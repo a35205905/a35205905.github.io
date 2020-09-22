@@ -28,7 +28,7 @@
 <meta property="og:description" content="前言因工作關係需要在GCP上架設WordPress趁這個機會趕緊做個筆記，讓自己在往後也能review而之前習慣性都把筆記放在HackMD上也剛好順便練習著如何架設Hexo 好的，讓我們開始吧:)">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2020-07-16T12:15:00.000Z">
-<meta property="article:modified_time" content="2020-09-07T01:45:35.969Z">
+<meta property="article:modified_time" content="2020-09-22T09:23:12.919Z">
 <meta property="article:author" content="LinChi">
 <meta property="article:tag" content="ubuntu">
 <meta property="article:tag" content="wordpress">
@@ -198,7 +198,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2020-09-07 09:45:35" itemprop="dateModified" datetime="2020-09-07T09:45:35+08:00">2020-09-07</time>
+                <time title="修改時間：2020-09-22 17:23:12" itemprop="dateModified" datetime="2020-09-22T17:23:12+08:00">2020-09-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -206,7 +206,7 @@
               </span>
               <span class="post-meta-item-text">分類於</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/WordPress/" itemprop="url" rel="index"><span itemprop="name">WordPress</span></a>
+                  <a href="/categories/%E6%8A%80%E8%A1%93%E6%96%87%E7%AB%A0/" itemprop="url" rel="index"><span itemprop="name">技術文章</span></a>
                 </span>
             </span>
 
@@ -243,7 +243,7 @@
 <p>測試網址：<a href="http://localhost/" target="_blank" rel="noopener">http://localhost/</a></p>
 </blockquote>
 <p>安裝 phpMyAdmin</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install phpmyadmin</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 將phpmyadmin連結至Apache目錄</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 重啟apache</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> servcie apache2 reload</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install phpmyadmin</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 將phpmyadmin連結至Apache目錄</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 重啟apache</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> service apache2 reload</span></span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>測試網址：<a href="http://localhost/phpmyadmin" target="_blank" rel="noopener">http://localhost/phpmyadmin</a></p>
@@ -336,7 +336,7 @@
 <p>設定權限</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> chown -R www-data /var/www/html/wordpress</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="Apache2"><a href="#Apache2" class="headerlink" title="Apache2"></a>Apache2</h2><p>其實做到這一步已經可以將<a href="http://localhost/wordpress" target="_blank" rel="noopener">WordPress</a>開啟<br>而我們可以透過更換Apache設定檔，在連至主機時就預設為WordPress<br><strong>但注意的是，更換設定檔後就不能連至<a href="http://localhost/phpmyadmin" target="_blank" rel="noopener">phpMyAdmin</a></strong></p>
+<h2 id="Apache2"><a href="#Apache2" class="headerlink" title="Apache2"></a>Apache2</h2><p>其實做到這一步已經可以將<a href="http://localhost/wordpress" target="_blank" rel="noopener">WordPress</a>開啟<br>而我們可以透過更換Apache設定檔，在連至主機時就預設為WordPress<br>順便同時將phpMyAdmin加入至router裡</p>
 <p>切換至Apache設定檔目錄</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /etc/apache2/sites-available</span></span><br></pre></td></tr></table></figure>
 
@@ -344,7 +344,7 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 複製Apache預設設定檔</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cp 000-default.conf wp.conf</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 編輯WordPress設定檔</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> vim wp.conf</span></span><br></pre></td></tr></table></figure>
 
 <p>在<code>wp.conf</code>中修改<code>ServerName</code> 與 <code>ServerAlias</code><br>更換為 <code>Domain name</code> 或 <code>IP</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">        ServerAdmin webmaster@localhost</span><br><span class="line">        DocumentRoot &#x2F;var&#x2F;www&#x2F;html&#x2F;wordpress</span><br><span class="line">        ServerName &lt;ServerName&gt;</span><br><span class="line">        ServerAlias &lt;ServerAlias&gt;</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">        ServerAdmin webmaster@localhost</span><br><span class="line">        DocumentRoot &#x2F;var&#x2F;www&#x2F;html&#x2F;wordpress</span><br><span class="line">        ServerName &lt;ServerName&gt;</span><br><span class="line">        ServerAlias &lt;ServerAlias&gt;</span><br><span class="line">        # phpMyAdmin Router</span><br><span class="line">        Alias &#x2F;phpMyAdmin &#x2F;var&#x2F;www&#x2F;html&#x2F;phpmyadmin</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
 
 <p>停用預設設定檔</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2dissite 000-default.conf</span></span><br></pre></td></tr></table></figure>
@@ -356,7 +356,10 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service apache2 reload</span></span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>測試網址：<a href="http://localhost" target="_blank" rel="noopener">http://localhost</a></p>
+<p>Wordpress：<a href="http://localhost" target="_blank" rel="noopener">http://localhost</a></p>
+</blockquote>
+<blockquote>
+<p>phpMyAdmin：<a href="http://localhost/phpMyAdmin" target="_blank" rel="noopener">http://localhost/phpMyAdmin</a></p>
 </blockquote>
 <p>以上做到一步你已經可以順利把WordPress畫面給順利開啟<br>剩下的部分就按照指示設定以及新增管理員<br>就可以登入進去管理後台囉～</p>
 
@@ -461,7 +464,7 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">1</span>
         <span class="site-state-item-name">分類</span></a>
       </div>
       <div class="site-state-item site-state-tags">
