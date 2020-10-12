@@ -28,7 +28,7 @@
 <meta property="og:description" content="前言最近有大學朋友正在找工作，他希望能夠把自己開發的Django小專案部署至GCP因此剛好了有這個機會，可以把當初在公司摸索到的經驗記錄下來。">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2020-07-20T04:38:00.000Z">
-<meta property="article:modified_time" content="2020-09-22T02:22:40.192Z">
+<meta property="article:modified_time" content="2020-10-11T16:52:50.910Z">
 <meta property="article:author" content="LinChi">
 <meta property="article:tag" content="ubuntu">
 <meta property="article:tag" content="django">
@@ -198,7 +198,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2020-09-22 10:22:40" itemprop="dateModified" datetime="2020-09-22T10:22:40+08:00">2020-09-22</time>
+                <time title="修改時間：2020-10-12 00:52:50" itemprop="dateModified" datetime="2020-10-12T00:52:50+08:00">2020-10-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -233,22 +233,29 @@
 <p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>先把所需要的套件裝起來<br>更新APT</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  sudo apt-get update</span></span><br></pre></td></tr></table></figure>
-<p>安裝virtualenv</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install python3-venv</span></span><br></pre></td></tr></table></figure>
 
 <p>我一般習慣會把專案放置在<code>/var/app</code>裡，因此我們先建立並切換至專案路徑<br>當然你也可以自行更換路徑，這沒有絕對</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> mkdir app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
 
-<p>使用Git將你的專案clone下來</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> &lt;YOUR PROJECT URL&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="Django"><a href="#Django" class="headerlink" title="Django"></a>Django</h2><p>使用Git將你的專案複製下來並切換目錄</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> &lt;YOUR PROJECT URL&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>以下步驟我都會用我平常的專案架構去部署</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">project</span><br><span class="line">    ├─manage.py</span><br><span class="line">    └─core</span><br><span class="line">        └─settings.py</span><br><span class="line">        └─urls.py</span><br><span class="line">        └─wsgi.py</span><br><span class="line">        └─__init__.py</span><br><span class="line">    ├─.gitignore</span><br><span class="line">    ├─requirements.txt</span><br><span class="line">    ├─common_static</span><br><span class="line">    ├─&lt;App1&gt;</span><br><span class="line">    ├─&lt;App2&gt;</span><br></pre></td></tr></table></figure>
 
-<p>虛擬環境 &amp; 套件管理包</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">建立虛擬環境</span><br><span class="line"><span class="meta">$</span><span class="bash"> python3 -m venv env</span></span><br><span class="line">執行虛擬環境</span><br><span class="line"><span class="meta">$</span><span class="bash"> . env/bin/activate</span></span><br><span class="line">更新pip</span><br><span class="line"><span class="meta">$</span><span class="bash"> pip3 install --upgrade pip</span></span><br><span class="line">安裝第三方套件庫</span><br><span class="line"><span class="meta">$</span><span class="bash"> pip3 install -r requirements.txt</span></span><br></pre></td></tr></table></figure>
+<h3 id="Virtualenv"><a href="#Virtualenv" class="headerlink" title="Virtualenv"></a>Virtualenv</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">安裝虛擬環境</span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install python3-venv</span></span><br><span class="line">建立虛擬環境</span><br><span class="line"><span class="meta">$</span><span class="bash"> python3 -m venv env</span></span><br><span class="line">執行虛擬環境</span><br><span class="line"><span class="meta">$</span><span class="bash"> . env/bin/activate</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h3><p>要特別注意的是，在安裝<code>mysqlclient</code>時要根據<strong>版本</strong>來下載相關的Ubuntu套件<br>而我這裡使用的則是<a href="https://pypi.org/project/mysqlclient/2.0.1/" target="_blank" rel="noopener">mysqlclient 2.0.1</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">更新pip</span><br><span class="line"><span class="meta">$</span><span class="bash"> pip3 install --upgrade pip</span></span><br><span class="line">安裝mysqlclient相關套件</span><br><span class="line"><span class="meta">$</span><span class="bash"> apt-get install python3-dev default-libmysqlclient-dev build-essential</span></span><br><span class="line">安裝第三方套件庫</span><br><span class="line"><span class="meta">$</span><span class="bash"> pip3 install -r requirements.txt</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="MySQL-8-0"><a href="#MySQL-8-0" class="headerlink" title="MySQL 8.0"></a>MySQL 8.0</h2><p>這篇<a href="https://leadingtides.com/article/%E6%95%99%E5%AD%B8-%E5%A6%82%E4%BD%95%E5%9C%A8-Ubuntu-18.04-%E5%AE%89%E8%A3%9D-MySQL-8.0" target="_blank" rel="noopener">教學文</a>寫得很好，照著它的步驟可以很順利的把MySQL裝起來</p>
+<h3 id="建立Database"><a href="#建立Database" class="headerlink" title="建立Database"></a>建立Database</h3><p>這裡我們新建一個屬於Django的資料庫</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> &lt;<span class="keyword">DATABASE</span>&gt; <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_unicode_ci;</span><br></pre></td></tr></table></figure>
+
+<p>這時就能看到新建立的Database</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">DATABASES</span>;</span><br></pre></td></tr></table></figure>
+
+
 <h3 id="遠端連線"><a href="#遠端連線" class="headerlink" title="遠端連線"></a>遠端連線</h3><p>root預設只能為本機使用，若你只是單純的想在同一台Server上，讓Django連至MySQL是可以的<br>但如果你想要用遠端連線至MySQL，得需要額外多做一些操作</p>
 <p>首先是進入MySQL</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u root -p</span></span><br></pre></td></tr></table></figure>
@@ -279,9 +286,15 @@
 
 
 
-<h2 id="資料庫遷移"><a href="#資料庫遷移" class="headerlink" title="資料庫遷移"></a>資料庫遷移</h2><p>至<code>env/lib/python3.7/site-packages/django/db/backends/mysql/base.py</code>註解下列程式碼</p>
+<h2 id="資料庫遷移"><a href="#資料庫遷移" class="headerlink" title="資料庫遷移"></a>資料庫遷移</h2><p>先切換至專案目錄</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app/&lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>至<code>env/lib/python3.6/site-packages/django/db/backends/mysql/base.py</code>註解下列程式碼</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">version = Database.version_info</span><br><span class="line"><span class="comment"># if version &lt; (1, 3, 13):</span></span><br><span class="line"><span class="comment">#     raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)</span></span><br></pre></td></tr></table></figure>
 
+<blockquote>
+<p>Python版本可能依系統而有所不同</p>
+</blockquote>
 <p>至<code>core/stteing.py</code>設定Database config <code>NAME</code> <code>USER</code> <code>PASSWORD</code></p>
 <p><code>HOST</code> <code>PORT</code> 預設為本機開發使用</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">DATABASES = &#123;</span><br><span class="line">    <span class="string">'default'</span>: &#123;</span><br><span class="line">        <span class="string">'ENGINE'</span>: <span class="string">'django.db.backends.mysql'</span>,</span><br><span class="line">        <span class="string">'NAME'</span>: <span class="string">'&lt;NAME&gt;'</span>,</span><br><span class="line">        <span class="string">'USER'</span>: <span class="string">'&lt;USER&gt;'</span>,</span><br><span class="line">        <span class="string">'PASSWORD'</span>: <span class="string">'&lt;PASSWORD&gt;'</span>,</span><br><span class="line">        <span class="string">'HOST'</span>: <span class="string">'127.0.0.1'</span>,</span><br><span class="line">        <span class="string">'PORT'</span>: <span class="string">'3306'</span>,</span><br><span class="line">        <span class="string">'OPTIONS'</span>: &#123;<span class="string">'charset'</span>: <span class="string">'utf8mb4'</span>&#125;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -300,7 +313,7 @@
 <h2 id="建立超級使用者"><a href="#建立超級使用者" class="headerlink" title="建立超級使用者"></a>建立超級使用者</h2><p>這步視專案需求可執行/略過</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python3 manage.py createsuperuser</span></span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>Email可任意填寫</p>
+<p>Email可任意填寫，若密碼過於簡單系統會再次詢問是否要使用這組密碼，輸入<code>y</code>即可</p>
 </blockquote>
 <h2 id="Apache2"><a href="#Apache2" class="headerlink" title="Apache2"></a>Apache2</h2><p>架站教學：<a href="https://chenuin.blogspot.com/2019/01/django-ubuntuapache2modwsgi-django.html" target="_blank" rel="noopener">網址</a></p>
 <p>安裝Apache套件</p>
@@ -411,7 +424,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ubuntu"><span class="nav-number">2.</span> <span class="nav-text">Ubuntu</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#環境"><span class="nav-number">3.</span> <span class="nav-text">環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL-8-0"><span class="nav-number">4.</span> <span class="nav-text">MySQL 8.0</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#遠端連線"><span class="nav-number">4.1.</span> <span class="nav-text">遠端連線</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#資料庫遷移"><span class="nav-number">5.</span> <span class="nav-text">資料庫遷移</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#靜態資源"><span class="nav-number">6.</span> <span class="nav-text">靜態資源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建立超級使用者"><span class="nav-number">7.</span> <span class="nav-text">建立超級使用者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Apache2"><span class="nav-number">8.</span> <span class="nav-text">Apache2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#檔案-amp-圖片上傳"><span class="nav-number">8.1.</span> <span class="nav-text">檔案&amp;圖片上傳</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Django-Rest-Framework-JWT"><span class="nav-number">8.2.</span> <span class="nav-text">Django Rest Framework JWT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署完成"><span class="nav-number">8.3.</span> <span class="nav-text">部署完成:)</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ubuntu"><span class="nav-number">2.</span> <span class="nav-text">Ubuntu</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#環境"><span class="nav-number">3.</span> <span class="nav-text">環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Django"><span class="nav-number">4.</span> <span class="nav-text">Django</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Virtualenv"><span class="nav-number">4.1.</span> <span class="nav-text">Virtualenv</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pip"><span class="nav-number">4.2.</span> <span class="nav-text">pip</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL-8-0"><span class="nav-number">5.</span> <span class="nav-text">MySQL 8.0</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#建立Database"><span class="nav-number">5.1.</span> <span class="nav-text">建立Database</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#遠端連線"><span class="nav-number">5.2.</span> <span class="nav-text">遠端連線</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#資料庫遷移"><span class="nav-number">6.</span> <span class="nav-text">資料庫遷移</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#靜態資源"><span class="nav-number">7.</span> <span class="nav-text">靜態資源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建立超級使用者"><span class="nav-number">8.</span> <span class="nav-text">建立超級使用者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Apache2"><span class="nav-number">9.</span> <span class="nav-text">Apache2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#檔案-amp-圖片上傳"><span class="nav-number">9.1.</span> <span class="nav-text">檔案&amp;圖片上傳</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Django-Rest-Framework-JWT"><span class="nav-number">9.2.</span> <span class="nav-text">Django Rest Framework JWT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署完成"><span class="nav-number">9.3.</span> <span class="nav-text">部署完成:)</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
