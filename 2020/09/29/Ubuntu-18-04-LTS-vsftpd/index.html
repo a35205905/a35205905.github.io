@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"a35205905.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言自從開始實習，公司開了一組GCP帳號讓我測試用之後前前後後碰了不少東西，也接觸了很多有關Server的知識而這次要玩的則是不依賴GCP方便的傳輸介面直接在Server上架設FTP，這個從小聽到大的檔案傳輸協定那就一起來看看是如何實現的吧～">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu 18.04 LTS+vsftpd">
+<meta property="og:url" content="https://a35205905.github.io/2020/09/29/Ubuntu-18-04-LTS-vsftpd/index.html">
+<meta property="og:site_name" content="LinChi 叩叮俱樂部">
+<meta property="og:description" content="前言自從開始實習，公司開了一組GCP帳號讓我測試用之後前前後後碰了不少東西，也接觸了很多有關Server的知識而這次要玩的則是不依賴GCP方便的傳輸介面直接在Server上架設FTP，這個從小聽到大的檔案傳輸協定那就一起來看看是如何實現的吧～">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://a35205905.github.io/images/gcp_firewall_ftp.png">
+<meta property="og:image" content="https://a35205905.github.io/images/filezilla01.png">
+<meta property="og:image" content="https://a35205905.github.io/images/filezilla02.png">
+<meta property="og:image" content="https://a35205905.github.io/images/openssl_ftp.png">
+<meta property="og:image" content="https://a35205905.github.io/images/filezilla03.png">
+<meta property="article:published_time" content="2020-09-29T13:23:00.000Z">
+<meta property="article:modified_time" content="2020-10-21T10:51:32.667Z">
+<meta property="article:author" content="LinChi">
+<meta property="article:tag" content="ubuntu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://a35205905.github.io/images/gcp_firewall_ftp.png">
+
+<link rel="canonical" href="https://a35205905.github.io/2020/09/29/Ubuntu-18-04-LTS-vsftpd/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>Ubuntu 18.04 LTS+vsftpd | LinChi 叩叮俱樂部</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LinChi 叩叮俱樂部</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">在開始之前，先來杯長島冰茶吧～</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>關於</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://a35205905.github.io/2020/09/29/Ubuntu-18-04-LTS-vsftpd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LinChi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LinChi 叩叮俱樂部">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Ubuntu 18.04 LTS+vsftpd
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2020-09-29 21:23:00" itemprop="dateCreated datePublished" datetime="2020-09-29T21:23:00+08:00">2020-09-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2020-10-21 18:51:32" itemprop="dateModified" datetime="2020-10-21T18:51:32+08:00">2020-10-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E8%A1%93%E6%96%87%E7%AB%A0/" itemprop="url" rel="index"><span itemprop="name">技術文章</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從開始實習，公司開了一組<code>GCP</code>帳號讓我測試用之後<br>前前後後碰了不少東西，也接觸了很多有關Server的知識<br>而這次要玩的則是不依賴<code>GCP</code>方便的傳輸介面<br>直接在Server上架設<code>FTP</code>，這個從小聽到大的檔案傳輸協定<br>那就一起來看看是如何實現的吧～</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>安裝<code>vsftpd</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install vsftpd -y</span></span><br></pre></td></tr></table></figure>
+
+<p>啟動&amp;開機自動啟動<code>vsftpd</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl start vsftpd</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> vsftpd</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="設定檔"><a href="#設定檔" class="headerlink" title="設定檔"></a>設定檔</h2><p>備份原始設定檔以方便回溯</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo cp /etc/vsftpd.conf /etc/vsftpd.conf.org</span></span><br></pre></td></tr></table></figure>
+
+<p>修改設定檔</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo vim /ect/vsftpd.conf</span></span><br></pre></td></tr></table></figure>
+
+<p>設定存取權限</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 禁止匿名使用者</span><br><span class="line">anonymous_enable&#x3D;NO</span><br><span class="line"></span><br><span class="line"># 只允許本地端使用者存取</span><br><span class="line">local_enable&#x3D;YES</span><br><span class="line"></span><br><span class="line"># 允許使用者寫入</span><br><span class="line">write_enable&#x3D;YES</span><br></pre></td></tr></table></figure>
+
+<p>限制存取範圍，讓使用者只能在<code>/home/&lt;USER&gt;/ftp</code>底下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chroot_local_user&#x3D;YES</span><br><span class="line">user_sub_token&#x3D;$USER</span><br><span class="line">local_root&#x3D;&#x2F;home&#x2F;$USER&#x2F;ftp</span><br></pre></td></tr></table></figure>
+
+<p>指定Port範圍在10000 ~ 110000 之間，可以依照個人需求修改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pasv_min_port&#x3D;10000</span><br><span class="line">pasv_max_port&#x3D;11000</span><br></pre></td></tr></table></figure>
+
+<p>使用者登入清單</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">userlist_enable&#x3D;YES</span><br><span class="line">userlist_file&#x3D;&#x2F;etc&#x2F;vsftpd.user_list</span><br><span class="line">userlist_deny&#x3D;NO</span><br></pre></td></tr></table></figure>
+
+<p>PAM模組名稱</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pam_service_name&#x3D;vsftpd</span><br></pre></td></tr></table></figure>
+
+<p>SSL加密，這裡可以事先一起設定</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rsa_cert_file&#x3D;&#x2F;etc&#x2F;ssl&#x2F;private&#x2F;vsftpd.pem</span><br><span class="line">rsa_private_key_file&#x3D;&#x2F;etc&#x2F;ssl&#x2F;private&#x2F;vsftpd.pem</span><br><span class="line">ssl_enable&#x3D;YES</span><br></pre></td></tr></table></figure>
+
+<p>都存檔之後就可以重啟<code>vsftpd</code>囉</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl restart vsftpd</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="SSL-TLS"><a href="#SSL-TLS" class="headerlink" title="SSL / TLS"></a>SSL / TLS</h2><p>預設的FTP是使用明碼進行傳輸，這其實對資料非常沒有保障<br>為了安全性上的考量，我們採用<code>OpenSSL</code>建立加密憑證，這裡會產生一組十年期限的2048bit金鑰<br>而金鑰和憑證都會依照設定檔配置放在<code>/etc/ssl/private/vsftpd.pem</code>裡</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem</span></span><br></pre></td></tr></table></figure>
+<p>系統會先問你一連串的基本資料加入至憑證中，按照指示回答即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 國家代號</span><br><span class="line">Country Name (2 letter code) [AU]:TW</span><br><span class="line"># 州或省</span><br><span class="line">State or Province Name (full name) [Some-State]:Taipei</span><br><span class="line"># 城市</span><br><span class="line">Locality Name (eg, city) []:xinyi</span><br><span class="line"># 組織或公司名稱</span><br><span class="line">Organization Name (eg, company) [Internet Widgits Pty Ltd]:kiitzu</span><br><span class="line"># 單位名稱</span><br><span class="line">Organizational Unit Name (eg, section) []:RD</span><br><span class="line"># Server或是負責人姓名</span><br><span class="line">Common Name (e.g. server FQDN or YOUR name) []:ricky_lin</span><br><span class="line"># 聯絡Email</span><br><span class="line">Email Address []:ricky_lin@kiitzu.com</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>這裡就依照你的個人資料輸入</p>
+</blockquote>
+<p>重啟<code>vsftpd</code>就設定好囉</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl restart vsftpd</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="使用者"><a href="#使用者" class="headerlink" title="使用者"></a>使用者</h2><p>接著我們就可以創立一組給予<code>vsftpd</code>使用的帳號，這裡用<code>vsftp</code>當作示例<br>按照步驟輸入密碼，後面的問題可直接<code>Enter</code>略過</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo adduser vsftp</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>adduser</code>和<code>useradd</code>雖然都可以建立使用者，但在細節上並不相同，可別搞混囉</p>
+</blockquote>
+<p>將使用者加入至登入清單中</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo vim /etc/vsftpd.user_list</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vsftp</span><br></pre></td></tr></table></figure>
+
+<h2 id="FTP目錄"><a href="#FTP目錄" class="headerlink" title="FTP目錄"></a>FTP目錄</h2><p>在剛建立好的使用者家目錄下建立FTP目錄，並設定權限</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo <span class="built_in">cd</span> /home/vsftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mkdir ftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chown nobody:nogroup ftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chmod a-w ftp</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>a-w</code>: 該檔案(目錄)不能寫入</p>
+</blockquote>
+<p>接下來在<code>ftp</code>目錄下建立一個可以上傳下載的目錄，並設定使用者權限</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo <span class="built_in">cd</span> ftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mkdir upload</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chown vsftp:vsftp upload</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>chmod</code>: 更改檔案(目錄)權限 / <code>chown</code>: 更改檔案(目錄)擁有者</p>
+</blockquote>
+<h2 id="GCP"><a href="#GCP" class="headerlink" title="GCP"></a>GCP</h2><p>別忘了我們的<code>Ubuntu</code>是綁在<code>GCP</code>底下，因此我們還要到GCP設置防火牆<br>不然連線至FTP時，會硬是活生生的被Google給擋了下來</p>
+<p>這邊要記得<code>Port</code>要根據你在設定檔配置的範圍<br><img src="/images/gcp_firewall_ftp.png" alt="vue_welcome"></p>
+<h2 id="FileZilla"><a href="#FileZilla" class="headerlink" title="FileZilla"></a>FileZilla</h2><p>所有的步驟都做好後，我們就可以在本機端連線至FTP了<br>我是使用<a href="https://filezilla-project.org/" target="_blank" rel="noopener">FileZilla</a>這套老牌的FTP軟體</p>
+<p>點擊左上角新增站台<br><img src="/images/filezilla01.png" alt="vue_welcome"></p>
+<p>配置好<code>主機</code>、<code>加密</code>、<code>使用者</code>後，點選連線<br><img src="/images/filezilla02.png" alt="vue_welcome"></p>
+<p>這就是我們之前建立好的憑證，點選確認<br><img src="/images/openssl_ftp.png" alt="vue_welcome"></p>
+<p>我們的目錄就會出現在畫面右方<br><img src="/images/filezilla03.png" alt="vue_welcome"></p>
+<p>接著你就可以在目錄下存取檔案囉～</p>
+<h2 id="WordPress"><a href="#WordPress" class="headerlink" title="WordPress"></a>WordPress</h2><p>如果你想在FTP上直接存取<code>WordPress</code>的話，可以這麼做</p>
+<p>先將<code>WordPress</code>目錄移至<code>ftp</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo mv /var/www/html/wordpress /home/vsftp/ftp</span></span><br></pre></td></tr></table></figure>
+
+<p>設定軟連結</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo ln -s /home/vsftp/ftp/wordpress /var/www/html/wordpress</span></span><br></pre></td></tr></table></figure>
+
+<p>這時候可以在FTP看到<code>WordPress</code>，但只能夠對檔案進行下載，完全不能上傳或是異動檔案<br>這是因為<code>WordPress</code>的擁有者必須是為<code>www-data</code>，因此<code>vsftp</code>這組帳號對<code>WordPress</code>並沒有寫入的權限<br>除非你<code>WordPress</code>的權限改為<code>777</code>，但是如此一來又有安全性上的疑慮<br>如果你希望能夠寫入，這裡提供一個簡單的方式，就是直接將<code>vsftp</code>加入至<code>www-data</code>群組當中<br>再把<code>WordPress</code>目錄及底下所有檔案擁有者改為<code>www-data:www-data</code><br>這樣的好處是你可以不必更動<code>WordPress</code>的所有權，同時又可以讓<code>vsftp</code>擁有權限<br>聽起來非常的複雜，但其實只要三行指令就可以做到這件事了</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 將使用者加入至www-data群組</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo usermod -aG www-data vsftp</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 將WordPress目錄及檔案擁有者改為www-data</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chown -R www-data:www-data /home/vsftp/ftp/wordpress</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 設定目錄及檔案權限</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chmod -R 775 /home/vsftp/ftp/wordpress</span></span><br></pre></td></tr></table></figure>
+<p>接下來你就可以在FTP上對<code>WordPress</code>進行操作囉～</p>
+<p>你可以在過程中使用<code>ls -l</code>觀察這其中的變化，這也代表<code>linux</code>在安全性上做得很好<br>我也是在這之中學到很多基礎的知識，<code>linux</code>真是個有趣的世界呢</p>
+<blockquote>
+<p>注意上傳至WordPress的檔案也記得要手動將檔案擁有者改為www-data！</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/09/18/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/" rel="prev" title="Ubuntu 18.04 LTS+Wordpress Backup/Restore">
+      <i class="fa fa-chevron-left"></i> Ubuntu 18.04 LTS+Wordpress Backup/Restore
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ubuntu"><span class="nav-number">2.</span> <span class="nav-text">Ubuntu</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#環境"><span class="nav-number">3.</span> <span class="nav-text">環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#設定檔"><span class="nav-number">4.</span> <span class="nav-text">設定檔</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SSL-TLS"><span class="nav-number">5.</span> <span class="nav-text">SSL &#x2F; TLS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用者"><span class="nav-number">6.</span> <span class="nav-text">使用者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FTP目錄"><span class="nav-number">7.</span> <span class="nav-text">FTP目錄</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCP"><span class="nav-number">8.</span> <span class="nav-text">GCP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FileZilla"><span class="nav-number">9.</span> <span class="nav-text">FileZilla</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WordPress"><span class="nav-number">10.</span> <span class="nav-text">WordPress</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">LinChi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/a35205905" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;a35205905" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:aa35205905@gmail.com" title="E-Mail → mailto:aa35205905@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LinChi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+    </div>
+</body>
+</html>
