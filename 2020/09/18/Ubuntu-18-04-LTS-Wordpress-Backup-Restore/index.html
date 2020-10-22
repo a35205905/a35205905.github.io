@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://a35205905.github.io/images/gcp_download_02.png">
 <meta property="og:image" content="https://a35205905.github.io/images/gcp_download_03.png">
 <meta property="article:published_time" content="2020-09-18T11:42:00.000Z">
-<meta property="article:modified_time" content="2020-09-29T13:32:25.324Z">
+<meta property="article:modified_time" content="2020-10-22T04:22:13.541Z">
 <meta property="article:author" content="LinChi">
 <meta property="article:tag" content="ubuntu">
 <meta property="article:tag" content="wordpress">
@@ -211,7 +211,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2020-09-29 21:32:25" itemprop="dateModified" datetime="2020-09-29T21:32:25+08:00">2020-09-29</time>
+                <time title="修改時間：2020-10-22 12:22:13" itemprop="dateModified" datetime="2020-10-22T12:22:13+08:00">2020-10-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -265,14 +265,14 @@
 <p>接著會出現視窗讓你輸入路徑<br><img src="/images/gcp_download_03.png" alt="vue_init"></p>
 <p>用這樣的方式就可以很簡單的把備份檔下載下來了<br>同理上傳檔案也是如此，上傳後檔案會放至在<code>/home/&lt;GCP_ACCOUNT&gt;</code>下<br>接著就可以開始著手處理還原的部分囉～</p>
 <h2 id="Restore"><a href="#Restore" class="headerlink" title="Restore"></a>Restore</h2><p>還原就有很多小細節要注意了，如果沒有處理好，不僅是WordPress打開來畫面跟原先的不一樣<br>甚至有可能會出現連網頁都開不了的窘境，因此這裡會一步一步教大家如何操作</p>
-<h3 id="Before"><a href="#Before" class="headerlink" title="Before"></a>Before</h3><p>我們先假設你已經將備份檔上傳至新的Server<br>也已經安裝好<code>PHP</code>, <code>MySQL</code>, <code>Apache</code>, <code>phpMyAdmin</code>等工具<br>如果對這方面不熟悉的人可以回去參考<a href="/2020/07/16/Ubuntu-18-04-LTS-Apache-WordPress/">這一篇</a>來複習，裡頭所提及的流程這邊就暫且不多做敘述</p>
+<h3 id="Before"><a href="#Before" class="headerlink" title="Before"></a>Before</h3><p>我們先假設你已經將備份檔及Apache設定檔上傳至新的Server<br>這邊是透過<code>GCP</code>上傳，因此檔案會位於我<code>GCP</code>帳號的家目錄底下</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /home/&lt;GCP_ACCOUNT&gt;</span></span><br></pre></td></tr></table></figure>
+<p>如果是需要透過FTP的話，也可以參考<a href="/2020/09/29/Ubuntu-18-04-LTS-vsftpd/">這一篇</a>安裝</p>
+<p>也已經安裝好<code>PHP</code>, <code>MySQL</code>, <code>Apache</code>, <code>phpMyAdmin</code>等工具<br>如果對這方面不熟悉的人可以回去參考<a href="/2020/07/16/Ubuntu-18-04-LTS-Apache-WordPress/">這一篇</a>來複習，裡頭所提及的流程這邊就暫且不多做敘述</p>
 <blockquote>
 <p>一樣可以使用<code>su -</code>切換root帳號以便後續操作</p>
 </blockquote>
-<h3 id="MySQL-1"><a href="#MySQL-1" class="headerlink" title="MySQL"></a>MySQL</h3><p>切換至備份檔目錄，因為我是採用<code>GCP</code>上傳<br>因此檔案會位於我<code>GCP</code>帳號的家目錄底下</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /home/&lt;GCP_ACCOUNT&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>在已建立好資料庫的情況下，這邊要做的事情就是先還原</p>
+<h3 id="MySQL-1"><a href="#MySQL-1" class="headerlink" title="MySQL"></a>MySQL</h3><p>在已建立好資料庫的情況下，這邊要做的事情就是先還原</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u &lt;USER&gt; -p &lt;DATABASE&gt; &lt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>u: user / p: password</p>
@@ -305,7 +305,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">define(&#39;DB_NAME&#39;, &#39;&lt;DB_NAME&gt;&#39;);</span><br><span class="line"></span><br><span class="line">define(&#39;DB_USER&#39;, &#39;&lt;DB_USER&gt;&#39;);</span><br><span class="line"> </span><br><span class="line">define(&#39;DB_PASSWORD&#39;, &#39;&lt;DB_PASSWORD&gt;&#39;);</span><br><span class="line"></span><br><span class="line">define(&#39;DB_HOST&#39;, &#39;localhost&#39;);</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
 <h3 id="Apache-1"><a href="#Apache-1" class="headerlink" title="Apache"></a>Apache</h3><p>將設定檔移至Apache目錄並切換過去</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mv /home/&lt;GCP_WORDPRESS&gt;/&lt;WORDPRESS&gt;.conf /etc/apache2/sites-available</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /etc/apache2/sites-available</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mv /home/&lt;GCP_ACCOUNT&gt;/&lt;WORDPRESS&gt;.conf /etc/apache2/sites-available</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /etc/apache2/sites-available</span></span><br></pre></td></tr></table></figure>
 
 <p>停用預設設定檔</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2dissite 000-default.conf</span></span><br></pre></td></tr></table></figure>
@@ -313,10 +313,13 @@
 <p>啟用WordPress設定檔</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2ensite &lt;WORDPRESS&gt;.conf</span></span><br></pre></td></tr></table></figure>
 
+<p>重新啟動Apache</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+
 <p>這裡要注意的是，如果你原本的Apache有使用WordPress裡<code>.htaccess</code>的設定<br>而在Apache的<code>.conf</code>檔裡也有添加這幾行</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;Directory &quot;&#x2F;var&#x2F;www&#x2F;html&#x2F;wordpress&#x2F;&quot;&gt;</span><br><span class="line">    AllowOverride All</span><br><span class="line">&lt;&#x2F;Directory&gt;</span><br></pre></td></tr></table></figure>
 <p>那你一定要記得啟動Apache mod_rewrite<br>要不然網頁打開來會是掛掉的情況</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2enmod rewrite</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2enmod rewrite</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>小小抱怨一下，我之前因為忘記做這件事，害得我花了將近一天的時間在DeBug，網頁開起來直接掛掉的當下讓我很緊張，還重舊Server上備份了好幾次，搞了老半天才意識到我沒有把mod_rewrite啟動，當下真的是想把自己給掐死，也因為這樣才衍生出了寫這篇文章的衝動。</p>
 </blockquote>
