@@ -28,7 +28,7 @@
 <meta property="og:description" content="前言因工作關係需要在GCP上架設WordPress趁這個機會趕緊做個筆記，讓自己在往後也能review而之前習慣性都把筆記放在HackMD上也剛好順便練習著如何架設Hexo 好的，讓我們開始吧:)">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2020-07-16T12:15:00.000Z">
-<meta property="article:modified_time" content="2020-10-23T03:11:48.160Z">
+<meta property="article:modified_time" content="2020-10-28T09:31:38.103Z">
 <meta property="article:author" content="LinChi">
 <meta property="article:tag" content="ubuntu">
 <meta property="article:tag" content="wordpress">
@@ -207,7 +207,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2020-10-23 11:11:48" itemprop="dateModified" datetime="2020-10-23T11:11:48+08:00">2020-10-23</time>
+                <time title="修改時間：2020-10-28 17:31:38" itemprop="dateModified" datetime="2020-10-28T17:31:38+08:00">2020-10-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -371,47 +371,7 @@
 <p>phpMyAdmin：<a href="http://localhost/phpMyAdmin" target="_blank" rel="noopener">http://localhost/phpMyAdmin</a></p>
 </blockquote>
 <p>以上做到一步你已經可以順利把WordPress畫面給順利開啟<br>剩下的部分就按照指示設定以及新增管理員<br>就可以登入進去管理後台囉～</p>
-<h2 id="TLS-SSL"><a href="#TLS-SSL" class="headerlink" title="TLS / SSL"></a>TLS / SSL</h2><p>為了讓WordPress能夠更加安全，我們可以透過<a href="https://certbot.eff.org/" target="_blank" rel="noopener">Certbot</a>免費的向<a href="https://letsencrypt.org/zh-tw/" target="_blank" rel="noopener">Let’s Encrypt</a>申請SSL憑證</p>
-<p>但在操作以下步驟之前，你必須先符合以下條件：</p>
-<ol>
-<li>已向域名商註冊一組網域名稱</li>
-<li>已設定<code>DNS</code>指向該Server IP</li>
-<li>已在<code>wp.cnof</code>檔中新增域名至<code>ServerName</code>中</li>
-</ol>
-<p>接著我們可以先新增<code>Certbot</code>的<code>PPA</code></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:certbot/certbot</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>按照提示按下<code>Enter</code></p>
-</blockquote>
-<p>利用<code>PPA</code>下載最新版本的<code>Certbot</code></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install python-certbot-apache</span></span><br></pre></td></tr></table></figure>
 
-<p>建立SSL憑證</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo certbot --apache -d &lt;YOUR_DOMAIN&gt; -d &lt;YOUR_DOMAIN2&gt;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>–apache: 使用Apache Web Server / -d: domain(可以依照域名新增至好幾個)</p>
-</blockquote>
-<blockquote>
-<p>如果不想讓<code>Certbot</code>覆寫設定檔只產生憑證，可以加入<code>certonly</code>參數</p>
-</blockquote>
-<p>如果是第一次申請，將會出現輸入Email的提示，之後<code>Cerbot</code>就會向<code>Let&#39;s Encrypt</code>進行申請SSL動作<br>同時驗證DNS配置是否正確，如果成功，<code>Cerbot</code>會再問你要如何設置<code>HTTPS</code>：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Please choose whether or not to redirect HTTP traffic to HTTPS, removing HTTP access.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">1: No redirect - Make no further changes to the webserver configuration.</span><br><span class="line">2: Redirect - Make all requests redirect to secure HTTPS access. Choose this for</span><br><span class="line">new sites, or if you&#39;re confident your site works on HTTPS. You can undo this</span><br><span class="line">change by editing your web server&#39;s configuration.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">Select the appropriate number [1-2] then [enter] (press &#39;c&#39; to cancel):</span><br></pre></td></tr></table></figure>
-<p>如果你想要讓瀏覽器輸入<code>http://&lt;DOMAIN&gt;/</code>時自動導向<code>https://&lt;DOMAIN&gt;</code>就輸入<code>2</code><br>接著<code>Certbot</code>就會自動重新配置你的Apache設定檔：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">        ...</span><br><span class="line">RewriteEngine on</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN2&gt; [OR]</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN&gt;</span><br><span class="line">RewriteRule ^ https:&#x2F;&#x2F;%&#123;SERVER_NAME&#125;%&#123;REQUEST_URI&#125; [END,NE,R&#x3D;permanent]</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
-<p>到這裡我們的憑證就已經申請好了，你可以打開瀏覽器輸入<code>https://&lt;YOUR_DOMAIN&gt;</code>就可以看到SSL囉～</p>
-<p>值得注意的是，SSL憑證是有效期的，如果你想更換憑證可以這麼做</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew -v</span></span><br></pre></td></tr></table></figure>
-
-<p>移除憑證</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot delete</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>可以加入<code>--cert-name &lt;DOMAIN&gt;</code>參數直接根據域名刪除</p>
-</blockquote>
-<h3 id="Corntab"><a href="#Corntab" class="headerlink" title="Corntab"></a>Corntab</h3><p>如果你不想每三個月都要手動更新憑證，我們一樣可以透過<code>Certbot</code>產生排程<br>幫我們每個禮拜去確認憑證狀態，如果效期低於一個月就會自動更換憑證</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew --dry-run</span></span><br></pre></td></tr></table></figure>
-
-<p>檢查排程狀態</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl status certbot.timer</span></span><br></pre></td></tr></table></figure>
     </div>
 
     
@@ -492,7 +452,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ubuntu"><span class="nav-number">2.</span> <span class="nav-text">Ubuntu</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#環境"><span class="nav-number">3.</span> <span class="nav-text">環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL"><span class="nav-number">4.</span> <span class="nav-text">MySQL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#設定Root密碼"><span class="nav-number">4.1.</span> <span class="nav-text">設定Root密碼</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建立Database"><span class="nav-number">4.2.</span> <span class="nav-text">建立Database</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建立User"><span class="nav-number">4.3.</span> <span class="nav-text">建立User</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WordPress"><span class="nav-number">5.</span> <span class="nav-text">WordPress</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Apache2"><span class="nav-number">6.</span> <span class="nav-text">Apache2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TLS-SSL"><span class="nav-number">7.</span> <span class="nav-text">TLS &#x2F; SSL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Corntab"><span class="nav-number">7.1.</span> <span class="nav-text">Corntab</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ubuntu"><span class="nav-number">2.</span> <span class="nav-text">Ubuntu</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#環境"><span class="nav-number">3.</span> <span class="nav-text">環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL"><span class="nav-number">4.</span> <span class="nav-text">MySQL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#設定Root密碼"><span class="nav-number">4.1.</span> <span class="nav-text">設定Root密碼</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建立Database"><span class="nav-number">4.2.</span> <span class="nav-text">建立Database</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建立User"><span class="nav-number">4.3.</span> <span class="nav-text">建立User</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WordPress"><span class="nav-number">5.</span> <span class="nav-text">WordPress</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Apache2"><span class="nav-number">6.</span> <span class="nav-text">Apache2</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -506,7 +466,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
