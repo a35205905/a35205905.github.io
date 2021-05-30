@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"a35205905.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言經過了漫長的等待及當兵的時間後，我終於順利退伍回來繼續當個碼農了 而現在是真的開始正式的工作了，因此想要好好的把工作上的筆記給整理一番 而無論是寫什麼程式甚至是WordPress最後都脫離不了與資料庫的間接 這次就來好好的從安裝到備份到還原一次記錄起來">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL8.0+Backup&#x2F;Restore">
+<meta property="og:url" content="https://a35205905.github.io/2021/05/24/MySQL8-0-Backup-Restore/index.html">
+<meta property="og:site_name" content="LinChi 叩叮俱樂部">
+<meta property="og:description" content="前言經過了漫長的等待及當兵的時間後，我終於順利退伍回來繼續當個碼農了 而現在是真的開始正式的工作了，因此想要好好的把工作上的筆記給整理一番 而無論是寫什麼程式甚至是WordPress最後都脫離不了與資料庫的間接 這次就來好好的從安裝到備份到還原一次記錄起來">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://a35205905.github.io/images/mysql_install_01.png">
+<meta property="og:image" content="https://a35205905.github.io/images/mysql_install_02.png">
+<meta property="og:image" content="https://a35205905.github.io/images/mysql_install_03.png">
+<meta property="og:image" content="https://a35205905.github.io/images/mysql_install_04.png">
+<meta property="article:published_time" content="2021-05-24T09:26:00.000Z">
+<meta property="article:modified_time" content="2021-05-30T21:00:56.668Z">
+<meta property="article:author" content="LinChi">
+<meta property="article:tag" content="ubuntu">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://a35205905.github.io/images/mysql_install_01.png">
+
+<link rel="canonical" href="https://a35205905.github.io/2021/05/24/MySQL8-0-Backup-Restore/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>MySQL8.0+Backup/Restore | LinChi 叩叮俱樂部</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-180982767-1"></script>
+    <script data-pjax>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-180982767-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LinChi 叩叮俱樂部</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">在開始之前，先來杯長島冰茶吧～</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>關於</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://a35205905.github.io/2021/05/24/MySQL8-0-Backup-Restore/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LinChi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LinChi 叩叮俱樂部">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL8.0+Backup/Restore
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2021-05-24 17:26:00" itemprop="dateCreated datePublished" datetime="2021-05-24T17:26:00+08:00">2021-05-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2021-05-31 05:00:56" itemprop="dateModified" datetime="2021-05-31T05:00:56+08:00">2021-05-31</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E8%A1%93%E6%96%87%E7%AB%A0/" itemprop="url" rel="index"><span itemprop="name">技術文章</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>經過了漫長的等待及當兵的時間後，我終於順利退伍回來繼續當個碼農了</p>
+<p>而現在是真的開始正式的工作了，因此想要好好的把工作上的筆記給整理一番</p>
+<p>而無論是寫什麼程式甚至是WordPress最後都脫離不了與資料庫的間接</p>
+<p>這次就來好好的從安裝到備份到還原一次記錄起來</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>首先我們先來安裝<code>MySQL</code>，不過以下我會用<code>5.7</code>和<code>8.0</code>的版本來做範例</p>
+<h3 id="5-7"><a href="#5-7" class="headerlink" title="5.7"></a>5.7</h3><p>5.7的版本單純很多基本上只要直接安裝即可</p>
+<p>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+<p>安裝MySQL</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install mysql-server</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="8-0"><a href="#8-0" class="headerlink" title="8.0"></a>8.0</h3><p>首先切換到暫存目錄</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /tmp</span></span><br></pre></td></tr></table></figure>
+
+<p>下載MySQL提供的軟體包</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -OL https://dev.mysql.com/get/mysql-apt-config_0.8.12-1_all.deb</span></span><br></pre></td></tr></table></figure>
+
+<p>必須透過<code>dpkg</code>來安裝軟體包</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo dpkg -i mysql-apt-config*</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>-i: install</p>
+</blockquote>
+<blockquote>
+<p>dpkg: 本機軟體包管理器 / apt: 線上軟體包管理器 / .deb: Debian的軟體包格式(Debian又為Ubuntu父版本)</p>
+</blockquote>
+<p>這時候你會看到這個畫面，採用預設的設定直接選最後一項<code>ok</code>就行<br><img src="/images/mysql_install_01.png" alt="vue_init"></p>
+<p>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝完後也可以刪除MySQL設定安裝檔</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo rm mysql-apt-config*</span></span><br></pre></td></tr></table></figure>
+
+<p>這時候就可以依據配置好的設定檔安裝我們的主角<code>MySQL</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install mysql-server -y</span></span><br></pre></td></tr></table></figure>
+
+<p>這時候MySQL會要你輸入root密碼，記住這是MySQL自己的root帳號，跟Ubuntu的root是不一樣的歐！<br><img src="/images/mysql_install_02.png" alt="vue_init"></p>
+<p>再次輸入密碼<br><img src="/images/mysql_install_03.png" alt="vue_init"></p>
+<p>再來MySQL還會問你是否要使用8.0版的<code>caching_sha2_password</code>還是5.7的<code>mysql_native_password</code>驗證方式，這會影響你其他Server連接MySQL時的相容性，這裡選第二個舊版的選項</p>
+<p><img src="/images/mysql_install_04.png" alt="vue_init"></p>
+<p>查看<code>MySQL</code>狀態</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service mysql status</span></span><br></pre></td></tr></table></figure>
+<p>會看到綠色的<code>active (running)</code>顯示正在運行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">● mysql.service - MySQL Community Server</span><br><span class="line">   Loaded: loaded (&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;mysql.service; enabled; vendor preset: enabled)</span><br><span class="line">   Active: active (running) since Thu 2021-05-27 20:08:22 UTC; 9min ago</span><br><span class="line">     Docs: man:mysqld(8)</span><br><span class="line">           http:&#x2F;&#x2F;dev.mysql.com&#x2F;doc&#x2F;refman&#x2F;en&#x2F;using-systemd.html</span><br><span class="line">  Process: 4863 ExecStartPre&#x3D;&#x2F;usr&#x2F;share&#x2F;mysql-8.0&#x2F;mysql-systemd-start pre (code&#x3D;exited, status&#x3D;0&#x2F;SUCCESS)</span><br><span class="line"> Main PID: 4918 (mysqld)</span><br><span class="line">   Status: &quot;Server is operational&quot;</span><br><span class="line">    Tasks: 37 (limit: 4671)</span><br><span class="line">   CGroup: &#x2F;system.slice&#x2F;mysql.service</span><br><span class="line">           └─4918 &#x2F;usr&#x2F;sbin&#x2F;mysqld</span><br><span class="line"></span><br><span class="line">May 27 20:08:22 mysql-test systemd[1]: Starting MySQL Community Server...</span><br><span class="line">May 27 20:08:22 mysql-test systemd[1]: Started MySQL Community Server.</span><br></pre></td></tr></table></figure>
+
+<p>開機時自動啟動<code>MySQL</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> systemctl <span class="built_in">enable</span> mysql</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p>這時你可以選擇更安全的初始化設定，讓你的MySQL有更好的安全機制<br>接下來就會有一系列的設定要操作，如果現在不想要就直接跳過一個環節就好</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql_secure_installation</span></span><br></pre></td></tr></table></figure>
+
+<p>輸入剛剛設定的root密碼後，接著可以選擇是否要配置更嚴謹的密碼規則</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">VALIDATE PASSWORD COMPONENT can be used to test passwords</span><br><span class="line">and improve security. It checks the strength of password</span><br><span class="line">and allows the users to set only those passwords which are</span><br><span class="line">secure enough. Would you like to setup VALIDATE PASSWORD component?</span><br><span class="line"></span><br><span class="line">Press y|Y for Yes, any other key for No: y</span><br></pre></td></tr></table></figure>
+
+<p>選擇是之後，會提供三種不同的規則給你配置：</p>
+<ul>
+<li>弱：8位數以上(含)</li>
+<li>中：8位數以上(含)，至少要有一個數字、小寫英文、大寫英文、特殊符號</li>
+<li>強：8位數以上(含)，至少要有一個數字、小寫英文、大寫英文、特殊符號，配置密碼字典文件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">There are three levels of password validation policy:</span><br><span class="line"></span><br><span class="line">LOW    Length &gt;&#x3D; 8</span><br><span class="line">MEDIUM Length &gt;&#x3D; 8, numeric, mixed case, and special characters</span><br><span class="line">STRONG Length &gt;&#x3D; 8, numeric, mixed case, special characters and dictionary file</span><br><span class="line"></span><br><span class="line">Please enter 0 &#x3D; LOW, 1 &#x3D; MEDIUM and 2 &#x3D; STRONG: 0</span><br></pre></td></tr></table></figure>
+
+<p>如果你剛剛在設定root密碼不符合你選擇的規則時，它會問你要不要重新設一組新的密碼</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Change the password for root ? ((Press y|Y for Yes, any other key for No) : n</span><br></pre></td></tr></table></figure>
+
+<p>MySQL在安裝過程有建立一組匿名帳號為了做系統測試，測試完成後是可以直接刪除的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">By default, a MySQL installation has an anonymous user,</span><br><span class="line">allowing anyone to log into MySQL without having to have</span><br><span class="line">a user account created for them. This is intended only for</span><br><span class="line">testing, and to make the installation go a bit smoother.</span><br><span class="line">You should remove them before moving into a production</span><br><span class="line">environment.</span><br><span class="line"></span><br><span class="line">Remove anonymous users? (Press y|Y for Yes, any other key for No) : y</span><br></pre></td></tr></table></figure>
+
+<p>接著要選擇是否禁止以遠端方式登入root帳號，只允許透過<code>localhost</code>登入<br>這裡我建議選擇是，如果想要遠端登入的話再另外創一組使用者就好，來提升安全性</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Normally, root should only be allowed to connect from</span><br><span class="line">&#39;localhost&#39;. This ensures that someone cannot guess at</span><br><span class="line">the root password from the network.</span><br><span class="line"></span><br><span class="line">Disallow root login remotely? (Press y|Y for Yes, any other key for No) : y</span><br></pre></td></tr></table></figure>
+
+<p>MySQL也同時建立了一個測試用的資料庫<code>test</code>，我們一樣可以把它給直接刪除掉</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">By default, MySQL comes with a database named &#39;test&#39; that</span><br><span class="line">anyone can access. This is also intended only for testing,</span><br><span class="line">and should be removed before moving into a production</span><br><span class="line">environment.</span><br><span class="line"></span><br><span class="line">Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y</span><br></pre></td></tr></table></figure>
+
+<p>最後我們要重新加載我們的權限表，選擇是就完成我們所有的設定了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> - Dropping test database...</span><br><span class="line">Success.</span><br><span class="line"></span><br><span class="line"> - Removing privileges on test database...</span><br><span class="line">Success.</span><br><span class="line"></span><br><span class="line">Reloading the privilege tables will ensure that all changes</span><br><span class="line">made so far will take effect immediately.</span><br><span class="line"></span><br><span class="line">Reload privilege tables now? (Press y|Y for Yes, any other key for No) : y</span><br></pre></td></tr></table></figure>
+
+<h2 id="Database"><a href="#Database" class="headerlink" title="Database"></a>Database</h2><p>首先進入MySQL CLI</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u root -p</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>u: user / p: password</p>
+</blockquote>
+<p>在這裡我們新建一個資料庫</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> &lt;<span class="keyword">DATABASE</span>&gt; <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_unicode_ci;</span><br></pre></td></tr></table></figure>
+
+<p>這時就能看到新建立的Database</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">DATABASES</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| information_schema |</span><br><span class="line">| mysql              |</span><br><span class="line">| mysql_example      |</span><br><span class="line">| performance_schema |</span><br><span class="line">| sys                |</span><br><span class="line">+--------------------+</span><br></pre></td></tr></table></figure>
+
+<p>進入剛剛建立的Database</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">USE</span> &lt;<span class="keyword">DATABASES</span>&gt;;</span><br></pre></td></tr></table></figure>
+
+<p>建立一張資料表</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> customers (</span><br><span class="line">  C_Id <span class="built_in">INT</span>,</span><br><span class="line">  <span class="keyword">Name</span> <span class="built_in">varchar</span>(<span class="number">50</span>),</span><br><span class="line">  Address <span class="built_in">varchar</span>(<span class="number">255</span>),</span><br><span class="line">  Phone <span class="built_in">varchar</span>(<span class="number">20</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>查看資料表</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">TABLES</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+-------------------------+</span><br><span class="line">| Tables_in_mysql_example |</span><br><span class="line">+-------------------------+</span><br><span class="line">| customers               |</span><br><span class="line">+-------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>接下來在這裡你就可以開始操作熟悉的SQL語法了<br>關於SQL教學的部分我非常推薦<a href="https://www.fooish.com/sql/" target="_blank" rel="noopener">Fooish 程式技術</a><br>大家有興趣可以去裡面探索，基本上我的語法都是在那裡學的</p>
+<h2 id="User"><a href="#User" class="headerlink" title="User"></a>User</h2><p>在先前的安全設定中，我們將root設為只允許localhost登入<br>因此如果我們要從外部連線進來時，我們必須建立一組可以遠端登入的User</p>
+<p>首先確認User狀態</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">user</span>, host <span class="keyword">FROM</span> mysql.user;</span><br></pre></td></tr></table></figure>
+<p>可以看到root的host為<code>localhost</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">+------------------+-----------+</span><br><span class="line">| user             | host      |</span><br><span class="line">+------------------+-----------+</span><br><span class="line">| mysql.infoschema | localhost |</span><br><span class="line">| mysql.session    | localhost |</span><br><span class="line">| mysql.sys        | localhost |</span><br><span class="line">| root             | localhost |</span><br><span class="line">+------------------+-----------+</span><br></pre></td></tr></table></figure>
+
+<h3 id="建立User"><a href="#建立User" class="headerlink" title="建立User"></a>建立User</h3><p>建立User</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> <span class="string">'&lt;USER NAME&gt;'</span>@<span class="string">'%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'&lt;PASSWORD&gt;'</span>;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>這裡<code>host</code>為%代表所有ip都能使用這組帳號連線，你也可以設為localhost</p>
+</blockquote>
+<p>如果你想更改User密碼可以這樣做</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">USER</span> <span class="string">'&lt;USER NAME&gt;'</span>@<span class="string">'&lt;HOST&gt;'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'&lt;PASSWORD&gt;'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>另外你可以建立<code>mysql_native_password</code>驗證模式的User</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> <span class="string">'&lt;USER NAME&gt;'</span>@<span class="string">'%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">WITH</span> mysql_native_password <span class="keyword">BY</span> <span class="string">'&lt;PASSWORD&gt;'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>如果想更改現有User的密碼為<code>mysql_native_password</code>驗證模式則是</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">USER</span> <span class="string">'&lt;USER NAME&gt;'</span>@<span class="string">'&lt;HOST&gt;'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">WITH</span> mysql_native_password <span class="keyword">BY</span> <span class="string">'&lt;PASSWORD&gt;'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>這時就可以看到新建立好的使用者</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">user</span>, host <span class="keyword">FROM</span> mysql.user;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+------------------+-----------+</span><br><span class="line">| user             | host      |</span><br><span class="line">+------------------+-----------+</span><br><span class="line">| user_example     | %         |</span><br><span class="line">| mysql.infoschema | localhost |</span><br><span class="line">| mysql.session    | localhost |</span><br><span class="line">| mysql.sys        | localhost |</span><br><span class="line">| root             | localhost |</span><br><span class="line">+------------------+-----------+</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="權限"><a href="#權限" class="headerlink" title="權限"></a>權限</h3><p>賦予User Database權限</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">ALL</span> <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> &lt;<span class="keyword">DATABASE</span>&gt;.* <span class="keyword">TO</span> <span class="string">'&lt;USER NAME&gt;'</span>@<span class="string">'%'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>更新權限表</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FLUSH</span> <span class="keyword">PRIVILEGES</span>;</span><br></pre></td></tr></table></figure>
+
+<p>可執行<code>exit</code>或<code>quit</code>退出MySQL<br>就能遠端重新登入了</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo mysql -u &lt;USER NAME&gt; -p</span></span><br></pre></td></tr></table></figure>
+
+<p>這時候就可以看到剛剛賦予權限的資料庫</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SHOW DATABASES;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| information_schema |</span><br><span class="line">| mysql_example      |</span><br><span class="line">+--------------------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="Backup"><a href="#Backup" class="headerlink" title="Backup"></a>Backup</h2><p>備份指定資料庫</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysqldump -u &lt;USER&gt; -p &lt;DATABASE&gt; &gt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+
+<p>備份所有資料庫</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysqldump -u &lt;USER&gt; -p --all-databases &gt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+
+<p>遠端備份資料庫</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysqldump -u &lt;USER&gt; -p -h &lt;HOST&gt; &lt;DATABASE&gt; &gt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+
+<p>備份指定資料表出來</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysqldump -u &lt;USER&gt; -p &lt;DATABASE&gt; &lt;TABLE NAME&gt; &gt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+
+<p><code>Google Cloud SQL</code>備份資料庫</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysqldump -u &lt;USER&gt; -p -h &lt;HOST&gt; --port &lt;PORT&gt; --databases &lt;DATABASE&gt; --hex-blob --single-transaction --<span class="built_in">set</span>-gtid-purged=OFF --default-character-set=utf8mb4 --column-statistics=0 &gt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+
+<p>設定排程備份<code>backup.sh</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> database info</span></span><br><span class="line">_USER=&lt;USER&gt;</span><br><span class="line">_PASSWORD=&lt;PASSWORD&gt;</span><br><span class="line">_DATABASE=&lt;DATABASE&gt;</span><br><span class="line">_HOST=&lt;HOST&gt;</span><br><span class="line"><span class="meta">#</span><span class="bash"> backup info</span></span><br><span class="line">_WORK_DIR=&lt;WORK_DIR&gt;</span><br><span class="line">_MYSQLDUMP_DIR=&lt;MYSQLDUMP_DIR&gt;</span><br><span class="line">_ZIP_DIR=&lt;ZIP_DIR&gt;</span><br><span class="line">_ZIP_PASSWORD=&lt;ZIP_PASSWORD&gt;</span><br><span class="line">_DATE=$(date "+%Y%m%d_%H%M%S")</span><br><span class="line">_FILE=$&#123;_DATABASE&#125;_$&#123;_DATE&#125;</span><br><span class="line"><span class="meta">#</span><span class="bash"> shell</span></span><br><span class="line"><span class="meta">$</span><span class="bash">&#123;_MYSQLDUMP_DIR&#125;/mysqldump -u <span class="variable">$&#123;_USER&#125;</span> -p<span class="variable">$&#123;_PASSWORD&#125;</span> <span class="variable">$&#123;_DATABASE&#125;</span> --host <span class="variable">$&#123;_HOST&#125;</span> &gt; <span class="variable">$&#123;_WORK_DIR&#125;</span>/<span class="variable">$&#123;_FILE&#125;</span>.sql</span></span><br><span class="line"><span class="meta">$</span><span class="bash">&#123;_ZIP_DIR&#125;/zip -m -j -P <span class="variable">$&#123;_ZIP_PASSWORD&#125;</span> <span class="variable">$&#123;_WORK_DIR&#125;</span>/<span class="variable">$&#123;_FILE&#125;</span>.zip <span class="variable">$&#123;_WORK_DIR&#125;</span>/<span class="variable">$&#123;_FILE&#125;</span>.sql</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Restore"><a href="#Restore" class="headerlink" title="Restore"></a>Restore</h2><p>還原指定資料庫</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u &lt;USER&gt; -p &lt;DATABASE&gt; &lt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+
+<p>還原多個資料庫</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u &lt;USER&gt; -p &lt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+              <a href="/tags/mysql/" rel="tag"># mysql</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/28/Ubuntu-18-04-LTS-Certbot-Let%E2%80%99s-Encrypt/" rel="prev" title="Ubuntu 18.04 LTS+Certbot(Let’s Encrypt)">
+      <i class="fa fa-chevron-left"></i> Ubuntu 18.04 LTS+Certbot(Let’s Encrypt)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/28/Ubuntu-18-04-LTS-Apache-Laravel/" rel="next" title="Ubuntu 18.04 LTS+Apache+Laravel">
+      Ubuntu 18.04 LTS+Apache+Laravel <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ubuntu"><span class="nav-number">2.</span> <span class="nav-text">Ubuntu</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#環境"><span class="nav-number">3.</span> <span class="nav-text">環境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-7"><span class="nav-number">3.1.</span> <span class="nav-text">5.7</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-0"><span class="nav-number">3.2.</span> <span class="nav-text">8.0</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化"><span class="nav-number">3.3.</span> <span class="nav-text">初始化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Database"><span class="nav-number">4.</span> <span class="nav-text">Database</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#User"><span class="nav-number">5.</span> <span class="nav-text">User</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#建立User"><span class="nav-number">5.1.</span> <span class="nav-text">建立User</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#權限"><span class="nav-number">5.2.</span> <span class="nav-text">權限</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Backup"><span class="nav-number">6.</span> <span class="nav-text">Backup</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Restore"><span class="nav-number">7.</span> <span class="nav-text">Restore</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">LinChi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/a35205905" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;a35205905" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:aa35205905@gmail.com" title="E-Mail → mailto:aa35205905@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LinChi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+    </div>
+</body>
+</html>
