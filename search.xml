@@ -1,0 +1,1066 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Ubuntu 18.04 LTS+Apache+Django</title>
+    <url>/2020/07/20/Ubuntu-18-04-LTS-Apache-Django/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近有大學朋友正在找工作，他希望能夠把自己開發的Django小專案部署至GCP<br>因此剛好了有這個機會，可以把當初在公司摸索到的經驗記錄下來。</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>先把所需要的套件裝起來<br>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+
+<p>我一般習慣會把專案放置在<code>/var/app</code>裡，因此我們先建立並切換至專案路徑<br>當然你也可以自行更換路徑，這沒有絕對</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Django"><a href="#Django" class="headerlink" title="Django"></a>Django</h2><p>使用Git將你的專案複製下來並切換目錄</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> &lt;YOUR PROJECT URL&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>以下步驟我都會用我平常的專案架構去部署</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">project</span><br><span class="line">    ├─manage.py</span><br><span class="line">    └─core</span><br><span class="line">        └─settings.py</span><br><span class="line">        └─urls.py</span><br><span class="line">        └─wsgi.py</span><br><span class="line">        └─__init__.py</span><br><span class="line">    ├─.gitignore</span><br><span class="line">    ├─requirements.txt</span><br><span class="line">    ├─common_static</span><br><span class="line">    ├─&lt;App1&gt;</span><br><span class="line">    ├─&lt;App2&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Virtualenv"><a href="#Virtualenv" class="headerlink" title="Virtualenv"></a>Virtualenv</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">安裝虛擬環境</span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install python3-venv</span></span><br><span class="line">建立虛擬環境</span><br><span class="line"><span class="meta">$</span><span class="bash"> python3 -m venv env</span></span><br><span class="line">執行虛擬環境</span><br><span class="line"><span class="meta">$</span><span class="bash"> . env/bin/activate</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h3><p>要特別注意的是，在安裝<code>mysqlclient</code>時要根據<strong>版本</strong>來下載相關的Ubuntu套件<br>而我這裡使用的則是<a href="https://pypi.org/project/mysqlclient/2.0.1/" target="_blank" rel="noopener">mysqlclient 2.0.1</a></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">更新pip</span><br><span class="line"><span class="meta">$</span><span class="bash"> pip3 install --upgrade pip</span></span><br><span class="line">安裝mysqlclient相關套件</span><br><span class="line"><span class="meta">$</span><span class="bash"> apt-get install python3-dev default-libmysqlclient-dev build-essential</span></span><br><span class="line">安裝第三方套件庫</span><br><span class="line"><span class="meta">$</span><span class="bash"> pip3 install -r requirements.txt</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL-8-0"><a href="#MySQL-8-0" class="headerlink" title="MySQL 8.0"></a>MySQL 8.0</h2><p>MySQL的部分我直接拆開來獨立成<a href="/2021/05/24/MySQL8-0-Backup-Restore/" title="一篇">一篇</a>了，可以直接點進去看</p>
+<h2 id="資料庫遷移"><a href="#資料庫遷移" class="headerlink" title="資料庫遷移"></a>資料庫遷移</h2><p>先切換至專案目錄</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app/&lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>至<code>env/lib/python3.6/site-packages/django/db/backends/mysql/base.py</code>註解下列程式碼</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">version = Database.version_info</span><br><span class="line"><span class="comment"># if version &lt; (1, 3, 13):</span></span><br><span class="line"><span class="comment">#     raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Python版本可能依系統而有所不同</p>
+</blockquote>
+<p>至<code>core/stteing.py</code>設定Database config <code>NAME</code> <code>USER</code> <code>PASSWORD</code></p>
+<p><code>HOST</code> <code>PORT</code> 預設為本機開發使用</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">DATABASES = &#123;</span><br><span class="line">    <span class="string">'default'</span>: &#123;</span><br><span class="line">        <span class="string">'ENGINE'</span>: <span class="string">'django.db.backends.mysql'</span>,</span><br><span class="line">        <span class="string">'NAME'</span>: <span class="string">'&lt;NAME&gt;'</span>,</span><br><span class="line">        <span class="string">'USER'</span>: <span class="string">'&lt;USER&gt;'</span>,</span><br><span class="line">        <span class="string">'PASSWORD'</span>: <span class="string">'&lt;PASSWORD&gt;'</span>,</span><br><span class="line">        <span class="string">'HOST'</span>: <span class="string">'127.0.0.1'</span>,</span><br><span class="line">        <span class="string">'PORT'</span>: <span class="string">'3306'</span>,</span><br><span class="line">        <span class="string">'OPTIONS'</span>: &#123;<span class="string">'charset'</span>: <span class="string">'utf8mb4'</span>&#125;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由資料庫遷移檔建立資料表</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python3 manage.py migrate</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>需先確認MySQL是否有該資料庫</p>
+</blockquote>
+<h2 id="靜態資源"><a href="#靜態資源" class="headerlink" title="靜態資源"></a>靜態資源</h2><p>我的<code>core/setting.py</code>的配置如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">STATIC_URL = <span class="string">'/static/'</span></span><br><span class="line"><span class="comment"># 部署靜態資源路徑 配合以下指令</span></span><br><span class="line"><span class="comment"># $ python manage.py collectstatic</span></span><br><span class="line">STATIC_ROOT = os.path.join(BASE_DIR, <span class="string">"static/"</span>)</span><br><span class="line"><span class="comment"># 開發靜態資源路徑</span></span><br><span class="line">STATICFILES_DIRS = [</span><br><span class="line">    os.path.join(BASE_DIR, <span class="string">'common_static/'</span>)</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 附件路由</span></span><br><span class="line">MEDIA_URL = <span class="string">'/media/'</span></span><br><span class="line">MEDIA_ROOT = os.path.join(BASE_DIR, <span class="string">'media'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>將靜態資源複製到<code>STATIC_ROOT</code>目錄底下</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python3 manage.py collectstatic</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="建立超級使用者"><a href="#建立超級使用者" class="headerlink" title="建立超級使用者"></a>建立超級使用者</h2><p>這步視專案需求可執行/略過</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python3 manage.py createsuperuser</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Email可任意填寫，若密碼過於簡單系統會再次詢問是否要使用這組密碼，輸入<code>y</code>即可</p>
+</blockquote>
+<h2 id="Apache2"><a href="#Apache2" class="headerlink" title="Apache2"></a>Apache2</h2><p>架站教學：<a href="https://chenuin.blogspot.com/2019/01/django-ubuntuapache2modwsgi-django.html" target="_blank" rel="noopener">網址</a></p>
+<p>安裝Apache套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install apache2 libapache2-mod-wsgi-py3</span></span><br></pre></td></tr></table></figure>
+
+<p>開機自動啟動Apache</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>
+
+<p>至<code>/etc/apache2/sites-available/django.conf</code>新增下列設定</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    DocumentRoot &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;</span><br><span class="line"></span><br><span class="line">    Alias &#x2F;static &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;static</span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;static&gt;</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;core&gt;</span><br><span class="line">        &lt;Files wsgi.py&gt;</span><br><span class="line">            Require all granted</span><br><span class="line">        &lt;&#x2F;Files&gt;</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line">    WSGIDaemonProcess core python-path&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt; python-home&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;env</span><br><span class="line">    WSGIProcessGroup core</span><br><span class="line">    WSGIScriptAlias &#x2F; &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;core&#x2F;wsgi.py</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可使用vi/Vim取代：<code>:%s/&lt;SEARCH_FROM&gt;/&lt;REPLACE_TO&gt;/g</code></p>
+</blockquote>
+<p>啟用自訂設定 &amp; 關閉預設設定</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2ensite django.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo a2dissite 000-default.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="檔案-amp-圖片上傳"><a href="#檔案-amp-圖片上傳" class="headerlink" title="檔案&amp;圖片上傳"></a>檔案&amp;圖片上傳</h3><p>至<code>/etc/apache2/sites-available/django.conf</code>新增下列設定</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    ...</span><br><span class="line">    Alias &#x2F;media &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;media</span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;media&gt;</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line">    ...</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+
+<p>設定Apache寫入權限</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">chown -R www-data /var/app/&lt;PROJECT&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Django-Rest-Framework-JWT"><a href="#Django-Rest-Framework-JWT" class="headerlink" title="Django Rest Framework JWT"></a>Django Rest Framework JWT</h3><p>至<code>/etc/apache2/sites-available/django.conf</code>新增下列設定</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    ...</span><br><span class="line">    WSGIPassAuthorization On</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署完成"><a href="#部署完成" class="headerlink" title="部署完成:)"></a>部署完成:)</h3><p><a href="http://localhost:80/" target="_blank" rel="noopener">http://localhost:80/</a></p>
+]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>django</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 LTS+Apache+Laravel</title>
+    <url>/2021/05/28/Ubuntu-18-04-LTS-Apache-Laravel/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>同一時間，最近因工作關係正式學習PHP了，而且馬上就進入到Laravel框架的部分</p>
+<p>可想而知每當學習新的Web Framework，不免俗的還是要來部署一下</p>
+<p>那就話不多說直接開始吧～</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>先把所需要的套件裝起來<br>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+
+<p>我一般習慣會把專案放置在<code>/var/app</code>裡，因此我們先建立並切換至專案路徑<br>當然你也可以自行更換路徑，這沒有絕對</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
+<h2 id="Laravel"><a href="#Laravel" class="headerlink" title="Laravel"></a>Laravel</h2><p>使用Git將你的專案複製下來並切換目錄</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> &lt;YOUR PROJECT URL&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><p>MySQL的部分我直接拆開來獨立成<a href="/2021/05/24/MySQL8-0-Backup-Restore/" title="一篇">一篇</a>了，可以直接點進去看</p>
+<h2 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h2><p>安裝<code>PHP</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install php</span></span><br></pre></td></tr></table></figure>
+
+<p>查看<code>PHP</code>版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ php -v</span><br></pre></td></tr></table></figure>
+
+<h2 id="Composer"><a href="#Composer" class="headerlink" title="Composer"></a>Composer</h2><p>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝<code>Composer</code>依賴套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install curl php-cli php-mbstring git unzip</span></span><br></pre></td></tr></table></figure>
+
+<p>下載<code>Composer</code>安裝檔</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cd ~</span><br><span class="line">$ curl -sS https:&#x2F;&#x2F;getcomposer.org&#x2F;installer -o composer-setup.php</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>-sS: 只顯示錯誤提示; -o: 輸出至文件上</p>
+</blockquote>
+<p>驗證安裝檔hash，若hash值不對請到<a href="https://composer.github.io/pubkeys.html" target="_blank" rel="noopener">官方文件</a>上再檢查一次</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ HASH&#x3D;756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3fbc1f233e9b180f061</span><br><span class="line">$ php -r &quot;if (hash_file(&#39;SHA384&#39;, &#39;composer-setup.php&#39;) &#x3D;&#x3D;&#x3D; &#39;$HASH&#39;) &#123; echo &#39;Installer verified&#39;; &#125; else &#123; echo &#39;Installer corrupt&#39;; unlink(&#39;composer-setup.php&#39;); &#125; echo PHP_EOL;&quot;</span><br></pre></td></tr></table></figure>
+<p>驗證成功會看到以下訊息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Installer verified</span><br></pre></td></tr></table></figure>
+
+<p>安裝<code>Composer</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo php composer-setup.php --install-dir=/usr/<span class="built_in">local</span>/bin --filename=composer</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">All settings correct for using Composer</span><br><span class="line">Downloading...</span><br><span class="line"></span><br><span class="line">Composer (version 2.0.14) successfully installed to: &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br><span class="line">Use it: php &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br></pre></td></tr></table></figure>
+
+<p>查看<code>Composer</code>狀態</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ composer</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">   ______</span><br><span class="line">  &#x2F; ____&#x2F;___  ____ ___  ____  ____  ________  _____</span><br><span class="line"> &#x2F; &#x2F;   &#x2F; __ \&#x2F; __ &#96;__ \&#x2F; __ \&#x2F; __ \&#x2F; ___&#x2F; _ \&#x2F; ___&#x2F;</span><br><span class="line">&#x2F; &#x2F;___&#x2F; &#x2F;_&#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F;_&#x2F; &#x2F; &#x2F;_&#x2F; (__  )  __&#x2F; &#x2F;</span><br><span class="line">\____&#x2F;\____&#x2F;_&#x2F; &#x2F;_&#x2F; &#x2F;_&#x2F; .___&#x2F;\____&#x2F;____&#x2F;\___&#x2F;_&#x2F;</span><br><span class="line">                    &#x2F;_&#x2F;</span><br><span class="line">Composer version 2.0.14 2021-05-21 17:03:37</span><br></pre></td></tr></table></figure>
+
+<p><code>Composer</code>不希望你使用root帳號，因為某些命令包括exec、install、update，允許第三方程式在你的系統上執行，這些腳本具有完全訪問權限，因此強烈建議不要在root帳號上操作</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Do not run Composer as root&#x2F;super user! See https:&#x2F;&#x2F;getcomposer.org&#x2F;root for details</span><br><span class="line">Continue as root&#x2F;super user [yes]</span><br></pre></td></tr></table></figure>
+
+<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
+<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.17.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.13</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Yarn"><a href="#Yarn" class="headerlink" title="Yarn"></a>Yarn</h2><p>安裝<code>Yarn</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm install -g yarn</span><br></pre></td></tr></table></figure>
+
+<p>查看<code>Yarn</code>版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yarn -v</span><br></pre></td></tr></table></figure>
+
+<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>架站教學：<a href="https://chenuin.blogspot.com/2019/01/django-ubuntuapache2modwsgi-django.html" target="_blank" rel="noopener">網址</a></p>
+<p>安裝Apache套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install apache2 libapache2-mod-wsgi-py3</span></span><br></pre></td></tr></table></figure>
+
+<p>開機自動啟動Apache</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>php</tag>
+        <tag>laravel</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 LTS+Apache+WordPress</title>
+    <url>/2020/07/16/Ubuntu-18-04-LTS-Apache-WordPress/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>因工作關係需要在<code>GCP</code>上架設<code>WordPress</code><br>趁這個機會趕緊做個筆記，讓自己在往後也能review<br>而之前習慣性都把筆記放在<a href="https://hackmd.io/" target="_blank" rel="noopener">HackMD</a>上<br>也剛好順便練習著如何架設<code>Hexo</code></p>
+<p>好的，讓我們開始吧:)</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>先把所需要的套件裝起來</p>
+<p>更新 APT</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get upgrade</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝 LAMP Server：<code>Liunx</code>+<code>Apache2</code>+<code>MySQL</code>+<code>PHP</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install lamp-server^</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>測試網址：<a href="http://localhost/" target="_blank" rel="noopener">http://localhost/</a></p>
+</blockquote>
+<p>安裝 phpMyAdmin</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install phpmyadmin</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 將phpmyadmin連結至Apache目錄</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 重啟apache</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> service apache2 reload</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>測試網址：<a href="http://localhost/phpmyadmin" target="_blank" rel="noopener">http://localhost/phpmyadmin</a></p>
+</blockquote>
+<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><p>這部分的操作都會透過MySQL CLI<br>而<code>Ubuntu 18.04 LTS</code>在安裝MySQL時root預設的密碼為空<br>為了安全考量，我們還是先手動賦予它一組密碼</p>
+<blockquote>
+<p><strong>Ubuntu與MySQL各自有一組root帳號，請注意不要搞混在一起</strong></p>
+</blockquote>
+<p>先登入MySQL</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo mysql</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="設定Root密碼"><a href="#設定Root密碼" class="headerlink" title="設定Root密碼"></a>設定Root密碼</h3><p>確認root狀態，這時<code>authentication_string</code>會為空</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">user</span>, authentication_string, <span class="keyword">plugin</span>, host <span class="keyword">FROM</span> mysql.user <span class="keyword">WHERE</span> <span class="keyword">user</span> = <span class="string">'root'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>賦予root密碼</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">USER</span> <span class="string">'root'</span>@<span class="string">'localhost'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">WITH</span> mysql_native_password <span class="keyword">BY</span> <span class="string">'&lt;PASSWORD&gt;'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>再次確認root狀態</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">user</span>, authentication_string, <span class="keyword">plugin</span>, host <span class="keyword">FROM</span> mysql.user <span class="keyword">WHERE</span> <span class="keyword">user</span> = <span class="string">'root'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>接著執行<code>exit</code>或<code>quit</code>退出MySQL<br>再次登入可看到錯誤訊息，代表root密碼已設定成功</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo mysql</span></span><br><span class="line">ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO)</span><br></pre></td></tr></table></figure>
+
+<p>使用密碼重新登入</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo mysql -u root -p</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>u: user / p: password</p>
+</blockquote>
+<h3 id="建立Database"><a href="#建立Database" class="headerlink" title="建立Database"></a>建立Database</h3><p>這裡我們新建一個屬於WordPress的資料庫</p>
+<p>確認Database狀態</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">DATABASES</span>;</span><br></pre></td></tr></table></figure>
+
+<p>建立Database</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> &lt;<span class="keyword">DATABASE</span>&gt; <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_unicode_ci;</span><br></pre></td></tr></table></figure>
+
+<p>這時就能看到新建立的Database</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">DATABASES</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="建立User"><a href="#建立User" class="headerlink" title="建立User"></a>建立User</h3><p>同上，我們一樣新建一個屬於WordPress的使用者</p>
+<p>確認User狀態</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">user</span>, host <span class="keyword">FROM</span> mysql.user;</span><br></pre></td></tr></table></figure>
+
+<p>建立允許遠端的User</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> <span class="string">'&lt;USER NAME&gt;'</span>@<span class="string">'%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'&lt;PASSWORD&gt;'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>賦予User Database權限</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">ALL</span> <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> &lt;<span class="keyword">DATABASE</span>&gt;.* <span class="keyword">TO</span> <span class="string">'&lt;USER NAME&gt;'</span>@<span class="string">'%'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>更新權限表</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FLUSH</span> <span class="keyword">PRIVILEGES</span>;</span><br></pre></td></tr></table></figure>
+
+<p>這時一樣也能看到剛建立好的使用者</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">user</span>, host <span class="keyword">FROM</span> mysql.user;</span><br></pre></td></tr></table></figure>
+
+<p>可執行<code>exit</code>或<code>quit</code>退出MySQL<br>以新建立User帳號重新登入</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo mysql -u &lt;USER NAME&gt; -p</span></span><br></pre></td></tr></table></figure>
+
+<p>就能看到新建立的資料庫了</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">DATABASES</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="WordPress"><a href="#WordPress" class="headerlink" title="WordPress"></a>WordPress</h2><p>處理完MySQL的部分，接著我們來著手這次的主題WordPress</p>
+<p>切換至Apache網站目錄</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/www/html</span></span><br></pre></td></tr></table></figure>
+
+
+<p>下載WordPress，版本可<a href="https://tw.wordpress.org/download/releases/" target="_blank" rel="noopener">自行更換</a></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> wget https://tw.wordpress.org/wordpress-5.2.4-zh_TW.tar.gz</span></span><br></pre></td></tr></table></figure>
+
+<p>解壓縮WordPress</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tar zxvf wordpress-5.2.4-zh_TW.tar.gz</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>x: 解壓縮 / z: gzip格式 / v: 顯示過程 / f: 指定檔案(後面一定要接檔名)</p>
+</blockquote>
+<p>刪除壓縮檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> rm wordpress-5.2.4-zh_TW.tar.gz</span></span><br></pre></td></tr></table></figure>
+
+<p>切換至WordPress目錄</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> wordpress</span></span><br></pre></td></tr></table></figure>
+
+<p>新增自定義設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 複製範例設定檔</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cp wp-config-sample.php wp-config.php</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 編輯設定檔</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> vim wp-config.php</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>不得不說<a href="https://www.vim.org/" target="_blank" rel="noopener">Vim</a>真的是一款超強大的編輯器</p>
+</blockquote>
+<p>在<code>wp-config.php</code>中修改 <code>DB_NAME</code> <code>DB_USER</code> <code>DB_PASSWORD</code></p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">define(<span class="string">'DB_NAME'</span>, <span class="string">'&lt;DB_NAME&gt;'</span>);</span><br><span class="line"></span><br><span class="line">define(<span class="string">'DB_USER'</span>, <span class="string">'&lt;DB_USER&gt;'</span>);</span><br><span class="line"> </span><br><span class="line">define(<span class="string">'DB_PASSWORD'</span>, <span class="string">'&lt;DB_PASSWORD&gt;'</span>);</span><br><span class="line"></span><br><span class="line">define(<span class="string">'DB_HOST'</span>, <span class="string">'localhost'</span>);</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>設定權限</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> chown -R www-data /var/www/html/wordpress</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Apache2"><a href="#Apache2" class="headerlink" title="Apache2"></a>Apache2</h2><p>其實做到這一步已經可以將<a href="http://localhost/wordpress" target="_blank" rel="noopener">WordPress</a>開啟<br>而我們可以透過更換Apache設定檔，在連至主機時就預設為WordPress<br>順便同時將phpMyAdmin加入至router裡</p>
+<p>切換至Apache設定檔目錄</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /etc/apache2/sites-available</span></span><br></pre></td></tr></table></figure>
+
+<p>新增自定義設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 複製Apache預設設定檔</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cp 000-default.conf wp.conf</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 編輯WordPress設定檔</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> vim wp.conf</span></span><br></pre></td></tr></table></figure>
+
+<p>在<code>wp.conf</code>中修改<code>ServerName</code> 與 <code>ServerAlias</code><br>更換為 <code>Domain name</code> 或 <code>IP</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">        ServerAdmin webmaster@localhost</span><br><span class="line">        DocumentRoot &#x2F;var&#x2F;www&#x2F;html&#x2F;wordpress</span><br><span class="line">        ServerName &lt;ServerName&gt;</span><br><span class="line">        ServerAlias &lt;ServerAlias&gt;</span><br><span class="line">        # phpMyAdmin Router</span><br><span class="line">        Alias &#x2F;phpMyAdmin &#x2F;var&#x2F;www&#x2F;html&#x2F;phpmyadmin</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+
+<p>停用預設設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2dissite 000-default.conf</span></span><br></pre></td></tr></table></figure>
+
+<p>啟用WordPress設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2ensite wp.conf</span></span><br></pre></td></tr></table></figure>
+
+<p>重啟Apache2</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service apache2 reload</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Wordpress：<a href="http://localhost" target="_blank" rel="noopener">http://localhost</a></p>
+</blockquote>
+<blockquote>
+<p>phpMyAdmin：<a href="http://localhost/phpMyAdmin" target="_blank" rel="noopener">http://localhost/phpMyAdmin</a></p>
+</blockquote>
+<p>以上做到一步你已經可以順利把WordPress畫面給順利開啟<br>剩下的部分就按照指示設定以及新增管理員<br>就可以登入進去管理後台囉～</p>
+]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>wordpress</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 LTS+Vue-CLI+Ngnix/Apache</title>
+    <url>/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從後台架設完畢後<br>緊接著要幫前端同事把Vue給搬至Server<br>如此一來整個專案就能順利上線了～</p>
+<p>不過即便如此也熬了一陣子的撞牆期<br>因為網路上的教學文章實在太多<br>每一篇都大同小異又有些微的不同<br>因此決定實際演練並趕緊記錄下來<br>這樣未來需要時就不會花太多時間走冤望路了</p>
+<p>那話不多說<br>一起來看是如何操作的吧</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>更新<code>APT</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+
+<p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
+<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.9.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.8</span><br></pre></td></tr></table></figure>
+
+<h2 id="Vue-CLI"><a href="#Vue-CLI" class="headerlink" title="Vue-CLI"></a>Vue-CLI</h2><p>安裝<code>Vue-CLI</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli-init</span></span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue -V</span></span><br><span class="line">@vue/cli 4.5.4</span><br></pre></td></tr></table></figure>
+
+<p>切換至存放專案目錄，這裡可自行選擇，我一般習慣放置在<code>/var/app</code>裡</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
+
+<p>建立專案</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue init webpack &lt;project&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>根據提示選擇即可<br><img src="/images/loading.gif" data-original="/images/vue_init.png" alt="vue_init"></p>
+<p>切換至剛剛建立的專案目錄，然後打包專案</p>
+<blockquote>
+<p>若是現有的專案可直接<code>git clone</code>到目錄下，再執行以下指令</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;project&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm install</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm run build</span></span><br></pre></td></tr></table></figure>
+
+<p>接著可以在目錄底下看到<code>dist</code>這個資料夾就代表打包完成</p>
+<h2 id="Ngnix"><a href="#Ngnix" class="headerlink" title="Ngnix"></a>Ngnix</h2><p>安裝<code>Ngnix</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nginx</span></span><br></pre></td></tr></table></figure>
+
+<p>查看服務狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service nginx status</span></span><br></pre></td></tr></table></figure>
+
+<p>打開瀏覽器直接輸入<code>http://&lt;server_ip&gt;/</code>就可以看到Nginx的歡迎頁面<br><img src="/images/loading.gif" data-original="/images/nginx_welcome.png" alt="nginx_welcome"></p>
+<p>根據<code>/etc/nginx/nginx.conf</code>我們可以知道設定檔放置在這兩個地方</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">http &#123;</span><br><span class="line">	...</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;*.conf;</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;*;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>Nginx預設的做法會先將設定檔放置<code>/etc/nginx/sites-available</code><br>再經由<code>軟連結</code>將檔案綁定至<code>/etc/nginx/sites-enabled</code><br>而我們同樣依照它的流程先新增自定義設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/nginx/sites-available/&lt;project&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name localhost;</span><br><span class="line">    root &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">    	index index.html;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>建立軟連結</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ ln -s &#x2F;etc&#x2F;nginx&#x2F;sites-available&#x2F;&lt;project&gt; &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;&lt;project&gt;</span><br></pre></td></tr></table></figure>
+
+<p>刪除預設設定檔的軟連結</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ rm &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;default</span><br></pre></td></tr></table></figure>
+
+<p>測試設定檔配置並重啟</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> nginx -t</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> service nginx reload</span></span><br></pre></td></tr></table></figure>
+
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/vue_welcome.png" alt="vue_welcome"></p>
+<h3 id="補充"><a href="#補充" class="headerlink" title="補充"></a>補充</h3><p>在研究過程中耗費我最多時間的其實是設定檔的配置，由於我對Vue-cli的理解還不夠熟悉<br>裡頭有一些參數還不瞭解作用為何，也不太清楚Vue-cli的router是如何運作<br>因此雖然以上的配置可以讓專案運行，但不代表是完全正確的<br>這部分我還要再琢磨一番後才能寫得更詳細，而以下是我實際專案的配置<br><code>location</code>的部分和原來有些許的不同</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    server_name  easylunch.today;</span><br><span class="line">    root         &#x2F;var&#x2F;app&#x2F;lunch&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        try_files $uri $uri&#x2F; @router;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">    location @router &#123;</span><br><span class="line">        rewrite ^.*$ &#x2F;index.html last;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>Apache其實也是同樣的做法，只是換了一個Web Server而已～</p>
+<p>安裝<code>Apache</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install apache2 libapache2-mod-wsgi-py3</span><br></pre></td></tr></table></figure>
+
+<p>開機自動啟動Apache</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>
+
+<p>至/etc/apache2/sites-available/vue.conf新增下列設定</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/apache2/sites-available/vue.conf</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    DocumentRoot &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist</span><br><span class="line">    ServerName localhost</span><br><span class="line"></span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist&gt;</span><br><span class="line">        Options Indexes FollowSymLinks</span><br><span class="line">        AllowOverride All</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可使用vi/Vim取代：<code>:%s/&lt;SEARCH_FROM&gt;/&lt;REPLACE_TO&gt;/g</code></p>
+</blockquote>
+<p>啟用自訂設定 &amp; 關閉預設設定</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2ensite vue.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo a2dissite 000-default.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/vue_welcome.png" alt="vue_welcome"></p>
+]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>vue</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 LTS+Certbot(Let’s Encrypt)</title>
+    <url>/2020/10/28/Ubuntu-18-04-LTS-Certbot-Let%E2%80%99s-Encrypt/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>打了幾篇文章之後發現，要想前言真的是一件挺燒腦的事情，明明也不是特別為了什麼才寫文章</p>
+<p>單純地只是為了把工作上遇到困難的解決辦法，記錄在這裡所以才打開<code>hexo</code>(攤手</p>
+<p>而因為最近部署了越來越多次的Server，導致我也面臨各種申請SSL/TLS的需求</p>
+<p>因此我把這一塊拉出來寫成一篇文章，好讓我以後再架設不同Web Server時也能快速上手</p>
+<p>那一樣就直接開始吧～</p>
+<a id="more"></a>
+
+<h2 id="在開始之前"><a href="#在開始之前" class="headerlink" title="在開始之前"></a>在開始之前</h2><p>有幾個名詞可以簡單介紹一下</p>
+<ul>
+<li><p><a href="https://certbot.eff.org/" target="_blank" rel="noopener">Let’s Encrypt</a>: 免費、自動化和開放的憑證(SSL/TLS)頒發機構</p>
+</li>
+<li><p><a href="https://letsencrypt.org/zh-tw/" target="_blank" rel="noopener">Certbot</a>: 協助向<code>Let’s Encrypt</code>申請憑證(SSL/TLS)的開源軟體</p>
+</li>
+</ul>
+<p>更多的相關知識你可以在網路上找到不少專業文章，這裡就只單純記錄實作上需要用到的部分<br>但在操作以下步驟之前，你必須先符合以下條件：</p>
+<ol>
+<li>已先向域名商(Web hosts)註冊一組網域名稱</li>
+<li>已設定<code>DNS</code>指向該Server IP</li>
+<li>已在<code>Apache</code>/<code>Nginx</code>設定檔中新增域名至<code>ServerName</code>中</li>
+</ol>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>接著我們可以先根據<code>PPA</code>下載最新版本的<code>Certobt</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:certbot/certbot</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install python-certbot-apache</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>按照提示按下<code>Enter</code></p>
+</blockquote>
+<h2 id="申請SSL-TLS憑證"><a href="#申請SSL-TLS憑證" class="headerlink" title="申請SSL/TLS憑證"></a>申請SSL/TLS憑證</h2><p>這裡先採用<code>Apache</code>作為實作範例，其實只要理解操作，要更換為<code>Nginx</code>並不會太困難</p>
+<p>建立SSL憑證</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo certbot --apache -d &lt;YOUR_DOMAIN&gt; -d &lt;YOUR_DOMAIN2&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>–apache: 使用Apache Web Server / -d: domain(可以依照域名新增至好幾個)</p>
+</blockquote>
+<blockquote>
+<p>如果不想讓<code>Certbot</code>覆寫設定檔只產生憑證，可以加入<code>certonly</code>參數</p>
+</blockquote>
+<p>如果是第一次申請，將會出現輸入Email的提示，之後<code>Cerbot</code>就會向<code>Let&#39;s Encrypt</code>進行申請SSL動作<br>同時驗證DNS配置是否正確，如果成功，<code>Cerbot</code>會再問你要如何設置<code>HTTPS</code>：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Please choose whether or not to redirect HTTP traffic to HTTPS, removing HTTP access.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">1: No redirect - Make no further changes to the webserver configuration.</span><br><span class="line">2: Redirect - Make all requests redirect to secure HTTPS access. Choose this for</span><br><span class="line">new sites, or if you&#39;re confident your site works on HTTPS. You can undo this</span><br><span class="line">change by editing your web server&#39;s configuration.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">Select the appropriate number [1-2] then [enter] (press &#39;c&#39; to cancel):</span><br></pre></td></tr></table></figure>
+<p>如果你想要讓瀏覽器輸入<code>http://&lt;DOMAIN&gt;/</code>時自動導向<code>https://&lt;DOMAIN&gt;</code>就輸入<code>2</code><br>接著<code>Certbot</code>就會在<code>/etc/apache2/sites-available/</code>中，將含有你輸入DOMAIN的設定檔進行配置，若你原先的設定內只有http<code>&lt;VirtualHost *:80&gt;</code>，那麼<code>Certbot</code>還會幫你再新增一份https<code>&lt;VirtualHost *:443&gt;</code>的設定檔，聽起來很難以理解對吧，實際做過一遍會更清楚這其中的流程</p>
+<ul>
+<li><p><code>&lt;YOUR CONF&gt;.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">        ...</span><br><span class="line">RewriteEngine on</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN2&gt; [OR]</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN&gt;</span><br><span class="line">RewriteRule ^ https:&#x2F;&#x2F;%&#123;SERVER_NAME&#125;%&#123;REQUEST_URI&#125; [END,NE,R&#x3D;permanent]</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>&lt;YOUR CONF&gt;-le-ssl.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;IfModule mod_ssl.c&gt;</span><br><span class="line">&lt;VirtualHost *:443&gt;</span><br><span class="line">        ...</span><br><span class="line">Include &#x2F;etc&#x2F;letsencrypt&#x2F;options-ssl-apache.conf</span><br><span class="line">SSLCertificateFile &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;kiitzu.com&#x2F;fullchain.pem</span><br><span class="line">SSLCertificateKeyFile &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;kiitzu.com&#x2F;privkey.pem</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br><span class="line">&lt;&#x2F;IfModule&gt;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>到這裡我們的憑證就已經申請好了，我們重啟<code>Apache</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+
+<p>現在你可以打開瀏覽器輸入<code>https://&lt;YOUR_DOMAIN&gt;</code>就可以看到SSL囉～</p>
+<h2 id="更換SSL-TLS憑證"><a href="#更換SSL-TLS憑證" class="headerlink" title="更換SSL/TLS憑證"></a>更換SSL/TLS憑證</h2><p>值得注意的是，<code>Let’s Encrypt</code>憑證是只有三個月的效期的，如果你想更換憑證可以這麼做</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew -v</span></span><br></pre></td></tr></table></figure>
+
+<p>但這樣做太不人性化了，等於每三個月都還要手動更換，因此推薦用Corntab的方式幫我們每個禮拜去確認憑證狀態，如果效期低於一個月就會自動更換憑證</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew --dry-run</span></span><br></pre></td></tr></table></figure>
+
+<p>確認Corntab狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl status certbot.timer</span></span><br></pre></td></tr></table></figure>
+
+<p>而想要移除憑證可以這麼做</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot delete</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可以加入<code>--cert-name &lt;DOMAIN&gt;</code>參數直接根據域名刪除</p>
+</blockquote>
+<h2 id="Django"><a href="#Django" class="headerlink" title="Django"></a>Django</h2><p>這裡有個要特別注意的地方，</p>
+]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 LTS+Wordpress Backup/Restore</title>
+    <url>/2020/09/18/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>說到WordPress，備份也是一件討人厭的事情<br>但比起備份，還原至另一台Server更是令人困擾<br>在工作時原本以為順利把WordPress部署至測試機後<br>續後處理起來會輕鬆很多，結果還是吃了不少悶虧<br>趁下班之餘趕緊趁忘記之前好好記起來！</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="Backup"><a href="#Backup" class="headerlink" title="Backup"></a>Backup</h2><h3 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h3><p>首先先從資料庫把資料備份出來</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysqldump -u &lt;USER&gt; -p &lt;DATABASE&gt; &gt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>u: user / p: password</p>
+</blockquote>
+<h3 id="WordPress"><a href="#WordPress" class="headerlink" title="WordPress"></a>WordPress</h3><p>這裡我們先以最簡單暴力的做法來呈現，也就是手動將整個WordPress備份下來</p>
+<p>先切換至存放WordPess的目錄</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/www/html</span></span><br></pre></td></tr></table></figure>
+
+<p>壓縮WordPress</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tar -zcvf wordpress_backup.tar.gz &lt;WORDPRESS&gt;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>c: 壓縮 / z: gzip格式 / v: 顯示過程 / f: 指定檔案(後面一定要接檔名)</p>
+</blockquote>
+<p>其實到這邊備份的部分就完成了，是不是超級簡單<br>這就是最笨但也是最快速的方式</p>
+<h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><p>其實Apache要備份只有<code>/etc/apache2/sites-available/&lt;WORDPRESS&gt;.conf</code>這個設定檔而已<br>因此你可以把它直接下載下來即可</p>
+<h3 id="Dowload"><a href="#Dowload" class="headerlink" title="Dowload"></a>Dowload</h3><p>而關於下載的部分，這邊也教一個<code>GCP</code>提供的功能<br>如果你是以SSL用瀏覽器打開的話，在畫面右上角會有一個工具欄<br><img src="/images/loading.gif" data-original="/images/gcp_download_01.png" alt="vue_init"></p>
+<p>點選下載檔案<br><img src="/images/loading.gif" data-original="/images/gcp_download_02.png" alt="vue_init"></p>
+<p>接著會出現視窗讓你輸入路徑<br><img src="/images/loading.gif" data-original="/images/gcp_download_03.png" alt="vue_init"></p>
+<p>用這樣的方式就可以很簡單的把備份檔下載下來了<br>同理上傳檔案也是如此，上傳後檔案會放至在<code>/home/&lt;GCP_ACCOUNT&gt;</code>下<br>接著就可以開始著手處理還原的部分囉～</p>
+<h2 id="Restore"><a href="#Restore" class="headerlink" title="Restore"></a>Restore</h2><p>還原就有很多小細節要注意了，如果沒有處理好，不僅是WordPress打開來畫面跟原先的不一樣<br>甚至有可能會出現連網頁都開不了的窘境，因此這裡會一步一步教大家如何操作</p>
+<h3 id="Before"><a href="#Before" class="headerlink" title="Before"></a>Before</h3><p>我們先假設你已經將備份檔及Apache設定檔上傳至新的Server<br>這邊是透過<code>GCP</code>上傳，因此檔案會位於我<code>GCP</code>帳號的家目錄底下</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /home/&lt;GCP_ACCOUNT&gt;</span></span><br></pre></td></tr></table></figure>
+<p>如果是需要透過FTP的話，也可以參考<a href="/2020/09/29/Ubuntu-18-04-LTS-vsftpd/">這一篇</a>安裝</p>
+<p>也已經安裝好<code>PHP</code>, <code>MySQL</code>, <code>Apache</code>, <code>phpMyAdmin</code>等工具<br>如果對這方面不熟悉的人可以回去參考<a href="/2020/07/16/Ubuntu-18-04-LTS-Apache-WordPress/">這一篇</a>來複習，裡頭所提及的流程這邊就暫且不多做敘述</p>
+<blockquote>
+<p>一樣可以使用<code>su -</code>切換root帳號以便後續操作</p>
+</blockquote>
+<h3 id="MySQL-1"><a href="#MySQL-1" class="headerlink" title="MySQL"></a>MySQL</h3><p>在已建立好資料庫的情況下，這邊要做的事情就是先還原</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u &lt;USER&gt; -p &lt;DATABASE&gt; &lt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>u: user / p: password</p>
+</blockquote>
+<h4 id="網址更換"><a href="#網址更換" class="headerlink" title="網址更換"></a>網址更換</h4><p>WordPress很多資料裡頭<code>url</code>都是寫死的，例如超連結或是圖片檔<br>因此如果不論你有沒有移機，<strong>只要有更換網址的需求</strong>都要更新<code>MySQL</code>裡頭的資料</p>
+<p>進入MySQL並操作WordPress資料庫</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u &lt;USER&gt; -p &lt;DATABASE&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>以取代方式更換網址</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> wp_options <span class="keyword">SET</span> option_value = <span class="keyword">replace</span>(option_value, <span class="string">'&lt;OLD_URL&gt;'</span>, <span class="string">'&lt;NEW_URL&gt;'</span>) <span class="keyword">WHERE</span> option_name = <span class="string">'home'</span> <span class="keyword">OR</span> option_name = <span class="string">'siteurl'</span>;</span><br><span class="line"><span class="keyword">UPDATE</span> wp_posts <span class="keyword">SET</span> guid = <span class="keyword">replace</span>(guid, <span class="string">'&lt;OLD_URL&gt;'</span>,<span class="string">'&lt;NEW_URL&gt;'</span>);</span><br><span class="line"><span class="keyword">UPDATE</span> wp_posts <span class="keyword">SET</span> post_content = <span class="keyword">replace</span>(post_content, <span class="string">'&lt;OLD_URL&gt;'</span>, <span class="string">'&lt;NEW_URL&gt;'</span>);</span><br><span class="line"><span class="keyword">UPDATE</span> wp_postmeta <span class="keyword">SET</span> meta_value = <span class="keyword">replace</span>(meta_value,<span class="string">'&lt;OLD_URL&gt;'</span>,<span class="string">'&lt;NEW_URL&gt;'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># Query OK, X rows affected (0.00 sec)</span></span><br><span class="line"><span class="comment"># Rows matched: X  Changed: X  Warnings: X</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可先用編輯器取代完字串後再貼進MySQL-CLI裡</p>
+</blockquote>
+<p>退出MySQL</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">$ exit</span><br><span class="line"><span class="comment"># Bye</span></span><br></pre></td></tr></table></figure>
+
+<p>但這裡還是要留意，如果有套用主題可能會有例外<br>因此還是要以實際的狀況為主，這一步可以符合大部分的需求</p>
+<h3 id="WordPress-1"><a href="#WordPress-1" class="headerlink" title="WordPress"></a>WordPress</h3><p>將備份檔移至WordPress目錄並切換過去</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mv &lt;WORDPRESS&gt;.tar.gz /var/www/html</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/www/html</span></span><br></pre></td></tr></table></figure>
+
+<p>解壓縮備份檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tar zxvf wordpress-5.2.4-zh_TW.tar.gz</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>x: 解壓縮 / z: gzip格式 / v: 顯示過程 / f: 指定檔案(後面一定要接檔名)</p>
+</blockquote>
+<p>可自己選擇要不要刪除壓縮檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> rm &lt;WORDPRESS&gt;.tar.gz</span></span><br></pre></td></tr></table></figure>
+
+<p>根據專案選擇要不要修改<code>wordpres/wp-config.php</code>的<code>DB_NAME</code> <code>DB_USER</code> <code>DB_PASSWORD</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">define(&#39;DB_NAME&#39;, &#39;&lt;DB_NAME&gt;&#39;);</span><br><span class="line"></span><br><span class="line">define(&#39;DB_USER&#39;, &#39;&lt;DB_USER&gt;&#39;);</span><br><span class="line"> </span><br><span class="line">define(&#39;DB_PASSWORD&#39;, &#39;&lt;DB_PASSWORD&gt;&#39;);</span><br><span class="line"></span><br><span class="line">define(&#39;DB_HOST&#39;, &#39;localhost&#39;);</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h3 id="Apache-1"><a href="#Apache-1" class="headerlink" title="Apache"></a>Apache</h3><p>將設定檔移至Apache目錄並切換過去</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mv /home/&lt;GCP_ACCOUNT&gt;/&lt;WORDPRESS&gt;.conf /etc/apache2/sites-available</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /etc/apache2/sites-available</span></span><br></pre></td></tr></table></figure>
+
+<p>停用預設設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2dissite 000-default.conf</span></span><br></pre></td></tr></table></figure>
+
+<p>啟用WordPress設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2ensite &lt;WORDPRESS&gt;.conf</span></span><br></pre></td></tr></table></figure>
+
+<p>重新啟動Apache</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+
+<p>這裡要注意的是，如果你原本的Apache有使用WordPress裡<code>.htaccess</code>的設定<br>而在Apache的<code>.conf</code>檔裡也有添加這幾行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;Directory &quot;&#x2F;var&#x2F;www&#x2F;html&#x2F;wordpress&#x2F;&quot;&gt;</span><br><span class="line">    AllowOverride All</span><br><span class="line">&lt;&#x2F;Directory&gt;</span><br></pre></td></tr></table></figure>
+<p>那你一定要記得啟動Apache mod_rewrite<br>要不然網頁打開來會是掛掉的情況</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2enmod rewrite</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>小小抱怨一下，我之前因為忘記做這件事，害得我花了將近一天的時間在DeBug，網頁開起來直接掛掉的當下讓我很緊張，還重舊Server上備份了好幾次，搞了老半天才意識到我沒有把mod_rewrite啟動，當下真的是想把自己給掐死，也因為這樣才衍生出了寫這篇文章的衝動。</p>
+</blockquote>
+<p>接著你就可以在新的Server上開啟WordPress囉～</p>
+<blockquote>
+<p><a href="http://localhost:80/" target="_blank" rel="noopener">http://localhost:80/</a></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>wordpress</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>macOS+pipenv+pyenv</title>
+    <url>/2021/07/23/macOS-pipenv-pyenv/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近準備要開發新的Python專案時，發現自己原先用pip+virtualenv的方式已經有點難管理各個版本的套件了<br>會有這樣的感覺是因為之前參與其他專案時發現無論是Laravel的<code>composer.json</code>/<code>composer.lock</code><br>或是Vue的<code>package.json</code>/<code>yarn.lock</code>都能很有效的管理套件本身的相依問題<br>而要達到這點，進一步的還需要在本機與測試機版本相同的情況下會是更好<br>雖然能達成的方法有很多，但還是想以<code>pipenv</code>+<code>pyenv</code>來實做看看</p>
+<a id="more"></a>
+
+<blockquote>
+<p>本篇是以<a href="https://www.rootstrap.com/blog/how-to-manage-your-python-projects-with-pipenv-pyenv/" target="_blank" rel="noopener">該教材</a>作為參考依據</p>
+</blockquote>
+<h2 id="Pyenv"><a href="#Pyenv" class="headerlink" title="Pyenv"></a>Pyenv</h2><h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><p>在macOS中使用<a href="https://brew.sh/index_zh-tw" target="_blank" rel="noopener">Homebrew</a>來安裝<code>Pyenv</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> brew install pyenv</span></span><br></pre></td></tr></table></figure>
+
+<p>編輯並新增下列設定至你所使用的shell設定檔(<code>.bashrc</code>, <code>.zshrc</code>, <code>.bash_profile</code>)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if command -v pyenv 1&gt;&#x2F;dev&#x2F;null 2&gt;&amp;1; then</span><br><span class="line">  eval &quot;$(pyenv init -)&quot;</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<p>重新啟動shell並查看<code>pyenv</code>安裝狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv -v</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Usage: pipenv [OPTIONS] COMMAND [ARGS]...</span><br><span class="line"></span><br><span class="line">Options:</span><br><span class="line">  --where                         Output project home information.</span><br><span class="line">  --venv                          Output virtualenv information.</span><br><span class="line">  --py                            Output Python interpreter information.</span><br><span class="line">  --envs                          Output Environment Variable options.</span><br><span class="line">  --rm                            Remove the virtualenv.</span><br><span class="line">  --bare                          Minimal output.</span><br><span class="line">  --completion                    Output completion (to be executed by the</span><br><span class="line">                                  shell).</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h3 id="新增python版本"><a href="#新增python版本" class="headerlink" title="新增python版本"></a>新增python版本</h3><p>查看在<code>pyenv</code>上的所有可安裝的python版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv install --list</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝指定的python版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv install &lt;version&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>查看本機已安裝的所有python版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv versions</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">* system (set by &#x2F;Users&#x2F;a35205905&#x2F;.pyenv&#x2F;version)</span><br><span class="line">  3.6.9</span><br><span class="line">  3.9.4</span><br></pre></td></tr></table></figure>
+
+<h3 id="切換python版本"><a href="#切換python版本" class="headerlink" title="切換python版本"></a>切換python版本</h3><p>切換整個系統上的python版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv global &lt;version&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在當前目錄切換python版本，並建立<code>.python-version</code>存放版號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv <span class="built_in">local</span> &lt;version&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在當前shell的session裡切換版本，權重優先於<code>global</code>&amp;<code>local</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ pyenv shell &lt;version&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看python版本"><a href="#查看python版本" class="headerlink" title="查看python版本"></a>查看python版本</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> global</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pyenv global</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">local</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pyenv <span class="built_in">local</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> shell</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pyenv shell</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="pipenv"><a href="#pipenv" class="headerlink" title="pipenv"></a>pipenv</h2><p>順帶一提，<code>pipenv</code>已成為<a href="https://packaging.python.org/tutorials/managing-dependencies/#managing-dependencies" target="_blank" rel="noopener">Python官方推薦的套件管理工具</a>，<code>pipenv</code>不但解決了套件相依的問題<br>還一併整合了virtualenv的功能，如此一來我們更能專注於在開發本身上就好，讚讚！</p>
+<p><code>pipenv</code>會透過自動產生的兩個檔案進行套件管理，分別為：</p>
+<ul>
+<li><code>Pipfile</code>：存放開發&amp;正式環境中所有套件的設定檔</li>
+<li><code>Pipfile.lock</code>：存放所有套件版、相依套件版本、hash值的設定檔</li>
+</ul>
+<h3 id="安裝-1"><a href="#安裝-1" class="headerlink" title="安裝"></a>安裝</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pip3 install pipenv</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="自定義虛擬環境"><a href="#自定義虛擬環境" class="headerlink" title="自定義虛擬環境"></a>自定義虛擬環境</h3><p>在建立虛擬環境之前，我們要先知道pipenv預設目錄為<code>/home/$username/.local/share/virtualenvs</code><br>因此如果要自定義虛擬環境的目錄有以下兩個做法</p>
+<ol>
+<li><p>設置在該專案根目錄下，透過<code>PIPENV_VENV_IN_PROJECT</code>環境變數</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export PIPENV_VENV_IN_PROJECT&#x3D;1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>設定在指定的目錄，透過<code>export WORKON_HOME</code>環境變數</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export WORKON_HOME&#x3D;~&#x2F;.venvs</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<blockquote>
+<p>要至shell設定檔(<code>.bashrc</code>, <code>.zshrc</code>, <code>.bash_profile</code>)設定環境變數</p>
+</blockquote>
+<h3 id="建立虛擬環境"><a href="#建立虛擬環境" class="headerlink" title="建立虛擬環境"></a>建立虛擬環境</h3><p>建立虛擬環境</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">pipenv install &lt;version&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>你可以選擇透過剛剛pyenv切換好版本</p>
+</blockquote>
+<p>這時候會有以下兩個情況：</p>
+<ol>
+<li>若你還沒有<code>Pipfile</code>&amp;<code>Pipfile.lock</code>，它將會自動產生這兩個檔案</li>
+<li>若你已經有<code>Pipfile</code>&amp;<code>Pipfile.lock</code>，它將會安裝設定檔裡的所有套件</li>
+</ol>
+<p>設定檔範例：</p>
+<ul>
+<li><p>Pipfile</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[[source]]</span><br><span class="line">url &#x3D; &quot;https:&#x2F;&#x2F;pypi.org&#x2F;simple&quot;</span><br><span class="line">verify_ssl &#x3D; true</span><br><span class="line">name &#x3D; &quot;pypi&quot;</span><br><span class="line"></span><br><span class="line">[packages]</span><br><span class="line"></span><br><span class="line">[dev-packages]</span><br><span class="line"></span><br><span class="line">[requires]</span><br><span class="line">python_version &#x3D; &quot;3.9&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Pipfile.lock</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;_meta&quot;: &#123;</span><br><span class="line">        &quot;hash&quot;: &#123;</span><br><span class="line">            &quot;sha256&quot;: &quot;a36a5392bb1e8bbc06bfaa0761e52593cf2d83b486696bf54667ba8da616c839&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;pipfile-spec&quot;: 6,</span><br><span class="line">        &quot;requires&quot;: &#123;</span><br><span class="line">            &quot;python_version&quot;: &quot;3.9&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;sources&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;name&quot;: &quot;pypi&quot;,</span><br><span class="line">                &quot;url&quot;: &quot;https:&#x2F;&#x2F;pypi.org&#x2F;simple&quot;,</span><br><span class="line">                &quot;verify_ssl&quot;: true</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;default&quot;: &#123;&#125;,</span><br><span class="line">    &quot;develop&quot;: &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>若顯示<code>ValueError: unknown locale: UTF-8</code>等錯誤訊息，表示系統需要設定<code>LANG</code>環境變數</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export LANG&#x3D;en_US.UTF-8 &#x2F;&#x2F; ~&#x2F;.bashrc or ~&#x2F;.zshrc</span><br></pre></td></tr></table></figure>
+
+<p>你也可以刪除虛擬環境</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv --rm</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="切換虛擬環境"><a href="#切換虛擬環境" class="headerlink" title="切換虛擬環境"></a>切換虛擬環境</h3><p>進入虛擬環境</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv shell</span></span><br></pre></td></tr></table></figure>
+
+<p>退出虛擬環境</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">exit</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="安裝套件"><a href="#安裝套件" class="headerlink" title="安裝套件"></a>安裝套件</h3><p>安裝套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt;==&lt;verison&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在沒有指定版本的情況下你可以看到<code>Pipfile</code>&amp;<code>Pipfile.lock</code>被更新了<br>Pipfile</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[packages]</span><br><span class="line">&lt;your package&gt; &#x3D; &quot;*&quot;</span><br></pre></td></tr></table></figure>
+
+<p>你還可以指定套件的版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝開發用的套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt; --dev</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>這時候你將虛擬環境砍掉，重新執行<code>pipenv install</code>時，會自動忽略<code>[dev-packages]</code>裡的所有套件</p>
+</blockquote>
+<p>查看所有套件以及相依套件關係</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv graph</span></span><br></pre></td></tr></table></figure>
+
+<p>確認你的相依套件有無安全漏洞</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">pipenv check</span><br></pre></td></tr></table></figure>
+
+<p>移除套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv uninstall &lt;package&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="升級套件"><a href="#升級套件" class="headerlink" title="升級套件"></a>升級套件</h3><p>假設你今天安裝了特定版本的套件，像是</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install django==2.2</span></span><br></pre></td></tr></table></figure>
+
+<p>那麼你現在Pipfile會是這樣</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[[source]]</span><br><span class="line">url &#x3D; &quot;https:&#x2F;&#x2F;pypi.org&#x2F;simple&quot;</span><br><span class="line">verify_ssl &#x3D; true</span><br><span class="line">name &#x3D; &quot;pypi&quot;</span><br><span class="line"></span><br><span class="line">[packages]</span><br><span class="line">django &#x3D; &quot;&#x3D;&#x3D;2.2&quot;</span><br><span class="line"></span><br><span class="line">[dev-packages]</span><br><span class="line"></span><br><span class="line">[requires]</span><br><span class="line">python_version &#x3D; &quot;3.9&quot;</span><br></pre></td></tr></table></figure>
+
+<p>然而你執行升級套件指令</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv update django</span></span><br></pre></td></tr></table></figure>
+
+<p>卻發現什麼事都沒做</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Locking [dev-packages] dependencies...</span><br><span class="line">Locking [packages] dependencies...</span><br><span class="line">Building requirements...</span><br><span class="line">Resolving dependencies...</span><br><span class="line">✔ Success!</span><br><span class="line">Updated Pipfile.lock (24b2dc)!</span><br><span class="line">Installing dependencies from Pipfile.lock (24b2dc)...</span><br><span class="line">  🐍   ▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉ 0&#x2F;0 — 00:00:00</span><br><span class="line">To activate this project&#39;s virtualenv, run pipenv shell.</span><br><span class="line">Alternatively, run a command inside the virtualenv with pipenv run.</span><br><span class="line">All dependencies are now up-to-date!</span><br></pre></td></tr></table></figure>
+
+<p>這是因為<code>update</code>這個指令是只根據你的Pipfile的套件版本來決定是否要升級！<br>因此如果你想升級套件的話，你必須先編輯Pipfile裡的套件版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">[packages]</span><br><span class="line">django &#x3D; &quot;*&quot;</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>若是將版本設為*代表升級成最新的版本</p>
+</blockquote>
+<p>這時候再下一次升級指令</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv update django</span></span><br></pre></td></tr></table></figure>
+
+<p>你會發現下面的進度條變成2/2，這代表包含套件本身及相依套件共兩個套件同時被升級或安裝</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Locking [dev-packages] dependencies...</span><br><span class="line">Locking [packages] dependencies...</span><br><span class="line">Building requirements...</span><br><span class="line">Resolving dependencies...</span><br><span class="line">✔ Success!</span><br><span class="line">Updated Pipfile.lock (06f36b)!</span><br><span class="line">Installing dependencies from Pipfile.lock (06f36b)...</span><br><span class="line">  🐍   ▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉ 2&#x2F;2 — 00:00:00</span><br><span class="line">All dependencies are now up-to-date!</span><br></pre></td></tr></table></figure>
+
+<p>這時你用圖形化顯示更能看清楚整個套件的關係圖</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv graph</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Django&#x3D;&#x3D;3.2.5</span><br><span class="line">  - asgiref [required: &gt;&#x3D;3.3.2,&lt;4, installed: 3.4.1]</span><br><span class="line">  - pytz [required: Any, installed: 2021.1]</span><br><span class="line">  - sqlparse [required: &gt;&#x3D;0.2.2, installed: 0.4.1]</span><br></pre></td></tr></table></figure>
+
+<p>而你一樣可以批次更改多個套件的版本在一次升級</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv update</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="降級套件"><a href="#降級套件" class="headerlink" title="降級套件"></a>降級套件</h3><p>這時候你可能會想說那降級是不是只要把版號改小就好，很遺憾的是<code>pipenv</code>不支援這樣的功能<br>但是我們還是能透過最原始的做法來達到目的</p>
+<p>首先先將套件移除</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv uninstall &lt;package&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>再重新安裝指定版本的套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt;==&lt;version&gt;</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>macOS</tag>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL8.0+Backup/Restore</title>
+    <url>/2021/05/24/MySQL8-0-Backup-Restore/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>經過了漫長的等待及當兵的時間後，我終於順利退伍回來繼續當個碼農了</p>
+<p>而現在是真的開始正式的工作了，因此想要好好的把工作上的筆記給整理一番</p>
+<p>而無論是寫什麼程式甚至是WordPress最後都脫離不了與資料庫的間接</p>
+<p>這次就來好好的從安裝到備份到還原一次記錄起來</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>首先我們先來安裝<code>MySQL</code>，不過以下我會用<code>5.7</code>和<code>8.0</code>的版本來做範例</p>
+<h3 id="5-7"><a href="#5-7" class="headerlink" title="5.7"></a>5.7</h3><p>5.7的版本單純很多基本上只要直接安裝即可</p>
+<p>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+<p>安裝MySQL</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install mysql-server</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="8-0"><a href="#8-0" class="headerlink" title="8.0"></a>8.0</h3><p>首先切換到暫存目錄</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /tmp</span></span><br></pre></td></tr></table></figure>
+
+<p>下載MySQL提供的軟體包</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -OL https://dev.mysql.com/get/mysql-apt-config_0.8.12-1_all.deb</span></span><br></pre></td></tr></table></figure>
+
+<p>必須透過<code>dpkg</code>來安裝軟體包</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo dpkg -i mysql-apt-config*</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>-i: install</p>
+</blockquote>
+<blockquote>
+<p>dpkg: 本機軟體包管理器 / apt: 線上軟體包管理器 / .deb: Debian的軟體包格式(Debian又為Ubuntu父版本)</p>
+</blockquote>
+<p>這時候你會看到這個畫面，採用預設的設定直接選最後一項<code>ok</code>就行<br><img src="/images/loading.gif" data-original="/images/mysql_install_01.png" alt="vue_init"></p>
+<p>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝完後也可以刪除MySQL設定安裝檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo rm mysql-apt-config*</span></span><br></pre></td></tr></table></figure>
+
+<p>這時候就可以依據配置好的設定檔安裝我們的主角<code>MySQL</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install mysql-server -y</span></span><br></pre></td></tr></table></figure>
+
+<p>這時候MySQL會要你輸入root密碼，記住這是MySQL自己的root帳號，跟Ubuntu的root是不一樣的歐！<br><img src="/images/loading.gif" data-original="/images/mysql_install_02.png" alt="vue_init"></p>
+<p>再次輸入密碼<br><img src="/images/loading.gif" data-original="/images/mysql_install_03.png" alt="vue_init"></p>
+<p>再來MySQL還會問你是否要使用8.0版的<code>caching_sha2_password</code>還是5.7的<code>mysql_native_password</code>驗證方式，這會影響你其他Server連接MySQL時的相容性，這裡選第二個舊版的選項</p>
+<p><img src="/images/loading.gif" data-original="/images/mysql_install_04.png" alt="vue_init"></p>
+<p>查看<code>MySQL</code>狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service mysql status</span></span><br></pre></td></tr></table></figure>
+<p>會看到綠色的<code>active (running)</code>顯示正在運行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">● mysql.service - MySQL Community Server</span><br><span class="line">   Loaded: loaded (&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;mysql.service; enabled; vendor preset: enabled)</span><br><span class="line">   Active: active (running) since Thu 2021-05-27 20:08:22 UTC; 9min ago</span><br><span class="line">     Docs: man:mysqld(8)</span><br><span class="line">           http:&#x2F;&#x2F;dev.mysql.com&#x2F;doc&#x2F;refman&#x2F;en&#x2F;using-systemd.html</span><br><span class="line">  Process: 4863 ExecStartPre&#x3D;&#x2F;usr&#x2F;share&#x2F;mysql-8.0&#x2F;mysql-systemd-start pre (code&#x3D;exited, status&#x3D;0&#x2F;SUCCESS)</span><br><span class="line"> Main PID: 4918 (mysqld)</span><br><span class="line">   Status: &quot;Server is operational&quot;</span><br><span class="line">    Tasks: 37 (limit: 4671)</span><br><span class="line">   CGroup: &#x2F;system.slice&#x2F;mysql.service</span><br><span class="line">           └─4918 &#x2F;usr&#x2F;sbin&#x2F;mysqld</span><br><span class="line"></span><br><span class="line">May 27 20:08:22 mysql-test systemd[1]: Starting MySQL Community Server...</span><br><span class="line">May 27 20:08:22 mysql-test systemd[1]: Started MySQL Community Server.</span><br></pre></td></tr></table></figure>
+
+<p>開機時自動啟動<code>MySQL</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> systemctl <span class="built_in">enable</span> mysql</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p>這時你可以選擇更安全的初始化設定，讓你的MySQL有更好的安全機制<br>接下來就會有一系列的設定要操作，如果現在不想要就直接跳過一個環節就好</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql_secure_installation</span></span><br></pre></td></tr></table></figure>
+
+<p>輸入剛剛設定的root密碼後，接著可以選擇是否要配置更嚴謹的密碼規則</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">VALIDATE PASSWORD COMPONENT can be used to test passwords</span><br><span class="line">and improve security. It checks the strength of password</span><br><span class="line">and allows the users to set only those passwords which are</span><br><span class="line">secure enough. Would you like to setup VALIDATE PASSWORD component?</span><br><span class="line"></span><br><span class="line">Press y|Y for Yes, any other key for No: y</span><br></pre></td></tr></table></figure>
+
+<p>選擇是之後，會提供三種不同的規則給你配置：</p>
+<ul>
+<li>弱：8位數以上(含)</li>
+<li>中：8位數以上(含)，至少要有一個數字、小寫英文、大寫英文、特殊符號</li>
+<li>強：8位數以上(含)，至少要有一個數字、小寫英文、大寫英文、特殊符號，配置密碼字典文件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">There are three levels of password validation policy:</span><br><span class="line"></span><br><span class="line">LOW    Length &gt;&#x3D; 8</span><br><span class="line">MEDIUM Length &gt;&#x3D; 8, numeric, mixed case, and special characters</span><br><span class="line">STRONG Length &gt;&#x3D; 8, numeric, mixed case, special characters and dictionary file</span><br><span class="line"></span><br><span class="line">Please enter 0 &#x3D; LOW, 1 &#x3D; MEDIUM and 2 &#x3D; STRONG: 0</span><br></pre></td></tr></table></figure>
+
+<p>如果你剛剛在設定root密碼不符合你選擇的規則時，它會問你要不要重新設一組新的密碼</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Change the password for root ? ((Press y|Y for Yes, any other key for No) : n</span><br></pre></td></tr></table></figure>
+
+<p>MySQL在安裝過程有建立一組匿名帳號為了做系統測試，測試完成後是可以直接刪除的</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">By default, a MySQL installation has an anonymous user,</span><br><span class="line">allowing anyone to log into MySQL without having to have</span><br><span class="line">a user account created for them. This is intended only for</span><br><span class="line">testing, and to make the installation go a bit smoother.</span><br><span class="line">You should remove them before moving into a production</span><br><span class="line">environment.</span><br><span class="line"></span><br><span class="line">Remove anonymous users? (Press y|Y for Yes, any other key for No) : y</span><br></pre></td></tr></table></figure>
+
+<p>接著要選擇是否禁止以遠端方式登入root帳號，只允許透過<code>localhost</code>登入<br>這裡我建議選擇是，如果想要遠端登入的話再另外創一組使用者就好，來提升安全性</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Normally, root should only be allowed to connect from</span><br><span class="line">&#39;localhost&#39;. This ensures that someone cannot guess at</span><br><span class="line">the root password from the network.</span><br><span class="line"></span><br><span class="line">Disallow root login remotely? (Press y|Y for Yes, any other key for No) : y</span><br></pre></td></tr></table></figure>
+
+<p>MySQL也同時建立了一個測試用的資料庫<code>test</code>，我們一樣可以把它給直接刪除掉</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">By default, MySQL comes with a database named &#39;test&#39; that</span><br><span class="line">anyone can access. This is also intended only for testing,</span><br><span class="line">and should be removed before moving into a production</span><br><span class="line">environment.</span><br><span class="line"></span><br><span class="line">Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y</span><br></pre></td></tr></table></figure>
+
+<p>最後我們要重新加載我們的權限表，選擇是就完成我們所有的設定了</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> - Dropping test database...</span><br><span class="line">Success.</span><br><span class="line"></span><br><span class="line"> - Removing privileges on test database...</span><br><span class="line">Success.</span><br><span class="line"></span><br><span class="line">Reloading the privilege tables will ensure that all changes</span><br><span class="line">made so far will take effect immediately.</span><br><span class="line"></span><br><span class="line">Reload privilege tables now? (Press y|Y for Yes, any other key for No) : y</span><br></pre></td></tr></table></figure>
+
+<h2 id="Database"><a href="#Database" class="headerlink" title="Database"></a>Database</h2><p>首先進入MySQL CLI</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u root -p</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>u: user / p: password</p>
+</blockquote>
+<p>在這裡我們新建一個資料庫</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> &lt;<span class="keyword">DATABASE</span>&gt; <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_unicode_ci;</span><br></pre></td></tr></table></figure>
+
+<p>這時就能看到新建立的Database</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">DATABASES</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| information_schema |</span><br><span class="line">| mysql              |</span><br><span class="line">| mysql_example      |</span><br><span class="line">| performance_schema |</span><br><span class="line">| sys                |</span><br><span class="line">+--------------------+</span><br></pre></td></tr></table></figure>
+
+<p>進入剛剛建立的Database</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">USE</span> &lt;<span class="keyword">DATABASES</span>&gt;;</span><br></pre></td></tr></table></figure>
+
+<p>建立一張資料表</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> customers (</span><br><span class="line">  C_Id <span class="built_in">INT</span>,</span><br><span class="line">  <span class="keyword">Name</span> <span class="built_in">varchar</span>(<span class="number">50</span>),</span><br><span class="line">  Address <span class="built_in">varchar</span>(<span class="number">255</span>),</span><br><span class="line">  Phone <span class="built_in">varchar</span>(<span class="number">20</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>查看資料表</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">TABLES</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">+-------------------------+</span><br><span class="line">| Tables_in_mysql_example |</span><br><span class="line">+-------------------------+</span><br><span class="line">| customers               |</span><br><span class="line">+-------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>接下來在這裡你就可以開始操作熟悉的SQL語法了<br>關於SQL教學的部分我非常推薦<a href="https://www.fooish.com/sql/" target="_blank" rel="noopener">Fooish 程式技術</a><br>大家有興趣可以去裡面探索，基本上我的語法都是在那裡學的</p>
+<h2 id="User"><a href="#User" class="headerlink" title="User"></a>User</h2><p>在先前的安全設定中，我們將root設為只允許localhost登入<br>因此如果我們要從外部連線進來時，我們必須建立一組可以遠端登入的User</p>
+<p>首先確認User狀態</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">user</span>, host <span class="keyword">FROM</span> mysql.user;</span><br></pre></td></tr></table></figure>
+<p>可以看到root的host為<code>localhost</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">+------------------+-----------+</span><br><span class="line">| user             | host      |</span><br><span class="line">+------------------+-----------+</span><br><span class="line">| mysql.infoschema | localhost |</span><br><span class="line">| mysql.session    | localhost |</span><br><span class="line">| mysql.sys        | localhost |</span><br><span class="line">| root             | localhost |</span><br><span class="line">+------------------+-----------+</span><br></pre></td></tr></table></figure>
+
+<h3 id="建立User"><a href="#建立User" class="headerlink" title="建立User"></a>建立User</h3><p>建立User</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> <span class="string">'&lt;USER NAME&gt;'</span>@<span class="string">'%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'&lt;PASSWORD&gt;'</span>;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>這裡<code>host</code>為%代表所有ip都能使用這組帳號連線，你也可以設為localhost</p>
+</blockquote>
+<p>如果你想更改User密碼可以這樣做</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">USER</span> <span class="string">'&lt;USER NAME&gt;'</span>@<span class="string">'&lt;HOST&gt;'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'&lt;PASSWORD&gt;'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>另外你可以建立<code>mysql_native_password</code>驗證模式的User</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> <span class="string">'&lt;USER NAME&gt;'</span>@<span class="string">'%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">WITH</span> mysql_native_password <span class="keyword">BY</span> <span class="string">'&lt;PASSWORD&gt;'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>如果想更改現有User的密碼為<code>mysql_native_password</code>驗證模式則是</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">USER</span> <span class="string">'&lt;USER NAME&gt;'</span>@<span class="string">'&lt;HOST&gt;'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">WITH</span> mysql_native_password <span class="keyword">BY</span> <span class="string">'&lt;PASSWORD&gt;'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>這時就可以看到新建立好的使用者</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">user</span>, host <span class="keyword">FROM</span> mysql.user;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">+------------------+-----------+</span><br><span class="line">| user             | host      |</span><br><span class="line">+------------------+-----------+</span><br><span class="line">| user_example     | %         |</span><br><span class="line">| mysql.infoschema | localhost |</span><br><span class="line">| mysql.session    | localhost |</span><br><span class="line">| mysql.sys        | localhost |</span><br><span class="line">| root             | localhost |</span><br><span class="line">+------------------+-----------+</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="權限"><a href="#權限" class="headerlink" title="權限"></a>權限</h3><p>賦予User Database權限</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">ALL</span> <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> &lt;<span class="keyword">DATABASE</span>&gt;.* <span class="keyword">TO</span> <span class="string">'&lt;USER NAME&gt;'</span>@<span class="string">'%'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>更新權限表</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FLUSH</span> <span class="keyword">PRIVILEGES</span>;</span><br></pre></td></tr></table></figure>
+
+<p>可執行<code>exit</code>或<code>quit</code>退出MySQL<br>就能遠端重新登入了</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo mysql -u &lt;USER NAME&gt; -p</span></span><br></pre></td></tr></table></figure>
+
+<p>這時候就可以看到剛剛賦予權限的資料庫</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SHOW DATABASES;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| information_schema |</span><br><span class="line">| mysql_example      |</span><br><span class="line">+--------------------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="Backup"><a href="#Backup" class="headerlink" title="Backup"></a>Backup</h2><p>備份指定資料庫</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysqldump -u &lt;USER&gt; -p &lt;DATABASE&gt; &gt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+
+<p>備份所有資料庫</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysqldump -u &lt;USER&gt; -p --all-databases &gt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+
+<p>遠端備份資料庫</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysqldump -u &lt;USER&gt; -p -h &lt;HOST&gt; &lt;DATABASE&gt; &gt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+
+<p>備份指定資料表出來</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysqldump -u &lt;USER&gt; -p &lt;DATABASE&gt; &lt;TABLE NAME&gt; &gt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+
+<p><code>Google Cloud SQL</code>備份資料庫</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysqldump -u &lt;USER&gt; -p -h &lt;HOST&gt; --port &lt;PORT&gt; --databases &lt;DATABASE&gt; --hex-blob --single-transaction --<span class="built_in">set</span>-gtid-purged=OFF --default-character-set=utf8mb4 --column-statistics=0 &gt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+
+<p>設定排程備份<code>backup.sh</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> database info</span></span><br><span class="line">_USER=&lt;USER&gt;</span><br><span class="line">_PASSWORD=&lt;PASSWORD&gt;</span><br><span class="line">_DATABASE=&lt;DATABASE&gt;</span><br><span class="line">_HOST=&lt;HOST&gt;</span><br><span class="line"><span class="meta">#</span><span class="bash"> backup info</span></span><br><span class="line">_WORK_DIR=&lt;WORK_DIR&gt;</span><br><span class="line">_MYSQLDUMP_DIR=&lt;MYSQLDUMP_DIR&gt;</span><br><span class="line">_ZIP_DIR=&lt;ZIP_DIR&gt;</span><br><span class="line">_ZIP_PASSWORD=&lt;ZIP_PASSWORD&gt;</span><br><span class="line">_DATE=$(date "+%Y%m%d_%H%M%S")</span><br><span class="line">_FILE=$&#123;_DATABASE&#125;_$&#123;_DATE&#125;</span><br><span class="line"><span class="meta">#</span><span class="bash"> shell</span></span><br><span class="line"><span class="meta">$</span><span class="bash">&#123;_MYSQLDUMP_DIR&#125;/mysqldump -u <span class="variable">$&#123;_USER&#125;</span> -p<span class="variable">$&#123;_PASSWORD&#125;</span> <span class="variable">$&#123;_DATABASE&#125;</span> --host <span class="variable">$&#123;_HOST&#125;</span> &gt; <span class="variable">$&#123;_WORK_DIR&#125;</span>/<span class="variable">$&#123;_FILE&#125;</span>.sql</span></span><br><span class="line"><span class="meta">$</span><span class="bash">&#123;_ZIP_DIR&#125;/zip -m -j -P <span class="variable">$&#123;_ZIP_PASSWORD&#125;</span> <span class="variable">$&#123;_WORK_DIR&#125;</span>/<span class="variable">$&#123;_FILE&#125;</span>.zip <span class="variable">$&#123;_WORK_DIR&#125;</span>/<span class="variable">$&#123;_FILE&#125;</span>.sql</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Restore"><a href="#Restore" class="headerlink" title="Restore"></a>Restore</h2><p>還原指定資料庫</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u &lt;USER&gt; -p &lt;DATABASE&gt; &lt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+
+<p>還原多個資料庫</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u &lt;USER&gt; -p &lt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 LTS+vsftpd</title>
+    <url>/2020/09/29/Ubuntu-18-04-LTS-vsftpd/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從開始實習，公司開了一組<code>GCP</code>帳號讓我測試用之後<br>前前後後碰了不少東西，也接觸了很多有關Server的知識<br>而這次要玩的則是不依賴<code>GCP</code>方便的傳輸介面<br>直接在Server上架設<code>FTP</code>，這個從小聽到大的檔案傳輸協定<br>那就一起來看看是如何實現的吧～</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>安裝<code>vsftpd</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install vsftpd -y</span></span><br></pre></td></tr></table></figure>
+
+<p>啟動&amp;開機自動啟動<code>vsftpd</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl start vsftpd</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> vsftpd</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="設定檔"><a href="#設定檔" class="headerlink" title="設定檔"></a>設定檔</h2><p>備份原始設定檔以方便回溯</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo cp /etc/vsftpd.conf /etc/vsftpd.conf.org</span></span><br></pre></td></tr></table></figure>
+
+<p>修改設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo vim /etc/vsftpd.conf</span></span><br></pre></td></tr></table></figure>
+
+<p>設定存取權限</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 禁止匿名使用者</span><br><span class="line">anonymous_enable&#x3D;NO</span><br><span class="line"></span><br><span class="line"># 只允許本地端使用者存取</span><br><span class="line">local_enable&#x3D;YES</span><br><span class="line"></span><br><span class="line"># 允許使用者寫入</span><br><span class="line">write_enable&#x3D;YES</span><br></pre></td></tr></table></figure>
+
+<p>限制存取範圍，讓使用者只能在<code>/home/&lt;USER&gt;/ftp</code>底下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">chroot_local_user&#x3D;YES</span><br><span class="line">user_sub_token&#x3D;$USER</span><br><span class="line">local_root&#x3D;&#x2F;home&#x2F;$USER&#x2F;ftp</span><br></pre></td></tr></table></figure>
+
+<p>指定Port範圍在10000 ~ 110000 之間，可以依照個人需求修改</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pasv_min_port&#x3D;10000</span><br><span class="line">pasv_max_port&#x3D;11000</span><br></pre></td></tr></table></figure>
+
+<p>使用者登入清單</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">userlist_enable&#x3D;YES</span><br><span class="line">userlist_file&#x3D;&#x2F;etc&#x2F;vsftpd.user_list</span><br><span class="line">userlist_deny&#x3D;NO</span><br></pre></td></tr></table></figure>
+
+<p>PAM模組名稱</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pam_service_name&#x3D;vsftpd</span><br></pre></td></tr></table></figure>
+
+<p>SSL加密，這裡可以事先一起設定</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rsa_cert_file&#x3D;&#x2F;etc&#x2F;ssl&#x2F;private&#x2F;vsftpd.pem</span><br><span class="line">rsa_private_key_file&#x3D;&#x2F;etc&#x2F;ssl&#x2F;private&#x2F;vsftpd.pem</span><br><span class="line">ssl_enable&#x3D;YES</span><br></pre></td></tr></table></figure>
+
+<p>都存檔之後就可以重啟<code>vsftpd</code>囉</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl restart vsftpd</span></span><br></pre></td></tr></table></figure>
+
+<p>完整<code>vsftpd.conf</code>如下，保留原始的配置以便日後修改</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># Example config file &#x2F;etc&#x2F;vsftpd.conf</span><br><span class="line">#</span><br><span class="line"># The default compiled in settings are fairly paranoid. This sample file</span><br><span class="line"># loosens things up a bit, to make the ftp daemon more usable.</span><br><span class="line"># Please see vsftpd.conf.5 for all compiled in defaults.</span><br><span class="line">#</span><br><span class="line"># READ THIS: This example file is NOT an exhaustive list of vsftpd options.</span><br><span class="line"># Please read the vsftpd.conf.5 manual page to get a full idea of vsftpd&#39;s</span><br><span class="line"># capabilities.</span><br><span class="line">#</span><br><span class="line">#</span><br><span class="line"># Run standalone?  vsftpd can run either from an inetd or as a standalone</span><br><span class="line"># daemon started from an initscript.</span><br><span class="line">listen&#x3D;NO</span><br><span class="line">#</span><br><span class="line"># This directive enables listening on IPv6 sockets. By default, listening</span><br><span class="line"># on the IPv6 &quot;any&quot; address (::) will accept connections from both IPv6</span><br><span class="line"># and IPv4 clients. It is not necessary to listen on *both* IPv4 and IPv6</span><br><span class="line"># sockets. If you want that (perhaps because you want to listen on specific</span><br><span class="line"># addresses) then you must run two copies of vsftpd with two configuration</span><br><span class="line"># files.</span><br><span class="line">listen_ipv6&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Allow anonymous FTP? (Disabled by default).</span><br><span class="line">anonymous_enable&#x3D;NO</span><br><span class="line">#</span><br><span class="line"># Uncomment this to allow local users to log in.</span><br><span class="line">local_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Uncomment this to enable any form of FTP write command.</span><br><span class="line">write_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Default umask for local users is 077. You may wish to change this to 022,</span><br><span class="line"># if your users expect that (022 is used by most other ftpd&#39;s)</span><br><span class="line">#local_umask&#x3D;022</span><br><span class="line">#</span><br><span class="line"># Uncomment this to allow the anonymous FTP user to upload files. This only</span><br><span class="line"># has an effect if the above global write enable is activated. Also, you will</span><br><span class="line"># obviously need to create a directory writable by the FTP user.</span><br><span class="line">#anon_upload_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Uncomment this if you want the anonymous FTP user to be able to create</span><br><span class="line"># new directories.</span><br><span class="line">#anon_mkdir_write_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Activate directory messages - messages given to remote users when they</span><br><span class="line"># go into a certain directory.</span><br><span class="line">dirmessage_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># If enabled, vsftpd will display directory listings with the time</span><br><span class="line"># in  your  local  time  zone.  The default is to display GMT. The</span><br><span class="line"># times returned by the MDTM FTP command are also affected by this</span><br><span class="line"># option.</span><br><span class="line">use_localtime&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Activate logging of uploads&#x2F;downloads.</span><br><span class="line">xferlog_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Make sure PORT transfer connections originate from port 20 (ftp-data).</span><br><span class="line">connect_from_port_20&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># If you want, you can arrange for uploaded anonymous files to be owned by</span><br><span class="line"># a different user. Note! Using &quot;root&quot; for uploaded files is not</span><br><span class="line"># recommended!</span><br><span class="line">#chown_uploads&#x3D;YES</span><br><span class="line">#chown_username&#x3D;whoever</span><br><span class="line">#</span><br><span class="line"># You may override where the log file goes if you like. The default is shown</span><br><span class="line"># below.</span><br><span class="line">#xferlog_file&#x3D;&#x2F;var&#x2F;log&#x2F;vsftpd.log</span><br><span class="line">#</span><br><span class="line"># If you want, you can have your log file in standard ftpd xferlog format.</span><br><span class="line"># Note that the default log file location is &#x2F;var&#x2F;log&#x2F;xferlog in this case.</span><br><span class="line">#xferlog_std_format&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># You may change the default value for timing out an idle session.</span><br><span class="line">#idle_session_timeout&#x3D;600</span><br><span class="line">#</span><br><span class="line"># You may change the default value for timing out a data connection.</span><br><span class="line">#data_connection_timeout&#x3D;120</span><br><span class="line">#</span><br><span class="line"># It is recommended that you define on your system a unique user which the</span><br><span class="line"># ftp server can use as a totally isolated and unprivileged user.</span><br><span class="line">#nopriv_user&#x3D;ftpsecure</span><br><span class="line">#</span><br><span class="line"># Enable this and the server will recognise asynchronous ABOR requests. Not</span><br><span class="line"># recommended for security (the code is non-trivial). Not enabling it,</span><br><span class="line"># however, may confuse older FTP clients.</span><br><span class="line">#async_abor_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># By default the server will pretend to allow ASCII mode but in fact ignore</span><br><span class="line"># the request. Turn on the below options to have the server actually do ASCII</span><br><span class="line"># mangling on files when in ASCII mode.</span><br><span class="line"># Beware that on some FTP servers, ASCII support allows a denial of service</span><br><span class="line"># attack (DoS) via the command &quot;SIZE &#x2F;big&#x2F;file&quot; in ASCII mode. vsftpd</span><br><span class="line"># predicted this attack and has always been safe, reporting the size of the</span><br><span class="line"># raw file.</span><br><span class="line"># ASCII mangling is a horrible feature of the protocol.</span><br><span class="line">#ascii_upload_enable&#x3D;YES</span><br><span class="line">#ascii_download_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># You may fully customise the login banner string:</span><br><span class="line">#ftpd_banner&#x3D;Welcome to blah FTP service.</span><br><span class="line">#</span><br><span class="line"># You may specify a file of disallowed anonymous e-mail addresses. Apparently</span><br><span class="line"># useful for combatting certain DoS attacks.</span><br><span class="line">#deny_email_enable&#x3D;YES</span><br><span class="line"># (default follows)</span><br><span class="line">#banned_email_file&#x3D;&#x2F;etc&#x2F;vsftpd.banned_emails</span><br><span class="line">#</span><br><span class="line"># You may restrict local users to their home directories.  See the FAQ for</span><br><span class="line"># the possible risks in this before using chroot_local_user or</span><br><span class="line"># chroot_list_enable below.</span><br><span class="line">chroot_local_user&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># You may specify an explicit list of local users to chroot() to their home</span><br><span class="line"># directory. If chroot_local_user is YES, then this list becomes a list of</span><br><span class="line"># users to NOT chroot().</span><br><span class="line"># (Warning! chroot&#39;ing can be very dangerous. If using chroot, make sure that</span><br><span class="line"># the user does not have write access to the top level directory within the</span><br><span class="line"># chroot)</span><br><span class="line">#chroot_local_user&#x3D;YES</span><br><span class="line">#chroot_list_enable&#x3D;YES</span><br><span class="line"># (default follows)</span><br><span class="line">#chroot_list_file&#x3D;&#x2F;etc&#x2F;vsftpd.chroot_list</span><br><span class="line">#</span><br><span class="line"># You may activate the &quot;-R&quot; option to the builtin ls. This is disabled by</span><br><span class="line"># default to avoid remote users being able to cause excessive I&#x2F;O on large</span><br><span class="line"># sites. However, some broken FTP clients such as &quot;ncftp&quot; and &quot;mirror&quot; assume</span><br><span class="line"># the presence of the &quot;-R&quot; option, so there is a strong case for enabling it.</span><br><span class="line">#ls_recurse_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Customization</span><br><span class="line">#</span><br><span class="line"># Some of vsftpd&#39;s settings don&#39;t fit the filesystem layout by</span><br><span class="line"># default.</span><br><span class="line">#</span><br><span class="line"># This option should be the name of a directory which is empty.  Also, the</span><br><span class="line"># directory should not be writable by the ftp user. This directory is used</span><br><span class="line"># as a secure chroot() jail at times vsftpd does not require filesystem</span><br><span class="line"># access.</span><br><span class="line">secure_chroot_dir&#x3D;&#x2F;var&#x2F;run&#x2F;vsftpd&#x2F;empty</span><br><span class="line">#</span><br><span class="line"># This string is the name of the PAM service vsftpd will use.</span><br><span class="line">pam_service_name&#x3D;vsftpd</span><br><span class="line">#</span><br><span class="line"># This option specifies the location of the RSA certificate to use for SSL</span><br><span class="line"># encrypted connections.</span><br><span class="line">rsa_cert_file&#x3D;&#x2F;etc&#x2F;ssl&#x2F;private&#x2F;vsftpd.pem</span><br><span class="line">rsa_private_key_file&#x3D;&#x2F;etc&#x2F;ssl&#x2F;private&#x2F;vsftpd.pem</span><br><span class="line">ssl_enable&#x3D;YES</span><br><span class="line"></span><br><span class="line">#</span><br><span class="line"># Uncomment this to indicate that vsftpd use a utf8 filesystem.</span><br><span class="line">#utf8_filesystem&#x3D;YES</span><br><span class="line"></span><br><span class="line">user_sub_token&#x3D;$USER</span><br><span class="line">local_root&#x3D;&#x2F;home&#x2F;$USER&#x2F;ftp</span><br><span class="line"></span><br><span class="line">pasv_min_port&#x3D;10000</span><br><span class="line">pasv_max_port&#x3D;11000</span><br><span class="line"></span><br><span class="line">userlist_enable&#x3D;YES</span><br><span class="line">userlist_file&#x3D;&#x2F;etc&#x2F;vsftpd.user_list</span><br><span class="line">userlist_deny&#x3D;NO</span><br></pre></td></tr></table></figure>
+
+<h2 id="SSL-TLS"><a href="#SSL-TLS" class="headerlink" title="SSL / TLS"></a>SSL / TLS</h2><p>預設的FTP是使用明碼進行傳輸，這其實對資料非常沒有保障<br>為了安全性上的考量，我們採用<code>OpenSSL</code>建立加密憑證，這裡會產生一組十年期限的2048bit金鑰<br>而金鑰和憑證都會依照設定檔配置放在<code>/etc/ssl/private/vsftpd.pem</code>裡</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem</span></span><br></pre></td></tr></table></figure>
+<p>系統會先問你一連串的基本資料加入至憑證中，按照指示回答即可</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 國家代號</span><br><span class="line">Country Name (2 letter code) [AU]:TW</span><br><span class="line"># 州或省</span><br><span class="line">State or Province Name (full name) [Some-State]:Taipei</span><br><span class="line"># 城市</span><br><span class="line">Locality Name (eg, city) []:xinyi</span><br><span class="line"># 組織或公司名稱</span><br><span class="line">Organization Name (eg, company) [Internet Widgits Pty Ltd]:kiitzu</span><br><span class="line"># 單位名稱</span><br><span class="line">Organizational Unit Name (eg, section) []:RD</span><br><span class="line"># Server或是負責人姓名</span><br><span class="line">Common Name (e.g. server FQDN or YOUR name) []:ricky_lin</span><br><span class="line"># 聯絡Email</span><br><span class="line">Email Address []:ricky_lin@kiitzu.com</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>這裡就依照你的個人資料輸入</p>
+</blockquote>
+<p>重啟<code>vsftpd</code>就設定好囉</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl restart vsftpd</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="使用者"><a href="#使用者" class="headerlink" title="使用者"></a>使用者</h2><p>接著我們就可以創立一組給予<code>vsftpd</code>使用的帳號，這裡用<code>vsftp</code>當作示例<br>按照步驟輸入密碼，後面的問題可直接<code>Enter</code>略過</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo adduser vsftp</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>adduser</code>和<code>useradd</code>雖然都可以建立使用者，但在細節上並不相同，可別搞混囉</p>
+</blockquote>
+<p>將使用者加入至登入清單中</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo vim /etc/vsftpd.user_list</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vsftp</span><br></pre></td></tr></table></figure>
+
+<h2 id="FTP目錄"><a href="#FTP目錄" class="headerlink" title="FTP目錄"></a>FTP目錄</h2><p>在剛建立好的使用者家目錄下建立FTP目錄，並設定權限</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo <span class="built_in">cd</span> /home/vsftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mkdir ftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chown nobody:nogroup ftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chmod a-w ftp</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>a-w</code>: 該檔案(目錄)不能寫入</p>
+</blockquote>
+<p>接下來在<code>ftp</code>目錄下建立一個可以上傳下載的目錄，並設定使用者權限</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo <span class="built_in">cd</span> ftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mkdir upload</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chown vsftp:vsftp upload</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>chmod</code>: 更改檔案(目錄)權限 / <code>chown</code>: 更改檔案(目錄)擁有者</p>
+</blockquote>
+<h2 id="GCP"><a href="#GCP" class="headerlink" title="GCP"></a>GCP</h2><p>別忘了我們的<code>Ubuntu</code>是綁在<code>GCP</code>底下，因此我們還要到GCP設置防火牆<br>不然連線至FTP時，會硬是活生生的被Google給擋了下來</p>
+<p>這邊要記得<code>Port</code>要根據你在設定檔配置的範圍<br><img src="/images/loading.gif" data-original="/images/gcp_firewall_ftp.png" alt="vue_welcome"></p>
+<h2 id="FileZilla"><a href="#FileZilla" class="headerlink" title="FileZilla"></a>FileZilla</h2><p>所有的步驟都做好後，我們就可以在本機端連線至FTP了<br>我是使用<a href="https://filezilla-project.org/" target="_blank" rel="noopener">FileZilla</a>這套老牌的FTP軟體</p>
+<p>點擊左上角新增站台<br><img src="/images/loading.gif" data-original="/images/filezilla01.png" alt="vue_welcome"></p>
+<p>配置好<code>主機</code>、<code>加密</code>、<code>使用者</code>後，點選連線<br><img src="/images/loading.gif" data-original="/images/filezilla02.png" alt="vue_welcome"></p>
+<p>這就是我們之前建立好的憑證，點選確認<br><img src="/images/loading.gif" data-original="/images/openssl_ftp.png" alt="vue_welcome"></p>
+<p>我們的目錄就會出現在畫面右方<br><img src="/images/loading.gif" data-original="/images/filezilla03.png" alt="vue_welcome"></p>
+<p>接著你就可以在目錄下存取檔案囉～</p>
+<h2 id="WordPress"><a href="#WordPress" class="headerlink" title="WordPress"></a>WordPress</h2><p>如果你想在FTP上直接存取<code>WordPress</code>的話，可以這麼做</p>
+<p>先將<code>WordPress</code>目錄移至<code>ftp</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo mv /var/www/html/wordpress /home/vsftp/ftp</span></span><br></pre></td></tr></table></figure>
+
+<p>設定軟連結</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo ln -s /home/vsftp/ftp/wordpress /var/www/html/wordpress</span></span><br></pre></td></tr></table></figure>
+
+<p>這時候可以在FTP看到<code>WordPress</code>，但只能夠對檔案進行下載，完全不能上傳或是異動檔案<br>這是因為<code>WordPress</code>的擁有者必須是為<code>www-data</code>，因此<code>vsftp</code>這組帳號對<code>WordPress</code>並沒有寫入的權限<br>除非你<code>WordPress</code>的權限改為<code>777</code>，但是如此一來又有安全性上的疑慮<br>如果你希望能夠寫入，這裡提供一個簡單的方式，就是直接將<code>vsftp</code>加入至<code>www-data</code>群組當中<br>再把<code>WordPress</code>目錄及底下所有檔案擁有者改為<code>www-data:www-data</code><br>這樣的好處是你可以不必更動<code>WordPress</code>的所有權，同時又可以讓<code>vsftp</code>擁有權限<br>聽起來非常的複雜，但其實只要三行指令就可以做到這件事了</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 將使用者加入至www-data群組</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo usermod -aG www-data vsftp</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 將WordPress目錄及檔案擁有者改為www-data</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chown -R www-data:www-data /home/vsftp/ftp/wordpress</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 設定目錄及檔案權限</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chmod -R 775 /home/vsftp/ftp/wordpress</span></span><br></pre></td></tr></table></figure>
+<p>接下來你就可以在FTP上對<code>WordPress</code>進行操作囉～</p>
+<p>你可以在過程中使用<code>ls -l</code>觀察這其中的變化，這也代表<code>linux</code>在安全性上做得很好<br>我也是在這之中學到很多基礎的知識，<code>linux</code>真是個有趣的世界呢</p>
+<blockquote>
+<p>注意上傳至WordPress的檔案也記得要手動將檔案擁有者改為www-data！</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+      </tags>
+  </entry>
+</search>

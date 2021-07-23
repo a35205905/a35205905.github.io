@@ -14,10 +14,13 @@
 
 
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"a35205905.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"a35205905.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="前言說到WordPress，備份也是一件討人厭的事情但比起備份，還原至另一台Server更是令人困擾在工作時原本以為順利把WordPress部署至測試機後續後處理起來會輕鬆很多，結果還是吃了不少悶虧趁下班之餘趕緊趁忘記之前好好記起來！">
@@ -27,16 +30,16 @@
 <meta property="og:site_name" content="LinChi 叩叮俱樂部">
 <meta property="og:description" content="前言說到WordPress，備份也是一件討人厭的事情但比起備份，還原至另一台Server更是令人困擾在工作時原本以為順利把WordPress部署至測試機後續後處理起來會輕鬆很多，結果還是吃了不少悶虧趁下班之餘趕緊趁忘記之前好好記起來！">
 <meta property="og:locale" content="zh_TW">
-<meta property="og:image" content="https://a35205905.github.io/images/gcp_download_01.png">
-<meta property="og:image" content="https://a35205905.github.io/images/gcp_download_02.png">
-<meta property="og:image" content="https://a35205905.github.io/images/gcp_download_03.png">
+<meta property="og:image" content="https://a35205905.github.io/images/loading.gif">
+<meta property="og:image" content="https://a35205905.github.io/images/loading.gif">
+<meta property="og:image" content="https://a35205905.github.io/images/loading.gif">
 <meta property="article:published_time" content="2020-09-18T11:42:00.000Z">
 <meta property="article:modified_time" content="2020-10-22T04:22:13.000Z">
 <meta property="article:author" content="LinChi">
 <meta property="article:tag" content="ubuntu">
 <meta property="article:tag" content="wordpress">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://a35205905.github.io/images/gcp_download_01.png">
+<meta name="twitter:image" content="https://a35205905.github.io/images/loading.gif">
 
 <link rel="canonical" href="https://a35205905.github.io/2020/09/18/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/">
 
@@ -119,6 +122,7 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -153,11 +157,38 @@
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
 
   </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
   </ul>
 </nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜尋..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
 
 </div>
     </header>
@@ -224,6 +255,13 @@
             </span>
 
           
+            <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
 
         </div>
       </header>
@@ -260,9 +298,9 @@
 </blockquote>
 <p>其實到這邊備份的部分就完成了，是不是超級簡單<br>這就是最笨但也是最快速的方式</p>
 <h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><p>其實Apache要備份只有<code>/etc/apache2/sites-available/&lt;WORDPRESS&gt;.conf</code>這個設定檔而已<br>因此你可以把它直接下載下來即可</p>
-<h3 id="Dowload"><a href="#Dowload" class="headerlink" title="Dowload"></a>Dowload</h3><p>而關於下載的部分，這邊也教一個<code>GCP</code>提供的功能<br>如果你是以SSL用瀏覽器打開的話，在畫面右上角會有一個工具欄<br><img src="/images/gcp_download_01.png" alt="vue_init"></p>
-<p>點選下載檔案<br><img src="/images/gcp_download_02.png" alt="vue_init"></p>
-<p>接著會出現視窗讓你輸入路徑<br><img src="/images/gcp_download_03.png" alt="vue_init"></p>
+<h3 id="Dowload"><a href="#Dowload" class="headerlink" title="Dowload"></a>Dowload</h3><p>而關於下載的部分，這邊也教一個<code>GCP</code>提供的功能<br>如果你是以SSL用瀏覽器打開的話，在畫面右上角會有一個工具欄<br><img src="/images/loading.gif" data-original="/images/gcp_download_01.png" alt="vue_init"></p>
+<p>點選下載檔案<br><img src="/images/loading.gif" data-original="/images/gcp_download_02.png" alt="vue_init"></p>
+<p>接著會出現視窗讓你輸入路徑<br><img src="/images/loading.gif" data-original="/images/gcp_download_03.png" alt="vue_init"></p>
 <p>用這樣的方式就可以很簡單的把備份檔下載下來了<br>同理上傳檔案也是如此，上傳後檔案會放至在<code>/home/&lt;GCP_ACCOUNT&gt;</code>下<br>接著就可以開始著手處理還原的部分囉～</p>
 <h2 id="Restore"><a href="#Restore" class="headerlink" title="Restore"></a>Restore</h2><p>還原就有很多小細節要注意了，如果沒有處理好，不僅是WordPress打開來畫面跟原先的不一樣<br>甚至有可能會出現連網頁都開不了的窘境，因此這裡會一步一步教大家如何操作</p>
 <h3 id="Before"><a href="#Before" class="headerlink" title="Before"></a>Before</h3><p>我們先假設你已經將備份檔及Apache設定檔上傳至新的Server<br>這邊是透過<code>GCP</code>上傳，因此檔案會位於我<code>GCP</code>帳號的家目錄底下</p>
@@ -333,6 +371,23 @@
     
     
     
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>作者： </strong>LinChi
+  </li>
+  <li class="post-copyright-link">
+    <strong>文章連結：</strong>
+    <a href="https://a35205905.github.io/2020/09/18/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/" title="Ubuntu 18.04 LTS+Wordpress Backup&#x2F;Restore">https://a35205905.github.io/2020/09/18/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版權聲明： </strong>本網誌所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 許可協議。轉載請註明出處！
+  </li>
+</ul>
+</div>
+
 
       <footer class="post-footer">
           <div class="post-tags">
@@ -451,6 +506,9 @@
         <a href="mailto:aa35205905@gmail.com" title="E-Mail → mailto:aa35205905@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
   </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/loading.gif" data-original="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
 
 
 
@@ -483,6 +541,26 @@
   </div>
 
         
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
 
 
 
@@ -498,6 +576,8 @@
   
   <script src="/lib/anime.min.js"></script>
   <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 
@@ -578,6 +658,10 @@ window.addEventListener('pjax:success', () => {
 
 
 
+  
+<script src="/js/local-search.js"></script>
+
+
 
 
 
@@ -595,5 +679,11 @@ window.addEventListener('pjax:success', () => {
   
 
     </div>
-</body>
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
 </html>
