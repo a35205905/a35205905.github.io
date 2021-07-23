@@ -439,9 +439,9 @@
 </blockquote>
 <p>其實到這邊備份的部分就完成了，是不是超級簡單<br>這就是最笨但也是最快速的方式</p>
 <h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><p>其實Apache要備份只有<code>/etc/apache2/sites-available/&lt;WORDPRESS&gt;.conf</code>這個設定檔而已<br>因此你可以把它直接下載下來即可</p>
-<h3 id="Dowload"><a href="#Dowload" class="headerlink" title="Dowload"></a>Dowload</h3><p>而關於下載的部分，這邊也教一個<code>GCP</code>提供的功能<br>如果你是以SSL用瀏覽器打開的話，在畫面右上角會有一個工具欄<br><img src="/images/loading.gif" data-original="/images/gcp_download_01.png" alt="vue_init"></p>
-<p>點選下載檔案<br><img src="/images/loading.gif" data-original="/images/gcp_download_02.png" alt="vue_init"></p>
-<p>接著會出現視窗讓你輸入路徑<br><img src="/images/loading.gif" data-original="/images/gcp_download_03.png" alt="vue_init"></p>
+<h3 id="Dowload"><a href="#Dowload" class="headerlink" title="Dowload"></a>Dowload</h3><p>而關於下載的部分，這邊也教一個<code>GCP</code>提供的功能<br>如果你是以SSL用瀏覽器打開的話，在畫面右上角會有一個工具欄<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_01.png" alt="vue_init"></p>
+<p>點選下載檔案<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_02.png" alt="vue_init"></p>
+<p>接著會出現視窗讓你輸入路徑<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_03.png" alt="vue_init"></p>
 <p>用這樣的方式就可以很簡單的把備份檔下載下來了<br>同理上傳檔案也是如此，上傳後檔案會放至在<code>/home/&lt;GCP_ACCOUNT&gt;</code>下<br>接著就可以開始著手處理還原的部分囉～</p>
 <h2 id="Restore"><a href="#Restore" class="headerlink" title="Restore"></a>Restore</h2><p>還原就有很多小細節要注意了，如果沒有處理好，不僅是WordPress打開來畫面跟原先的不一樣<br>甚至有可能會出現連網頁都開不了的窘境，因此這裡會一步一步教大家如何操作</p>
 <h3 id="Before"><a href="#Before" class="headerlink" title="Before"></a>Before</h3><p>我們先假設你已經將備份檔及Apache設定檔上傳至新的Server<br>這邊是透過<code>GCP</code>上傳，因此檔案會位於我<code>GCP</code>帳號的家目錄底下</p>
@@ -605,7 +605,7 @@
 <p>啟用自訂設定 &amp; 關閉預設設定</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2ensite vue.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo a2dissite 000-default.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
 
-<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/vue_welcome.png" alt="vue_welcome"></p>
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
 ]]></content>
       <categories>
         <category>技術文章</category>
@@ -811,7 +811,7 @@
 <blockquote>
 <p>dpkg: 本機軟體包管理器 / apt: 線上軟體包管理器 / .deb: Debian的軟體包格式(Debian又為Ubuntu父版本)</p>
 </blockquote>
-<p>這時候你會看到這個畫面，採用預設的設定直接選最後一項<code>ok</code>就行<br><img src="/images/loading.gif" data-original="/images/mysql_install_01.png" alt="vue_init"></p>
+<p>這時候你會看到這個畫面，採用預設的設定直接選最後一項<code>ok</code>就行<br><img src="/images/loading.gif" data-original="/images/MySQL8-0-Backup-Restore/mysql_config.png" alt="vue_init"></p>
 <p>更新APT</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br></pre></td></tr></table></figure>
 
@@ -821,10 +821,10 @@
 <p>這時候就可以依據配置好的設定檔安裝我們的主角<code>MySQL</code></p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install mysql-server -y</span></span><br></pre></td></tr></table></figure>
 
-<p>這時候MySQL會要你輸入root密碼，記住這是MySQL自己的root帳號，跟Ubuntu的root是不一樣的歐！<br><img src="/images/loading.gif" data-original="/images/mysql_install_02.png" alt="vue_init"></p>
-<p>再次輸入密碼<br><img src="/images/loading.gif" data-original="/images/mysql_install_03.png" alt="vue_init"></p>
+<p>這時候MySQL會要你輸入root密碼，記住這是MySQL自己的root帳號，跟Ubuntu的root是不一樣的歐！<br><img src="/images/loading.gif" data-original="/images/MySQL8-0-Backup-Restore/mysql_password.png" alt="vue_init"></p>
+<p>再次輸入密碼<br><img src="/images/loading.gif" data-original="/images/MySQL8-0-Backup-Restore/mysql_re_password.png" alt="vue_init"></p>
 <p>再來MySQL還會問你是否要使用8.0版的<code>caching_sha2_password</code>還是5.7的<code>mysql_native_password</code>驗證方式，這會影響你其他Server連接MySQL時的相容性，這裡選第二個舊版的選項</p>
-<p><img src="/images/loading.gif" data-original="/images/mysql_install_04.png" alt="vue_init"></p>
+<p><img src="/images/loading.gif" data-original="/images/MySQL8-0-Backup-Restore/mysql_authentication.png" alt="vue_init"></p>
 <p>查看<code>MySQL</code>狀態</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service mysql status</span></span><br></pre></td></tr></table></figure>
 <p>會看到綠色的<code>active (running)</code>顯示正在運行</p>
@@ -1034,12 +1034,12 @@
 <p><code>chmod</code>: 更改檔案(目錄)權限 / <code>chown</code>: 更改檔案(目錄)擁有者</p>
 </blockquote>
 <h2 id="GCP"><a href="#GCP" class="headerlink" title="GCP"></a>GCP</h2><p>別忘了我們的<code>Ubuntu</code>是綁在<code>GCP</code>底下，因此我們還要到GCP設置防火牆<br>不然連線至FTP時，會硬是活生生的被Google給擋了下來</p>
-<p>這邊要記得<code>Port</code>要根據你在設定檔配置的範圍<br><img src="/images/loading.gif" data-original="/images/gcp_firewall_ftp.png" alt="vue_welcome"></p>
+<p>這邊要記得<code>Port</code>要根據你在設定檔配置的範圍<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-vsftpd/gcp_firewall_ftp.png" alt="vue_welcome"></p>
 <h2 id="FileZilla"><a href="#FileZilla" class="headerlink" title="FileZilla"></a>FileZilla</h2><p>所有的步驟都做好後，我們就可以在本機端連線至FTP了<br>我是使用<a href="https://filezilla-project.org/" target="_blank" rel="noopener">FileZilla</a>這套老牌的FTP軟體</p>
-<p>點擊左上角新增站台<br><img src="/images/loading.gif" data-original="/images/filezilla01.png" alt="vue_welcome"></p>
-<p>配置好<code>主機</code>、<code>加密</code>、<code>使用者</code>後，點選連線<br><img src="/images/loading.gif" data-original="/images/filezilla02.png" alt="vue_welcome"></p>
-<p>這就是我們之前建立好的憑證，點選確認<br><img src="/images/loading.gif" data-original="/images/openssl_ftp.png" alt="vue_welcome"></p>
-<p>我們的目錄就會出現在畫面右方<br><img src="/images/loading.gif" data-original="/images/filezilla03.png" alt="vue_welcome"></p>
+<p>點擊左上角新增站台<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-vsftpd/filezilla01.png" alt="vue_welcome"></p>
+<p>配置好<code>主機</code>、<code>加密</code>、<code>使用者</code>後，點選連線<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-vsftpd/filezilla02.png" alt="vue_welcome"></p>
+<p>這就是我們之前建立好的憑證，點選確認<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-vsftpd/openssl_ftp.png" alt="vue_welcome"></p>
+<p>我們的目錄就會出現在畫面右方<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-vsftpd/filezilla03.png" alt="vue_welcome"></p>
 <p>接著你就可以在目錄下存取檔案囉～</p>
 <h2 id="WordPress"><a href="#WordPress" class="headerlink" title="WordPress"></a>WordPress</h2><p>如果你想在FTP上直接存取<code>WordPress</code>的話，可以這麼做</p>
 <p>先將<code>WordPress</code>目錄移至<code>ftp</code></p>

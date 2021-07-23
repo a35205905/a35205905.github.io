@@ -2,6 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://a35205905.github.io/2021/05/24/MySQL8-0-Backup-Restore/</loc>
+    
+    <lastmod>2021-07-23</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://a35205905.github.io/2020/09/29/Ubuntu-18-04-LTS-vsftpd/</loc>
+    
+    <lastmod>2021-07-23</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://a35205905.github.io/2020/09/18/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/</loc>
+    
+    <lastmod>2021-07-23</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://a35205905.github.io/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/</loc>
     
     <lastmod>2021-07-23</lastmod>
@@ -24,13 +45,6 @@
   
   <url>
     <loc>https://a35205905.github.io/about/index.html</loc>
-    
-    <lastmod>2021-05-30</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://a35205905.github.io/2021/05/24/MySQL8-0-Backup-Restore/</loc>
     
     <lastmod>2021-05-30</lastmod>
     
@@ -61,20 +75,6 @@
     <loc>https://a35205905.github.io/2020/07/16/Ubuntu-18-04-LTS-Apache-WordPress/</loc>
     
     <lastmod>2020-10-28</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://a35205905.github.io/2020/09/18/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/</loc>
-    
-    <lastmod>2020-10-22</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://a35205905.github.io/2020/09/29/Ubuntu-18-04-LTS-vsftpd/</loc>
-    
-    <lastmod>2020-10-22</lastmod>
     
   </url>
   
