@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"a35205905.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言最近準備要開發新的Python專案時，發現自己原先用pip+virtualenv的方式已經有點難管理各個版本的套件了會有這樣的感覺是因為之前參與其他專案時發現無論是Laravel的composer.json&#x2F;composer.lock或是Vue的package.json&#x2F;yarn.lock都能很有效的管理套件本身的相依問題而要達到這點，進一步的還需要在本機與測試機版本相同的情況下會是更好雖然能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="macOS+pipenv+pyenv">
+<meta property="og:url" content="https://a35205905.github.io/2021/07/23/macOS-pipenv-pyenv/index.html">
+<meta property="og:site_name" content="LinChi 叩叮俱樂部">
+<meta property="og:description" content="前言最近準備要開發新的Python專案時，發現自己原先用pip+virtualenv的方式已經有點難管理各個版本的套件了會有這樣的感覺是因為之前參與其他專案時發現無論是Laravel的composer.json&#x2F;composer.lock或是Vue的package.json&#x2F;yarn.lock都能很有效的管理套件本身的相依問題而要達到這點，進一步的還需要在本機與測試機版本相同的情況下會是更好雖然能">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2021-07-23T11:24:00.000Z">
+<meta property="article:modified_time" content="2021-07-23T18:12:24.317Z">
+<meta property="article:author" content="LinChi">
+<meta property="article:tag" content="macOS">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://a35205905.github.io/2021/07/23/macOS-pipenv-pyenv/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>macOS+pipenv+pyenv | LinChi 叩叮俱樂部</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-180982767-1"></script>
+    <script data-pjax>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-180982767-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LinChi 叩叮俱樂部</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">在開始之前，先來杯長島冰茶吧～</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>關於</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://a35205905.github.io/2021/07/23/macOS-pipenv-pyenv/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LinChi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LinChi 叩叮俱樂部">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          macOS+pipenv+pyenv
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2021-07-23 19:24:00" itemprop="dateCreated datePublished" datetime="2021-07-23T19:24:00+08:00">2021-07-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2021-07-24 02:12:24" itemprop="dateModified" datetime="2021-07-24T02:12:24+08:00">2021-07-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E8%A1%93%E6%96%87%E7%AB%A0/" itemprop="url" rel="index"><span itemprop="name">技術文章</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近準備要開發新的Python專案時，發現自己原先用pip+virtualenv的方式已經有點難管理各個版本的套件了<br>會有這樣的感覺是因為之前參與其他專案時發現無論是Laravel的<code>composer.json</code>/<code>composer.lock</code><br>或是Vue的<code>package.json</code>/<code>yarn.lock</code>都能很有效的管理套件本身的相依問題<br>而要達到這點，進一步的還需要在本機與測試機版本相同的情況下會是更好<br>雖然能達成的方法有很多，但還是想以<code>pipenv</code>+<code>pyenv</code>來實做看看</p>
+<a id="more"></a>
+
+<blockquote>
+<p>本篇是以<a href="https://www.rootstrap.com/blog/how-to-manage-your-python-projects-with-pipenv-pyenv/" target="_blank" rel="noopener">該教材</a>作為參考依據</p>
+</blockquote>
+<h2 id="Pyenv"><a href="#Pyenv" class="headerlink" title="Pyenv"></a>Pyenv</h2><h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><p>在macOS中使用<a href="https://brew.sh/index_zh-tw" target="_blank" rel="noopener">Homebrew</a>來安裝<code>Pyenv</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> brew install pyenv</span></span><br></pre></td></tr></table></figure>
+
+<p>編輯並新增下列設定至你所使用的shell設定檔(<code>.bashrc</code>, <code>.zshrc</code>, <code>.bash_profile</code>)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if command -v pyenv 1&gt;&#x2F;dev&#x2F;null 2&gt;&amp;1; then</span><br><span class="line">  eval &quot;$(pyenv init -)&quot;</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<p>重新啟動shell並查看<code>pyenv</code>安裝狀態</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv -v</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Usage: pipenv [OPTIONS] COMMAND [ARGS]...</span><br><span class="line"></span><br><span class="line">Options:</span><br><span class="line">  --where                         Output project home information.</span><br><span class="line">  --venv                          Output virtualenv information.</span><br><span class="line">  --py                            Output Python interpreter information.</span><br><span class="line">  --envs                          Output Environment Variable options.</span><br><span class="line">  --rm                            Remove the virtualenv.</span><br><span class="line">  --bare                          Minimal output.</span><br><span class="line">  --completion                    Output completion (to be executed by the</span><br><span class="line">                                  shell).</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h3 id="新增python版本"><a href="#新增python版本" class="headerlink" title="新增python版本"></a>新增python版本</h3><p>查看在<code>pyenv</code>上的所有可安裝的python版本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv install --list</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝指定的python版本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv install &lt;version&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>查看本機已安裝的所有python版本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv versions</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">* system (set by &#x2F;Users&#x2F;a35205905&#x2F;.pyenv&#x2F;version)</span><br><span class="line">  3.6.9</span><br><span class="line">  3.9.4</span><br></pre></td></tr></table></figure>
+
+<h3 id="切換python版本"><a href="#切換python版本" class="headerlink" title="切換python版本"></a>切換python版本</h3><p>切換整個系統上的python版本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv global &lt;version&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在當前目錄切換python版本，並建立<code>.python-version</code>存放版號</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv <span class="built_in">local</span> &lt;version&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在當前shell的session裡切換版本，權重優先於<code>global</code>&amp;<code>local</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pyenv shell &lt;version&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看python版本"><a href="#查看python版本" class="headerlink" title="查看python版本"></a>查看python版本</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> global</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pyenv global</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">local</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pyenv <span class="built_in">local</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> shell</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pyenv shell</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="pipenv"><a href="#pipenv" class="headerlink" title="pipenv"></a>pipenv</h2><p>順帶一提，<code>pipenv</code>已成為<a href="https://packaging.python.org/tutorials/managing-dependencies/#managing-dependencies" target="_blank" rel="noopener">Python官方推薦的套件管理工具</a>，<code>pipenv</code>不但解決了套件相依的問題<br>還一併整合了virtualenv的功能，如此一來我們更能專注於在開發本身上就好，讚讚！</p>
+<p><code>pipenv</code>會透過自動產生的兩個檔案進行套件管理，分別為：</p>
+<ul>
+<li><code>Pipfile</code>：存放開發&amp;正式環境中所有套件的設定檔</li>
+<li><code>Pipfile.lock</code>：存放所有套件版、相依套件版本、hash值的設定檔</li>
+</ul>
+<h3 id="安裝-1"><a href="#安裝-1" class="headerlink" title="安裝"></a>安裝</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pip3 install pipenv</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="自定義虛擬環境"><a href="#自定義虛擬環境" class="headerlink" title="自定義虛擬環境"></a>自定義虛擬環境</h3><p>在建立虛擬環境之前，我們要先知道pipenv預設目錄為<code>/home/$username/.local/share/virtualenvs</code><br>因此如果要自定義虛擬環境的目錄有以下兩個做法</p>
+<ol>
+<li><p>設置在該專案根目錄下，透過<code>PIPENV_VENV_IN_PROJECT</code>環境變數</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export PIPENV_VENV_IN_PROJECT&#x3D;1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>設定在指定的目錄，透過<code>export WORKON_HOME</code>環境變數</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export WORKON_HOME&#x3D;~&#x2F;.venvs</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<blockquote>
+<p>要至shell設定檔(<code>.bashrc</code>, <code>.zshrc</code>, <code>.bash_profile</code>)設定環境變數</p>
+</blockquote>
+<h3 id="建立虛擬環境"><a href="#建立虛擬環境" class="headerlink" title="建立虛擬環境"></a>建立虛擬環境</h3><p>建立虛擬環境</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pipenv install &lt;version&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>你可以選擇透過剛剛pyenv切換好版本</p>
+</blockquote>
+<p>這時候會有以下兩個情況：</p>
+<ol>
+<li>若你還沒有<code>Pipfile</code>&amp;<code>Pipfile.lock</code>，它將會自動產生這兩個檔案</li>
+<li>若你已經有<code>Pipfile</code>&amp;<code>Pipfile.lock</code>，它將會安裝設定檔裡的所有套件</li>
+</ol>
+<p>設定檔範例：</p>
+<ul>
+<li><p>Pipfile</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[[source]]</span><br><span class="line">url &#x3D; &quot;https:&#x2F;&#x2F;pypi.org&#x2F;simple&quot;</span><br><span class="line">verify_ssl &#x3D; true</span><br><span class="line">name &#x3D; &quot;pypi&quot;</span><br><span class="line"></span><br><span class="line">[packages]</span><br><span class="line"></span><br><span class="line">[dev-packages]</span><br><span class="line"></span><br><span class="line">[requires]</span><br><span class="line">python_version &#x3D; &quot;3.9&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Pipfile.lock</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;_meta&quot;: &#123;</span><br><span class="line">        &quot;hash&quot;: &#123;</span><br><span class="line">            &quot;sha256&quot;: &quot;a36a5392bb1e8bbc06bfaa0761e52593cf2d83b486696bf54667ba8da616c839&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;pipfile-spec&quot;: 6,</span><br><span class="line">        &quot;requires&quot;: &#123;</span><br><span class="line">            &quot;python_version&quot;: &quot;3.9&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;sources&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;name&quot;: &quot;pypi&quot;,</span><br><span class="line">                &quot;url&quot;: &quot;https:&#x2F;&#x2F;pypi.org&#x2F;simple&quot;,</span><br><span class="line">                &quot;verify_ssl&quot;: true</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;default&quot;: &#123;&#125;,</span><br><span class="line">    &quot;develop&quot;: &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>若顯示<code>ValueError: unknown locale: UTF-8</code>等錯誤訊息，表示系統需要設定<code>LANG</code>環境變數</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export LANG&#x3D;en_US.UTF-8 &#x2F;&#x2F; ~&#x2F;.bashrc or ~&#x2F;.zshrc</span><br></pre></td></tr></table></figure>
+
+<p>你也可以刪除虛擬環境</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv --rm</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="切換虛擬環境"><a href="#切換虛擬環境" class="headerlink" title="切換虛擬環境"></a>切換虛擬環境</h3><p>進入虛擬環境</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv shell</span></span><br></pre></td></tr></table></figure>
+
+<p>退出虛擬環境</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">exit</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="安裝套件"><a href="#安裝套件" class="headerlink" title="安裝套件"></a>安裝套件</h3><p>安裝套件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt;==&lt;verison&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在沒有指定版本的情況下你可以看到<code>Pipfile</code>&amp;<code>Pipfile.lock</code>被更新了<br>Pipfile</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[packages]</span><br><span class="line">&lt;your package&gt; &#x3D; &quot;*&quot;</span><br></pre></td></tr></table></figure>
+
+<p>你還可以指定套件的版本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝開發用的套件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt; --dev</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>這時候你將虛擬環境砍掉，重新執行<code>pipenv install</code>時，會自動忽略<code>[dev-packages]</code>裡的所有套件</p>
+</blockquote>
+<p>查看所有套件以及相依套件關係</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv graph</span></span><br></pre></td></tr></table></figure>
+
+<p>確認你的相依套件有無安全漏洞</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pipenv check</span><br></pre></td></tr></table></figure>
+
+<p>移除套件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv uninstall &lt;package&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="升級套件"><a href="#升級套件" class="headerlink" title="升級套件"></a>升級套件</h3><p>假設你今天安裝了特定版本的套件，像是</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install django==2.2</span></span><br></pre></td></tr></table></figure>
+
+<p>那麼你現在Pipfile會是這樣</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[[source]]</span><br><span class="line">url &#x3D; &quot;https:&#x2F;&#x2F;pypi.org&#x2F;simple&quot;</span><br><span class="line">verify_ssl &#x3D; true</span><br><span class="line">name &#x3D; &quot;pypi&quot;</span><br><span class="line"></span><br><span class="line">[packages]</span><br><span class="line">django &#x3D; &quot;&#x3D;&#x3D;2.2&quot;</span><br><span class="line"></span><br><span class="line">[dev-packages]</span><br><span class="line"></span><br><span class="line">[requires]</span><br><span class="line">python_version &#x3D; &quot;3.9&quot;</span><br></pre></td></tr></table></figure>
+
+<p>然而你執行升級套件指令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv update django</span></span><br></pre></td></tr></table></figure>
+
+<p>卻發現什麼事都沒做</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Locking [dev-packages] dependencies...</span><br><span class="line">Locking [packages] dependencies...</span><br><span class="line">Building requirements...</span><br><span class="line">Resolving dependencies...</span><br><span class="line">✔ Success!</span><br><span class="line">Updated Pipfile.lock (24b2dc)!</span><br><span class="line">Installing dependencies from Pipfile.lock (24b2dc)...</span><br><span class="line">  🐍   ▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉ 0&#x2F;0 — 00:00:00</span><br><span class="line">To activate this project&#39;s virtualenv, run pipenv shell.</span><br><span class="line">Alternatively, run a command inside the virtualenv with pipenv run.</span><br><span class="line">All dependencies are now up-to-date!</span><br></pre></td></tr></table></figure>
+
+<p>這是因為<code>update</code>這個指令是只根據你的Pipfile的套件版本來決定是否要升級！<br>因此如果你想升級套件的話，你必須先編輯Pipfile裡的套件版本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">[packages]</span><br><span class="line">django &#x3D; &quot;*&quot;</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>若是將版本設為*代表升級成最新的版本</p>
+</blockquote>
+<p>這時候再下一次升級指令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv update django</span></span><br></pre></td></tr></table></figure>
+
+<p>你會發現下面的進度條變成2/2，這代表包含套件本身及相依套件共兩個套件同時被升級或安裝</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Locking [dev-packages] dependencies...</span><br><span class="line">Locking [packages] dependencies...</span><br><span class="line">Building requirements...</span><br><span class="line">Resolving dependencies...</span><br><span class="line">✔ Success!</span><br><span class="line">Updated Pipfile.lock (06f36b)!</span><br><span class="line">Installing dependencies from Pipfile.lock (06f36b)...</span><br><span class="line">  🐍   ▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉ 2&#x2F;2 — 00:00:00</span><br><span class="line">All dependencies are now up-to-date!</span><br></pre></td></tr></table></figure>
+
+<p>這時你用圖形化顯示更能看清楚整個套件的關係圖</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv graph</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Django&#x3D;&#x3D;3.2.5</span><br><span class="line">  - asgiref [required: &gt;&#x3D;3.3.2,&lt;4, installed: 3.4.1]</span><br><span class="line">  - pytz [required: Any, installed: 2021.1]</span><br><span class="line">  - sqlparse [required: &gt;&#x3D;0.2.2, installed: 0.4.1]</span><br></pre></td></tr></table></figure>
+
+<p>而你一樣可以批次更改多個套件的版本在一次升級</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv update</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="降級套件"><a href="#降級套件" class="headerlink" title="降級套件"></a>降級套件</h3><p>這時候你可能會想說那降級是不是只要把版號改小就好，很遺憾的是<code>pipenv</code>不支援這樣的功能<br>但是我們還是能透過最原始的做法來達到目的</p>
+<p>首先先將套件移除</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv uninstall &lt;package&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>再重新安裝指定版本的套件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt;==&lt;version&gt;</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/macOS/" rel="tag"># macOS</a>
+              <a href="/tags/python/" rel="tag"># python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/28/Ubuntu-18-04-LTS-Apache-Laravel/" rel="prev" title="Ubuntu 18.04 LTS+Apache+Laravel">
+      <i class="fa fa-chevron-left"></i> Ubuntu 18.04 LTS+Apache+Laravel
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pyenv"><span class="nav-number">2.</span> <span class="nav-text">Pyenv</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安裝"><span class="nav-number">2.1.</span> <span class="nav-text">安裝</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新增python版本"><span class="nav-number">2.2.</span> <span class="nav-text">新增python版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#切換python版本"><span class="nav-number">2.3.</span> <span class="nav-text">切換python版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看python版本"><span class="nav-number">2.4.</span> <span class="nav-text">查看python版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pipenv"><span class="nav-number">3.</span> <span class="nav-text">pipenv</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安裝-1"><span class="nav-number">3.1.</span> <span class="nav-text">安裝</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定義虛擬環境"><span class="nav-number">3.2.</span> <span class="nav-text">自定義虛擬環境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建立虛擬環境"><span class="nav-number">3.3.</span> <span class="nav-text">建立虛擬環境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#切換虛擬環境"><span class="nav-number">3.4.</span> <span class="nav-text">切換虛擬環境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安裝套件"><span class="nav-number">3.5.</span> <span class="nav-text">安裝套件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#升級套件"><span class="nav-number">3.6.</span> <span class="nav-text">升級套件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#降級套件"><span class="nav-number">3.7.</span> <span class="nav-text">降級套件</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">LinChi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/a35205905" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;a35205905" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:aa35205905@gmail.com" title="E-Mail → mailto:aa35205905@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LinChi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+    </div>
+</body>
+</html>
