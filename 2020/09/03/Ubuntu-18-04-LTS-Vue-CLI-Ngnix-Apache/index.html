@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://a35205905.github.io/images/loading.gif">
 <meta property="og:image" content="https://a35205905.github.io/images/loading.gif">
 <meta property="article:published_time" content="2020-09-03T10:08:00.000Z">
-<meta property="article:modified_time" content="2021-05-24T09:25:22.000Z">
+<meta property="article:modified_time" content="2021-07-23T19:38:42.150Z">
 <meta property="article:author" content="LinChi">
 <meta property="article:tag" content="ubuntu">
 <meta property="article:tag" content="vue">
@@ -243,7 +243,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2021-05-24 17:25:22" itemprop="dateModified" datetime="2021-05-24T17:25:22+08:00">2021-05-24</time>
+                <time title="修改時間：2021-07-24 03:38:42" itemprop="dateModified" datetime="2021-07-24T03:38:42+08:00">2021-07-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -308,7 +308,7 @@
 <p>建立專案</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue init webpack &lt;project&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p>根據提示選擇即可<br><img src="/images/loading.gif" data-original="/images/vue_init.png" alt="vue_init"></p>
+<p>根據提示選擇即可<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_init.png" alt="vue_init"></p>
 <p>切換至剛剛建立的專案目錄，然後打包專案</p>
 <blockquote>
 <p>若是現有的專案可直接<code>git clone</code>到目錄下，再執行以下指令</p>
@@ -322,7 +322,7 @@
 <p>查看服務狀態</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service nginx status</span></span><br></pre></td></tr></table></figure>
 
-<p>打開瀏覽器直接輸入<code>http://&lt;server_ip&gt;/</code>就可以看到Nginx的歡迎頁面<br><img src="/images/loading.gif" data-original="/images/nginx_welcome.png" alt="nginx_welcome"></p>
+<p>打開瀏覽器直接輸入<code>http://&lt;server_ip&gt;/</code>就可以看到Nginx的歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/nginx_welcome.png" alt="nginx_welcome"></p>
 <p>根據<code>/etc/nginx/nginx.conf</code>我們可以知道設定檔放置在這兩個地方</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">http &#123;</span><br><span class="line">	...</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;*.conf;</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;*;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
@@ -339,7 +339,7 @@
 <p>測試設定檔配置並重啟</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> nginx -t</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> service nginx reload</span></span><br></pre></td></tr></table></figure>
 
-<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/vue_welcome.png" alt="vue_welcome"></p>
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
 <h3 id="補充"><a href="#補充" class="headerlink" title="補充"></a>補充</h3><p>在研究過程中耗費我最多時間的其實是設定檔的配置，由於我對Vue-cli的理解還不夠熟悉<br>裡頭有一些參數還不瞭解作用為何，也不太清楚Vue-cli的router是如何運作<br>因此雖然以上的配置可以讓專案運行，但不代表是完全正確的<br>這部分我還要再琢磨一番後才能寫得更詳細，而以下是我實際專案的配置<br><code>location</code>的部分和原來有些許的不同</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    server_name  easylunch.today;</span><br><span class="line">    root         &#x2F;var&#x2F;app&#x2F;lunch&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        try_files $uri $uri&#x2F; @router;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">    location @router &#123;</span><br><span class="line">        rewrite ^.*$ &#x2F;index.html last;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
