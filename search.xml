@@ -411,6 +411,106 @@
       </tags>
   </entry>
   <entry>
+    <title>Ubuntu 18.04 LTS+Vue-CLI+Ngnix/Apache</title>
+    <url>/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從後台架設完畢後<br>緊接著要幫前端同事把Vue給搬至Server<br>如此一來整個專案就能順利上線了～</p>
+<p>不過即便如此也熬了一陣子的撞牆期<br>因為網路上的教學文章實在太多<br>每一篇都大同小異又有些微的不同<br>因此決定實際演練並趕緊記錄下來<br>這樣未來需要時就不會花太多時間走冤望路了</p>
+<p>那話不多說<br>一起來看是如何操作的吧</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>更新<code>APT</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+
+<p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
+<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.9.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.8</span><br></pre></td></tr></table></figure>
+
+<h2 id="Vue-CLI"><a href="#Vue-CLI" class="headerlink" title="Vue-CLI"></a>Vue-CLI</h2><p>安裝<code>Vue-CLI</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli-init</span></span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue -V</span></span><br><span class="line">@vue/cli 4.5.4</span><br></pre></td></tr></table></figure>
+
+<p>切換至存放專案目錄，這裡可自行選擇，我一般習慣放置在<code>/var/app</code>裡</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
+
+<p>建立專案</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue init webpack &lt;project&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>根據提示選擇即可<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_init.png" alt="vue_init"></p>
+<p>切換至剛剛建立的專案目錄，然後打包專案</p>
+<blockquote>
+<p>若是現有的專案可直接<code>git clone</code>到目錄下，再執行以下指令</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;project&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm install</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm run build</span></span><br></pre></td></tr></table></figure>
+
+<p>接著可以在目錄底下看到<code>dist</code>這個資料夾就代表打包完成</p>
+<h2 id="Ngnix"><a href="#Ngnix" class="headerlink" title="Ngnix"></a>Ngnix</h2><p>安裝<code>Ngnix</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nginx</span></span><br></pre></td></tr></table></figure>
+
+<p>查看服務狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service nginx status</span></span><br></pre></td></tr></table></figure>
+
+<p>打開瀏覽器直接輸入<code>http://&lt;server_ip&gt;/</code>就可以看到Nginx的歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/nginx_welcome.png" alt="nginx_welcome"></p>
+<p>根據<code>/etc/nginx/nginx.conf</code>我們可以知道設定檔放置在這兩個地方</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">http &#123;</span><br><span class="line">	...</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;*.conf;</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;*;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>Nginx預設的做法會先將設定檔放置<code>/etc/nginx/sites-available</code><br>再經由<code>軟連結</code>將檔案綁定至<code>/etc/nginx/sites-enabled</code><br>而我們同樣依照它的流程先新增自定義設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/nginx/sites-available/&lt;project&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name localhost;</span><br><span class="line">    root &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">    	index index.html;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>建立軟連結</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ ln -s &#x2F;etc&#x2F;nginx&#x2F;sites-available&#x2F;&lt;project&gt; &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;&lt;project&gt;</span><br></pre></td></tr></table></figure>
+
+<p>刪除預設設定檔的軟連結</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ rm &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;default</span><br></pre></td></tr></table></figure>
+
+<p>測試設定檔配置並重啟</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> nginx -t</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> service nginx reload</span></span><br></pre></td></tr></table></figure>
+
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
+<h3 id="補充"><a href="#補充" class="headerlink" title="補充"></a>補充</h3><p>在研究過程中耗費我最多時間的其實是設定檔的配置，由於我對Vue-cli的理解還不夠熟悉<br>裡頭有一些參數還不瞭解作用為何，也不太清楚Vue-cli的router是如何運作<br>因此雖然以上的配置可以讓專案運行，但不代表是完全正確的<br>這部分我還要再琢磨一番後才能寫得更詳細，而以下是我實際專案的配置<br><code>location</code>的部分和原來有些許的不同</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    server_name  easylunch.today;</span><br><span class="line">    root         &#x2F;var&#x2F;app&#x2F;lunch&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        try_files $uri $uri&#x2F; @router;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">    location @router &#123;</span><br><span class="line">        rewrite ^.*$ &#x2F;index.html last;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>Apache其實也是同樣的做法，只是換了一個Web Server而已～</p>
+<p>安裝<code>Apache</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install apache2 libapache2-mod-wsgi-py3</span><br></pre></td></tr></table></figure>
+
+<p>開機自動啟動Apache</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>
+
+<p>至/etc/apache2/sites-available/vue.conf新增下列設定</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/apache2/sites-available/vue.conf</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    DocumentRoot &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist</span><br><span class="line">    ServerName localhost</span><br><span class="line"></span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist&gt;</span><br><span class="line">        Options Indexes FollowSymLinks</span><br><span class="line">        AllowOverride All</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可使用vi/Vim取代：<code>:%s/&lt;SEARCH_FROM&gt;/&lt;REPLACE_TO&gt;/g</code></p>
+</blockquote>
+<p>啟用自訂設定 &amp; 關閉預設設定</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2ensite vue.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo a2dissite 000-default.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
+]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>vue</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Ubuntu 18.04 LTS+Wordpress Backup/Restore</title>
     <url>/2020/09/18/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>說到WordPress，備份也是一件討人厭的事情<br>但比起備份，還原至另一台Server更是令人困擾<br>在工作時原本以為順利把WordPress部署至測試機後<br>續後處理起來會輕鬆很多，結果還是吃了不少悶虧<br>趁下班之餘趕緊趁忘記之前好好記起來！</p>
@@ -513,265 +613,6 @@
       <tags>
         <tag>ubuntu</tag>
         <tag>wordpress</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu 18.04 LTS+Vue-CLI+Ngnix/Apache</title>
-    <url>/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從後台架設完畢後<br>緊接著要幫前端同事把Vue給搬至Server<br>如此一來整個專案就能順利上線了～</p>
-<p>不過即便如此也熬了一陣子的撞牆期<br>因為網路上的教學文章實在太多<br>每一篇都大同小異又有些微的不同<br>因此決定實際演練並趕緊記錄下來<br>這樣未來需要時就不會花太多時間走冤望路了</p>
-<p>那話不多說<br>一起來看是如何操作的吧</p>
-<a id="more"></a>
-
-<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
-
-<p>可切換至<code>root</code>帳號</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
-
-<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
-<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>更新<code>APT</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br></pre></td></tr></table></figure>
-
-<p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
-<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
-
-<p>查看版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.9.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.8</span><br></pre></td></tr></table></figure>
-
-<h2 id="Vue-CLI"><a href="#Vue-CLI" class="headerlink" title="Vue-CLI"></a>Vue-CLI</h2><p>安裝<code>Vue-CLI</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli-init</span></span><br></pre></td></tr></table></figure>
-
-<p>查看版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue -V</span></span><br><span class="line">@vue/cli 4.5.4</span><br></pre></td></tr></table></figure>
-
-<p>切換至存放專案目錄，這裡可自行選擇，我一般習慣放置在<code>/var/app</code>裡</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
-
-<p>建立專案</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue init webpack &lt;project&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>根據提示選擇即可<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_init.png" alt="vue_init"></p>
-<p>切換至剛剛建立的專案目錄，然後打包專案</p>
-<blockquote>
-<p>若是現有的專案可直接<code>git clone</code>到目錄下，再執行以下指令</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;project&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm install</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm run build</span></span><br></pre></td></tr></table></figure>
-
-<p>接著可以在目錄底下看到<code>dist</code>這個資料夾就代表打包完成</p>
-<h2 id="Ngnix"><a href="#Ngnix" class="headerlink" title="Ngnix"></a>Ngnix</h2><p>安裝<code>Ngnix</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nginx</span></span><br></pre></td></tr></table></figure>
-
-<p>查看服務狀態</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service nginx status</span></span><br></pre></td></tr></table></figure>
-
-<p>打開瀏覽器直接輸入<code>http://&lt;server_ip&gt;/</code>就可以看到Nginx的歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/nginx_welcome.png" alt="nginx_welcome"></p>
-<p>根據<code>/etc/nginx/nginx.conf</code>我們可以知道設定檔放置在這兩個地方</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">http &#123;</span><br><span class="line">	...</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;*.conf;</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;*;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<p>Nginx預設的做法會先將設定檔放置<code>/etc/nginx/sites-available</code><br>再經由<code>軟連結</code>將檔案綁定至<code>/etc/nginx/sites-enabled</code><br>而我們同樣依照它的流程先新增自定義設定檔</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/nginx/sites-available/&lt;project&gt;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name localhost;</span><br><span class="line">    root &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">    	index index.html;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>建立軟連結</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ ln -s &#x2F;etc&#x2F;nginx&#x2F;sites-available&#x2F;&lt;project&gt; &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;&lt;project&gt;</span><br></pre></td></tr></table></figure>
-
-<p>刪除預設設定檔的軟連結</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ rm &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;default</span><br></pre></td></tr></table></figure>
-
-<p>測試設定檔配置並重啟</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> nginx -t</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> service nginx reload</span></span><br></pre></td></tr></table></figure>
-
-<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
-<h3 id="補充"><a href="#補充" class="headerlink" title="補充"></a>補充</h3><p>在研究過程中耗費我最多時間的其實是設定檔的配置，由於我對Vue-cli的理解還不夠熟悉<br>裡頭有一些參數還不瞭解作用為何，也不太清楚Vue-cli的router是如何運作<br>因此雖然以上的配置可以讓專案運行，但不代表是完全正確的<br>這部分我還要再琢磨一番後才能寫得更詳細，而以下是我實際專案的配置<br><code>location</code>的部分和原來有些許的不同</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    server_name  easylunch.today;</span><br><span class="line">    root         &#x2F;var&#x2F;app&#x2F;lunch&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        try_files $uri $uri&#x2F; @router;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">    location @router &#123;</span><br><span class="line">        rewrite ^.*$ &#x2F;index.html last;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>Apache其實也是同樣的做法，只是換了一個Web Server而已～</p>
-<p>安裝<code>Apache</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install apache2 libapache2-mod-wsgi-py3</span><br></pre></td></tr></table></figure>
-
-<p>開機自動啟動Apache</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>
-
-<p>至/etc/apache2/sites-available/vue.conf新增下列設定</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/apache2/sites-available/vue.conf</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    DocumentRoot &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist</span><br><span class="line">    ServerName localhost</span><br><span class="line"></span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist&gt;</span><br><span class="line">        Options Indexes FollowSymLinks</span><br><span class="line">        AllowOverride All</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>可使用vi/Vim取代：<code>:%s/&lt;SEARCH_FROM&gt;/&lt;REPLACE_TO&gt;/g</code></p>
-</blockquote>
-<p>啟用自訂設定 &amp; 關閉預設設定</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2ensite vue.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo a2dissite 000-default.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
-
-<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
-]]></content>
-      <categories>
-        <category>技術文章</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>vue</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>macOS+pipenv+pyenv</title>
-    <url>/2021/07/23/macOS-pipenv-pyenv/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近準備要開發新的Python專案時，發現自己原先用pip+virtualenv的方式已經有點難管理各個版本的套件了<br>會有這樣的感覺是因為之前參與其他專案時發現無論是Laravel的<code>composer.json</code>/<code>composer.lock</code><br>或是Vue的<code>package.json</code>/<code>yarn.lock</code>都能很有效的管理套件本身的相依問題<br>而要達到這點，進一步的還需要在本機與測試機版本相同的情況下會是更好<br>雖然能達成的方法有很多，但還是想以<code>pipenv</code>+<code>pyenv</code>來實做看看</p>
-<a id="more"></a>
-
-<blockquote>
-<p>本篇是以<a href="https://www.rootstrap.com/blog/how-to-manage-your-python-projects-with-pipenv-pyenv/" target="_blank" rel="noopener">該教材</a>作為參考依據</p>
-</blockquote>
-<h2 id="Pyenv"><a href="#Pyenv" class="headerlink" title="Pyenv"></a>Pyenv</h2><h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><p>在macOS中使用<a href="https://brew.sh/index_zh-tw" target="_blank" rel="noopener">Homebrew</a>來安裝<code>Pyenv</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> brew install pyenv</span></span><br></pre></td></tr></table></figure>
-
-<p>編輯並新增下列設定至你所使用的shell設定檔(<code>.bashrc</code>, <code>.zshrc</code>, <code>.bash_profile</code>)</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if command -v pyenv 1&gt;&#x2F;dev&#x2F;null 2&gt;&amp;1; then</span><br><span class="line">  eval &quot;$(pyenv init -)&quot;</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
-
-<p>重新啟動shell並查看<code>pyenv</code>安裝狀態</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv -v</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Usage: pipenv [OPTIONS] COMMAND [ARGS]...</span><br><span class="line"></span><br><span class="line">Options:</span><br><span class="line">  --where                         Output project home information.</span><br><span class="line">  --venv                          Output virtualenv information.</span><br><span class="line">  --py                            Output Python interpreter information.</span><br><span class="line">  --envs                          Output Environment Variable options.</span><br><span class="line">  --rm                            Remove the virtualenv.</span><br><span class="line">  --bare                          Minimal output.</span><br><span class="line">  --completion                    Output completion (to be executed by the</span><br><span class="line">                                  shell).</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<h3 id="新增python版本"><a href="#新增python版本" class="headerlink" title="新增python版本"></a>新增python版本</h3><p>查看在<code>pyenv</code>上的所有可安裝的python版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv install --list</span></span><br></pre></td></tr></table></figure>
-
-<p>安裝指定的python版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv install &lt;version&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>查看本機已安裝的所有python版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv versions</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">* system (set by &#x2F;Users&#x2F;a35205905&#x2F;.pyenv&#x2F;version)</span><br><span class="line">  3.6.9</span><br><span class="line">  3.9.4</span><br></pre></td></tr></table></figure>
-
-<h3 id="切換python版本"><a href="#切換python版本" class="headerlink" title="切換python版本"></a>切換python版本</h3><p>切換整個系統上的python版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv global &lt;version&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>在當前目錄切換python版本，並建立<code>.python-version</code>存放版號</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv <span class="built_in">local</span> &lt;version&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>在當前shell的session裡切換版本，權重優先於<code>global</code>&amp;<code>local</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ pyenv shell &lt;version&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="查看python版本"><a href="#查看python版本" class="headerlink" title="查看python版本"></a>查看python版本</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> global</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pyenv global</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">local</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pyenv <span class="built_in">local</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> shell</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pyenv shell</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="pipenv"><a href="#pipenv" class="headerlink" title="pipenv"></a>pipenv</h2><p>順帶一提，<code>pipenv</code>已成為<a href="https://packaging.python.org/tutorials/managing-dependencies/#managing-dependencies" target="_blank" rel="noopener">Python官方推薦的套件管理工具</a>，<code>pipenv</code>不但解決了套件相依的問題<br>還一併整合了virtualenv的功能，如此一來我們更能專注於在開發本身上就好，讚讚！</p>
-<p><code>pipenv</code>會透過自動產生的兩個檔案進行套件管理，分別為：</p>
-<ul>
-<li><code>Pipfile</code>：存放開發&amp;正式環境中所有套件的設定檔</li>
-<li><code>Pipfile.lock</code>：存放所有套件版、相依套件版本、hash值的設定檔</li>
-</ul>
-<h3 id="安裝-1"><a href="#安裝-1" class="headerlink" title="安裝"></a>安裝</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pip3 install pipenv</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="自定義虛擬環境"><a href="#自定義虛擬環境" class="headerlink" title="自定義虛擬環境"></a>自定義虛擬環境</h3><p>在建立虛擬環境之前，我們要先知道pipenv預設目錄為<code>/home/$username/.local/share/virtualenvs</code><br>因此如果要自定義虛擬環境的目錄有以下兩個做法</p>
-<ol>
-<li><p>設置在該專案根目錄下，透過<code>PIPENV_VENV_IN_PROJECT</code>環境變數</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export PIPENV_VENV_IN_PROJECT&#x3D;1</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>設定在指定的目錄，透過<code>export WORKON_HOME</code>環境變數</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export WORKON_HOME&#x3D;~&#x2F;.venvs</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<blockquote>
-<p>要至shell設定檔(<code>.bashrc</code>, <code>.zshrc</code>, <code>.bash_profile</code>)設定環境變數</p>
-</blockquote>
-<h3 id="建立虛擬環境"><a href="#建立虛擬環境" class="headerlink" title="建立虛擬環境"></a>建立虛擬環境</h3><p>建立虛擬環境</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">pipenv install &lt;version&gt;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>你可以選擇透過剛剛pyenv切換好版本</p>
-</blockquote>
-<p>這時候會有以下兩個情況：</p>
-<ol>
-<li>若你還沒有<code>Pipfile</code>&amp;<code>Pipfile.lock</code>，它將會自動產生這兩個檔案</li>
-<li>若你已經有<code>Pipfile</code>&amp;<code>Pipfile.lock</code>，它將會安裝設定檔裡的所有套件</li>
-</ol>
-<p>設定檔範例：</p>
-<ul>
-<li><p>Pipfile</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[[source]]</span><br><span class="line">url &#x3D; &quot;https:&#x2F;&#x2F;pypi.org&#x2F;simple&quot;</span><br><span class="line">verify_ssl &#x3D; true</span><br><span class="line">name &#x3D; &quot;pypi&quot;</span><br><span class="line"></span><br><span class="line">[packages]</span><br><span class="line"></span><br><span class="line">[dev-packages]</span><br><span class="line"></span><br><span class="line">[requires]</span><br><span class="line">python_version &#x3D; &quot;3.9&quot;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Pipfile.lock</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;_meta&quot;: &#123;</span><br><span class="line">        &quot;hash&quot;: &#123;</span><br><span class="line">            &quot;sha256&quot;: &quot;a36a5392bb1e8bbc06bfaa0761e52593cf2d83b486696bf54667ba8da616c839&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;pipfile-spec&quot;: 6,</span><br><span class="line">        &quot;requires&quot;: &#123;</span><br><span class="line">            &quot;python_version&quot;: &quot;3.9&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;sources&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;name&quot;: &quot;pypi&quot;,</span><br><span class="line">                &quot;url&quot;: &quot;https:&#x2F;&#x2F;pypi.org&#x2F;simple&quot;,</span><br><span class="line">                &quot;verify_ssl&quot;: true</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;default&quot;: &#123;&#125;,</span><br><span class="line">    &quot;develop&quot;: &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<p>若顯示<code>ValueError: unknown locale: UTF-8</code>等錯誤訊息，表示系統需要設定<code>LANG</code>環境變數</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export LANG&#x3D;en_US.UTF-8 &#x2F;&#x2F; ~&#x2F;.bashrc or ~&#x2F;.zshrc</span><br></pre></td></tr></table></figure>
-
-<p>你也可以刪除虛擬環境</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv --rm</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="切換虛擬環境"><a href="#切換虛擬環境" class="headerlink" title="切換虛擬環境"></a>切換虛擬環境</h3><p>進入虛擬環境</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv shell</span></span><br></pre></td></tr></table></figure>
-
-<p>退出虛擬環境</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">exit</span></span></span><br></pre></td></tr></table></figure>
-
-<h3 id="安裝套件"><a href="#安裝套件" class="headerlink" title="安裝套件"></a>安裝套件</h3><p>安裝套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt;==&lt;verison&gt;</span></span><br></pre></td></tr></table></figure>
-<p>在沒有指定版本的情況下你可以看到<code>Pipfile</code>&amp;<code>Pipfile.lock</code>被更新了<br>Pipfile</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[packages]</span><br><span class="line">&lt;your package&gt; &#x3D; &quot;*&quot;</span><br></pre></td></tr></table></figure>
-
-<p>你還可以指定套件的版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>安裝開發用的套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt; --dev</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>這時候你將虛擬環境砍掉，重新執行<code>pipenv install</code>時，會自動忽略<code>[dev-packages]</code>裡的所有套件</p>
-</blockquote>
-<p>查看所有套件以及相依套件關係</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv graph</span></span><br></pre></td></tr></table></figure>
-
-<p>確認你的相依套件有無安全漏洞</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">pipenv check</span><br></pre></td></tr></table></figure>
-
-<p>移除套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv uninstall &lt;package&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="升級套件"><a href="#升級套件" class="headerlink" title="升級套件"></a>升級套件</h3><p>假設你今天安裝了特定版本的套件，像是</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install django==2.2</span></span><br></pre></td></tr></table></figure>
-
-<p>那麼你現在Pipfile會是這樣</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[[source]]</span><br><span class="line">url &#x3D; &quot;https:&#x2F;&#x2F;pypi.org&#x2F;simple&quot;</span><br><span class="line">verify_ssl &#x3D; true</span><br><span class="line">name &#x3D; &quot;pypi&quot;</span><br><span class="line"></span><br><span class="line">[packages]</span><br><span class="line">django &#x3D; &quot;&#x3D;&#x3D;2.2&quot;</span><br><span class="line"></span><br><span class="line">[dev-packages]</span><br><span class="line"></span><br><span class="line">[requires]</span><br><span class="line">python_version &#x3D; &quot;3.9&quot;</span><br></pre></td></tr></table></figure>
-
-<p>然而你執行升級套件指令</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv update django</span></span><br></pre></td></tr></table></figure>
-
-<p>卻發現什麼事都沒做</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Locking [dev-packages] dependencies...</span><br><span class="line">Locking [packages] dependencies...</span><br><span class="line">Building requirements...</span><br><span class="line">Resolving dependencies...</span><br><span class="line">✔ Success!</span><br><span class="line">Updated Pipfile.lock (24b2dc)!</span><br><span class="line">Installing dependencies from Pipfile.lock (24b2dc)...</span><br><span class="line">  🐍   ▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉ 0&#x2F;0 — 00:00:00</span><br><span class="line">To activate this project&#39;s virtualenv, run pipenv shell.</span><br><span class="line">Alternatively, run a command inside the virtualenv with pipenv run.</span><br><span class="line">All dependencies are now up-to-date!</span><br></pre></td></tr></table></figure>
-
-<p>這是因為<code>update</code>這個指令是只根據你的Pipfile的套件版本來決定是否要升級！<br>因此如果你想升級套件的話，你必須先編輯Pipfile裡的套件版本</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">[packages]</span><br><span class="line">django &#x3D; &quot;*&quot;</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>若是將版本設為*代表升級成最新的版本</p>
-</blockquote>
-<p>這時候再下一次升級指令</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv update django</span></span><br></pre></td></tr></table></figure>
-
-<p>你會發現下面的進度條變成2/2，這代表包含套件本身及相依套件共兩個套件同時被升級或安裝</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Locking [dev-packages] dependencies...</span><br><span class="line">Locking [packages] dependencies...</span><br><span class="line">Building requirements...</span><br><span class="line">Resolving dependencies...</span><br><span class="line">✔ Success!</span><br><span class="line">Updated Pipfile.lock (06f36b)!</span><br><span class="line">Installing dependencies from Pipfile.lock (06f36b)...</span><br><span class="line">  🐍   ▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉ 2&#x2F;2 — 00:00:00</span><br><span class="line">All dependencies are now up-to-date!</span><br></pre></td></tr></table></figure>
-
-<p>這時你用圖形化顯示更能看清楚整個套件的關係圖</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv graph</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Django&#x3D;&#x3D;3.2.5</span><br><span class="line">  - asgiref [required: &gt;&#x3D;3.3.2,&lt;4, installed: 3.4.1]</span><br><span class="line">  - pytz [required: Any, installed: 2021.1]</span><br><span class="line">  - sqlparse [required: &gt;&#x3D;0.2.2, installed: 0.4.1]</span><br></pre></td></tr></table></figure>
-
-<p>而你一樣可以批次更改多個套件的版本在一次升級</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv update</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="降級套件"><a href="#降級套件" class="headerlink" title="降級套件"></a>降級套件</h3><p>這時候你可能會想說那降級是不是只要把版號改小就好，很遺憾的是<code>pipenv</code>不支援這樣的功能<br>但是我們還是能透過最原始的做法來達到目的</p>
-<p>首先先將套件移除</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv uninstall &lt;package&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>再重新安裝指定版本的套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt;==&lt;version&gt;</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>技術文章</category>
-      </categories>
-      <tags>
-        <tag>macOS</tag>
-        <tag>python</tag>
       </tags>
   </entry>
   <entry>
@@ -952,6 +793,175 @@
       <tags>
         <tag>ubuntu</tag>
         <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>macOS+pipenv+pyenv</title>
+    <url>/2021/07/23/macOS-pipenv-pyenv/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近準備要開發新的Python專案時，發現自己原先用pip+virtualenv的方式已經有點難管理各個版本的套件了<br>會有這樣的感覺是因為之前參與其他專案時發現無論是Laravel的<code>composer.json</code>/<code>composer.lock</code><br>或是Vue的<code>package.json</code>/<code>yarn.lock</code>都能很有效的管理套件本身的相依問題<br>而要達到這點，進一步的還需要在本機與測試機版本相同的情況下會是更好<br>雖然能達成的方法有很多，但還是想以<code>pipenv</code>+<code>pyenv</code>來實做看看</p>
+<a id="more"></a>
+
+<blockquote>
+<p>本篇是以<a href="https://www.rootstrap.com/blog/how-to-manage-your-python-projects-with-pipenv-pyenv/" target="_blank" rel="noopener">該教材</a>作為參考依據</p>
+</blockquote>
+<h2 id="Pyenv"><a href="#Pyenv" class="headerlink" title="Pyenv"></a>Pyenv</h2><h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><p>在macOS中使用<a href="https://brew.sh/index_zh-tw" target="_blank" rel="noopener">Homebrew</a>來安裝<code>Pyenv</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> brew install pyenv</span></span><br></pre></td></tr></table></figure>
+
+<p>編輯並新增下列設定至你所使用的shell設定檔(<code>.bashrc</code>, <code>.zshrc</code>, <code>.bash_profile</code>)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if command -v pyenv 1&gt;&#x2F;dev&#x2F;null 2&gt;&amp;1; then</span><br><span class="line">  eval &quot;$(pyenv init -)&quot;</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<p>重新啟動shell並查看<code>pyenv</code>安裝狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv -v</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Usage: pipenv [OPTIONS] COMMAND [ARGS]...</span><br><span class="line"></span><br><span class="line">Options:</span><br><span class="line">  --where                         Output project home information.</span><br><span class="line">  --venv                          Output virtualenv information.</span><br><span class="line">  --py                            Output Python interpreter information.</span><br><span class="line">  --envs                          Output Environment Variable options.</span><br><span class="line">  --rm                            Remove the virtualenv.</span><br><span class="line">  --bare                          Minimal output.</span><br><span class="line">  --completion                    Output completion (to be executed by the</span><br><span class="line">                                  shell).</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h3 id="新增python版本"><a href="#新增python版本" class="headerlink" title="新增python版本"></a>新增python版本</h3><p>查看在<code>pyenv</code>上的所有可安裝的python版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv install --list</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝指定的python版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv install &lt;version&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>查看本機已安裝的所有python版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv versions</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">* system (set by &#x2F;Users&#x2F;a35205905&#x2F;.pyenv&#x2F;version)</span><br><span class="line">  3.6.9</span><br><span class="line">  3.9.4</span><br></pre></td></tr></table></figure>
+
+<h3 id="切換python版本"><a href="#切換python版本" class="headerlink" title="切換python版本"></a>切換python版本</h3><p>切換整個系統上的python版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv global &lt;version&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在當前目錄切換python版本，並建立<code>.python-version</code>存放版號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv <span class="built_in">local</span> &lt;version&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在當前shell的session裡切換版本，權重優先於<code>global</code>&amp;<code>local</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ pyenv shell &lt;version&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看python版本"><a href="#查看python版本" class="headerlink" title="查看python版本"></a>查看python版本</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> global</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pyenv global</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">local</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pyenv <span class="built_in">local</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> shell</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pyenv shell</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="pipenv"><a href="#pipenv" class="headerlink" title="pipenv"></a>pipenv</h2><p>順帶一提，<code>pipenv</code>已成為<a href="https://packaging.python.org/tutorials/managing-dependencies/#managing-dependencies" target="_blank" rel="noopener">Python官方推薦的套件管理工具</a>，<code>pipenv</code>不但解決了套件相依的問題<br>還一併整合了virtualenv的功能，如此一來我們更能專注於在開發本身上就好，讚讚！</p>
+<p><code>pipenv</code>會透過自動產生的兩個檔案進行套件管理，分別為：</p>
+<ul>
+<li><code>Pipfile</code>：存放開發&amp;正式環境中所有套件的設定檔</li>
+<li><code>Pipfile.lock</code>：存放所有套件版、相依套件版本、hash值的設定檔</li>
+</ul>
+<h3 id="安裝-1"><a href="#安裝-1" class="headerlink" title="安裝"></a>安裝</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pip3 install pipenv</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="自定義虛擬環境"><a href="#自定義虛擬環境" class="headerlink" title="自定義虛擬環境"></a>自定義虛擬環境</h3><p>在建立虛擬環境之前，我們要先知道pipenv預設目錄為<code>/home/$username/.local/share/virtualenvs</code><br>因此如果要自定義虛擬環境的目錄有以下兩個做法</p>
+<ol>
+<li><p>設置在該專案根目錄下，透過<code>PIPENV_VENV_IN_PROJECT</code>環境變數</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export PIPENV_VENV_IN_PROJECT&#x3D;1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>設定在指定的目錄，透過<code>export WORKON_HOME</code>環境變數</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export WORKON_HOME&#x3D;~&#x2F;.venvs</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<blockquote>
+<p>要至shell設定檔(<code>.bashrc</code>, <code>.zshrc</code>, <code>.bash_profile</code>)設定環境變數</p>
+</blockquote>
+<h3 id="建立虛擬環境"><a href="#建立虛擬環境" class="headerlink" title="建立虛擬環境"></a>建立虛擬環境</h3><p>建立虛擬環境</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">pipenv install &lt;version&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>你可以選擇透過剛剛pyenv切換好版本</p>
+</blockquote>
+<p>這時候會有以下兩個情況：</p>
+<ol>
+<li>若你還沒有<code>Pipfile</code>&amp;<code>Pipfile.lock</code>，它將會自動產生這兩個檔案</li>
+<li>若你已經有<code>Pipfile</code>&amp;<code>Pipfile.lock</code>，它將會安裝設定檔裡的所有套件</li>
+</ol>
+<p>設定檔範例：</p>
+<ul>
+<li><p>Pipfile</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[[source]]</span><br><span class="line">url &#x3D; &quot;https:&#x2F;&#x2F;pypi.org&#x2F;simple&quot;</span><br><span class="line">verify_ssl &#x3D; true</span><br><span class="line">name &#x3D; &quot;pypi&quot;</span><br><span class="line"></span><br><span class="line">[packages]</span><br><span class="line"></span><br><span class="line">[dev-packages]</span><br><span class="line"></span><br><span class="line">[requires]</span><br><span class="line">python_version &#x3D; &quot;3.9&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Pipfile.lock</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;_meta&quot;: &#123;</span><br><span class="line">        &quot;hash&quot;: &#123;</span><br><span class="line">            &quot;sha256&quot;: &quot;a36a5392bb1e8bbc06bfaa0761e52593cf2d83b486696bf54667ba8da616c839&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;pipfile-spec&quot;: 6,</span><br><span class="line">        &quot;requires&quot;: &#123;</span><br><span class="line">            &quot;python_version&quot;: &quot;3.9&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;sources&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">                &quot;name&quot;: &quot;pypi&quot;,</span><br><span class="line">                &quot;url&quot;: &quot;https:&#x2F;&#x2F;pypi.org&#x2F;simple&quot;,</span><br><span class="line">                &quot;verify_ssl&quot;: true</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;default&quot;: &#123;&#125;,</span><br><span class="line">    &quot;develop&quot;: &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>若顯示<code>ValueError: unknown locale: UTF-8</code>等錯誤訊息，表示系統需要設定<code>LANG</code>環境變數</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export LANG&#x3D;en_US.UTF-8 &#x2F;&#x2F; ~&#x2F;.bashrc or ~&#x2F;.zshrc</span><br></pre></td></tr></table></figure>
+
+<p>你也可以刪除虛擬環境</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv --rm</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="requirements-txt"><a href="#requirements-txt" class="headerlink" title="requirements.txt"></a>requirements.txt</h3><p>若在目錄中有包含<code>requirements.txt</code>，那麼<code>pipenv</code>就會自動安裝所有套件<br>並且同樣的會產生<code>Pipfile</code>&amp;<code>Pipfile.lock</code>，完全可以無痛從<code>pip</code>轉換成<code>pipenv</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install</span></span><br></pre></td></tr></table></figure>
+
+<p>你也可以指定某一個路徑下的<code>requirements.txt</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install -r &lt;path&gt;/requirements.txt</span></span><br></pre></td></tr></table></figure>
+
+<p>而要從手動產生<code>requirements.txt</code>也很簡單</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv pipenv lock -r</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="切換虛擬環境"><a href="#切換虛擬環境" class="headerlink" title="切換虛擬環境"></a>切換虛擬環境</h3><p>進入虛擬環境</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv shell</span></span><br></pre></td></tr></table></figure>
+
+<p>退出虛擬環境</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">exit</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="安裝套件"><a href="#安裝套件" class="headerlink" title="安裝套件"></a>安裝套件</h3><p>安裝套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt;==&lt;verison&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在沒有指定版本的情況下你可以看到<code>Pipfile</code>&amp;<code>Pipfile.lock</code>被更新了<br>Pipfile</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[packages]</span><br><span class="line">&lt;your package&gt; &#x3D; &quot;*&quot;</span><br></pre></td></tr></table></figure>
+
+<p>你還可以指定套件的版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝開發用的套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt; --dev</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>這時候你將虛擬環境砍掉，重新執行<code>pipenv install</code>時，會自動忽略<code>[dev-packages]</code>裡的所有套件</p>
+</blockquote>
+<p>查看所有套件以及相依套件關係</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv graph</span></span><br></pre></td></tr></table></figure>
+
+<p>確認你的相依套件有無安全漏洞</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">pipenv check</span><br></pre></td></tr></table></figure>
+
+<p>移除套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv uninstall &lt;package&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="升級套件"><a href="#升級套件" class="headerlink" title="升級套件"></a>升級套件</h3><p>假設你今天安裝了特定版本的套件，像是</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install django==2.2</span></span><br></pre></td></tr></table></figure>
+
+<p>那麼你現在<code>Pipfile</code>會是這樣</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[[source]]</span><br><span class="line">url &#x3D; &quot;https:&#x2F;&#x2F;pypi.org&#x2F;simple&quot;</span><br><span class="line">verify_ssl &#x3D; true</span><br><span class="line">name &#x3D; &quot;pypi&quot;</span><br><span class="line"></span><br><span class="line">[packages]</span><br><span class="line">django &#x3D; &quot;&#x3D;&#x3D;2.2&quot;</span><br><span class="line"></span><br><span class="line">[dev-packages]</span><br><span class="line"></span><br><span class="line">[requires]</span><br><span class="line">python_version &#x3D; &quot;3.9&quot;</span><br></pre></td></tr></table></figure>
+
+<p>然而你執行升級套件指令</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv update django</span></span><br></pre></td></tr></table></figure>
+
+<p>卻發現什麼事都沒做</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Locking [dev-packages] dependencies...</span><br><span class="line">Locking [packages] dependencies...</span><br><span class="line">Building requirements...</span><br><span class="line">Resolving dependencies...</span><br><span class="line">✔ Success!</span><br><span class="line">Updated Pipfile.lock (24b2dc)!</span><br><span class="line">Installing dependencies from Pipfile.lock (24b2dc)...</span><br><span class="line">  🐍   ▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉ 0&#x2F;0 — 00:00:00</span><br><span class="line">To activate this project&#39;s virtualenv, run pipenv shell.</span><br><span class="line">Alternatively, run a command inside the virtualenv with pipenv run.</span><br><span class="line">All dependencies are now up-to-date!</span><br></pre></td></tr></table></figure>
+
+<p>這是因為<code>update</code>這個指令是只根據你的Pipfile的套件版本來決定是否要升級！<br>因此如果你想升級套件的話，你必須先編輯Pipfile裡的套件版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">[packages]</span><br><span class="line">django &#x3D; &quot;*&quot;</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>若是將版本設為*代表升級成最新的版本</p>
+</blockquote>
+<p>這時候再下一次升級指令</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv update django</span></span><br></pre></td></tr></table></figure>
+
+<p>你會發現下面的進度條變成2/2，這代表包含套件本身及相依套件共兩個套件同時被升級或安裝</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Locking [dev-packages] dependencies...</span><br><span class="line">Locking [packages] dependencies...</span><br><span class="line">Building requirements...</span><br><span class="line">Resolving dependencies...</span><br><span class="line">✔ Success!</span><br><span class="line">Updated Pipfile.lock (06f36b)!</span><br><span class="line">Installing dependencies from Pipfile.lock (06f36b)...</span><br><span class="line">  🐍   ▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉ 2&#x2F;2 — 00:00:00</span><br><span class="line">All dependencies are now up-to-date!</span><br></pre></td></tr></table></figure>
+
+<p>這時你用圖形化顯示更能看清楚整個套件的關係圖</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv graph</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Django&#x3D;&#x3D;3.2.5</span><br><span class="line">  - asgiref [required: &gt;&#x3D;3.3.2,&lt;4, installed: 3.4.1]</span><br><span class="line">  - pytz [required: Any, installed: 2021.1]</span><br><span class="line">  - sqlparse [required: &gt;&#x3D;0.2.2, installed: 0.4.1]</span><br></pre></td></tr></table></figure>
+
+<p>而你一樣可以批次更改多個套件的版本在一次升級</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv update</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="降級套件"><a href="#降級套件" class="headerlink" title="降級套件"></a>降級套件</h3><p>這時候你可能會想說那降級是不是只要把版號改小就好，很遺憾的是<code>pipenv</code>不支援這樣的功能<br>但是我們還是能透過最原始的做法來達到目的</p>
+<p>首先先將套件移除</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv uninstall &lt;package&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>再重新安裝指定版本的套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv install &lt;package&gt;==&lt;version&gt;</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>macOS</tag>
+        <tag>python</tag>
       </tags>
   </entry>
   <entry>
