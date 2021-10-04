@@ -31,7 +31,7 @@
 <meta property="og:description" content="前言最近準備要開發新的Python專案時，發現自己原先用pip+virtualenv的方式已經有點難管理各個版本的套件了會有這樣的感覺是因為之前參與其他專案時發現無論是Laravel的composer.json&#x2F;composer.lock或是Vue的package.json&#x2F;yarn.lock都能很有效的管理套件本身的相依問題而要達到這點，進一步的還需要在本機與測試機版本相同的情況下會是更好雖然能">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2021-07-23T11:24:00.000Z">
-<meta property="article:modified_time" content="2021-07-24T22:11:14.310Z">
+<meta property="article:modified_time" content="2021-10-04T19:38:44.459Z">
 <meta property="article:author" content="LinChi">
 <meta property="article:tag" content="macOS">
 <meta property="article:tag" content="python">
@@ -238,7 +238,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2021-07-25 06:11:14" itemprop="dateModified" datetime="2021-07-25T06:11:14+08:00">2021-07-25</time>
+                <time title="修改時間：2021-10-05 03:38:44" itemprop="dateModified" datetime="2021-10-05T03:38:44+08:00">2021-10-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -274,7 +274,7 @@
 <blockquote>
 <p>本篇是以<a href="https://www.rootstrap.com/blog/how-to-manage-your-python-projects-with-pipenv-pyenv/" target="_blank" rel="noopener">該教材</a>作為參考依據</p>
 </blockquote>
-<h2 id="Pyenv"><a href="#Pyenv" class="headerlink" title="Pyenv"></a>Pyenv</h2><h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><p>在macOS中使用<a href="https://brew.sh/index_zh-tw" target="_blank" rel="noopener">Homebrew</a>來安裝<code>Pyenv</code></p>
+<h2 id="Pyenv"><a href="#Pyenv" class="headerlink" title="Pyenv"></a>Pyenv</h2><h3 id="macOS安裝"><a href="#macOS安裝" class="headerlink" title="macOS安裝"></a>macOS安裝</h3><p>在macOS中使用<a href="https://brew.sh/index_zh-tw" target="_blank" rel="noopener">Homebrew</a>來安裝<code>Pyenv</code></p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> brew install pyenv</span></span><br></pre></td></tr></table></figure>
 
 <p>編輯並新增下列設定至你所使用的shell設定檔(<code>.bashrc</code>, <code>.zshrc</code>, <code>.bash_profile</code>)</p>
@@ -283,6 +283,15 @@
 <p>重新啟動shell並查看<code>pyenv</code>安裝狀態</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pipenv -v</span></span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Usage: pipenv [OPTIONS] COMMAND [ARGS]...</span><br><span class="line"></span><br><span class="line">Options:</span><br><span class="line">  --where                         Output project home information.</span><br><span class="line">  --venv                          Output virtualenv information.</span><br><span class="line">  --py                            Output Python interpreter information.</span><br><span class="line">  --envs                          Output Environment Variable options.</span><br><span class="line">  --rm                            Remove the virtualenv.</span><br><span class="line">  --bare                          Minimal output.</span><br><span class="line">  --completion                    Output completion (to be executed by the</span><br><span class="line">                                  shell).</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h3 id="Ubuntu安裝"><a href="#Ubuntu安裝" class="headerlink" title="Ubuntu安裝"></a>Ubuntu安裝</h3><p>下載<code>Pyenv</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> git://github.com/yyuu/pyenv.git ~/.pyenv</span></span><br></pre></td></tr></table></figure>
+
+<p>編輯並新增下列設定至你所使用的shell設定檔(<code>.bashrc</code>, <code>.zshrc</code>, <code>.bash_profile</code>)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">export PYENV_ROOT&#x3D;&quot;$HOME&#x2F;.pyenv&quot;</span><br><span class="line">export PATH&#x3D;&quot;$PYENV_ROOT&#x2F;bin:$PATH&quot;</span><br><span class="line">eval &quot;$(pyenv init -)&quot;</span><br></pre></td></tr></table></figure>
+
+<p>初始化系統參數</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">source</span> ~/.bash_profile</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="新增python版本"><a href="#新增python版本" class="headerlink" title="新增python版本"></a>新增python版本</h3><p>查看在<code>pyenv</code>上的所有可安裝的python版本</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pyenv install --list</span></span><br></pre></td></tr></table></figure>
@@ -311,7 +320,7 @@
 <li><code>Pipfile</code>：存放開發&amp;正式環境中所有套件的設定檔</li>
 <li><code>Pipfile.lock</code>：存放所有套件版、相依套件版本、hash值的設定檔</li>
 </ul>
-<h3 id="安裝-1"><a href="#安裝-1" class="headerlink" title="安裝"></a>安裝</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pip3 install pipenv</span></span><br></pre></td></tr></table></figure>
+<h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pip3 install pipenv</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="自定義虛擬環境"><a href="#自定義虛擬環境" class="headerlink" title="自定義虛擬環境"></a>自定義虛擬環境</h3><p>在建立虛擬環境之前，我們要先知道pipenv預設目錄為<code>/home/$username/.local/share/virtualenvs</code><br>因此如果要自定義虛擬環境的目錄有以下兩個做法</p>
 <ol>
@@ -523,7 +532,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pyenv"><span class="nav-number">2.</span> <span class="nav-text">Pyenv</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安裝"><span class="nav-number">2.1.</span> <span class="nav-text">安裝</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新增python版本"><span class="nav-number">2.2.</span> <span class="nav-text">新增python版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#切換python版本"><span class="nav-number">2.3.</span> <span class="nav-text">切換python版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看python版本"><span class="nav-number">2.4.</span> <span class="nav-text">查看python版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pipenv"><span class="nav-number">3.</span> <span class="nav-text">pipenv</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安裝-1"><span class="nav-number">3.1.</span> <span class="nav-text">安裝</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定義虛擬環境"><span class="nav-number">3.2.</span> <span class="nav-text">自定義虛擬環境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建立虛擬環境"><span class="nav-number">3.3.</span> <span class="nav-text">建立虛擬環境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#requirements-txt"><span class="nav-number">3.4.</span> <span class="nav-text">requirements.txt</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#切換虛擬環境"><span class="nav-number">3.5.</span> <span class="nav-text">切換虛擬環境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安裝套件"><span class="nav-number">3.6.</span> <span class="nav-text">安裝套件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#升級套件"><span class="nav-number">3.7.</span> <span class="nav-text">升級套件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#降級套件"><span class="nav-number">3.8.</span> <span class="nav-text">降級套件</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pyenv"><span class="nav-number">2.</span> <span class="nav-text">Pyenv</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#macOS安裝"><span class="nav-number">2.1.</span> <span class="nav-text">macOS安裝</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ubuntu安裝"><span class="nav-number">2.2.</span> <span class="nav-text">Ubuntu安裝</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新增python版本"><span class="nav-number">2.3.</span> <span class="nav-text">新增python版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#切換python版本"><span class="nav-number">2.4.</span> <span class="nav-text">切換python版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看python版本"><span class="nav-number">2.5.</span> <span class="nav-text">查看python版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pipenv"><span class="nav-number">3.</span> <span class="nav-text">pipenv</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安裝"><span class="nav-number">3.1.</span> <span class="nav-text">安裝</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定義虛擬環境"><span class="nav-number">3.2.</span> <span class="nav-text">自定義虛擬環境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建立虛擬環境"><span class="nav-number">3.3.</span> <span class="nav-text">建立虛擬環境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#requirements-txt"><span class="nav-number">3.4.</span> <span class="nav-text">requirements.txt</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#切換虛擬環境"><span class="nav-number">3.5.</span> <span class="nav-text">切換虛擬環境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安裝套件"><span class="nav-number">3.6.</span> <span class="nav-text">安裝套件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#升級套件"><span class="nav-number">3.7.</span> <span class="nav-text">升級套件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#降級套件"><span class="nav-number">3.8.</span> <span class="nav-text">降級套件</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
