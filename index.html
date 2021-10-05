@@ -202,6 +202,98 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://a35205905.github.io/2021/10/06/Ubuntu-18-04-LTS-Apache-PM2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LinChi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LinChi 叩叮俱樂部">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/06/Ubuntu-18-04-LTS-Apache-PM2/" class="post-title-link" itemprop="url">Ubuntu 18.04 LTS+Apache+PM2</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2021-10-06 02:48:00 / 修改時間：04:40:38" itemprop="dateCreated datePublished" datetime="2021-10-06T02:48:00+08:00">2021-10-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E8%A1%93%E6%96%87%E7%AB%A0/" itemprop="url" rel="index"><span itemprop="name">技術文章</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從進來公司後所有的專案都是採用SPA開發，但在部署上時常會碰到一些小問題</p>
+<p>像是當前後台並不是用子網域的方式分開，例如：</p>
+<ul>
+<li><p>https:backstage.xxx.com/</p>
+</li>
+<li><p>https:xxx.com/</p>
+</li>
+</ul>
+<p>而是採用子目錄的方式分開：例如：</p>
+<ul>
+<li><p>https:xxx.com/</p>
+</li>
+<li><p>https:xxx.com/bakcstage</p>
+</li>
+</ul>
+<p>要如何快速方便設定好<code>Apache</code>就是一個令人頭痛的地方</p>
+<p>而如果前台剛好使用的是<code>node.js</code>，就可以用<code>PM2</code>來解決這樣的困境</p>
+<p>那我們一起來看下去吧～！</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/06/Ubuntu-18-04-LTS-Apache-PM2/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
     <link itemprop="mainEntityOfPage" href="https://a35205905.github.io/2021/07/23/macOS-pipenv-pyenv/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1005,7 +1097,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -1018,7 +1110,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>

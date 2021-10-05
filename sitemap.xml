@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://a35205905.github.io/2021/10/06/Ubuntu-18-04-LTS-Apache-PM2/</loc>
+    
+    <lastmod>2021-10-05</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://a35205905.github.io/2021/05/24/MySQL8-0-Backup-Restore/</loc>
     
     <lastmod>2021-10-05</lastmod>
@@ -109,13 +116,6 @@
   </url>
   
   <url>
-    <loc>https://a35205905.github.io/tags/wordpress/</loc>
-    <lastmod>2021-10-05</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://a35205905.github.io/tags/django/</loc>
     <lastmod>2021-10-05</lastmod>
     <changefreq>daily</changefreq>
@@ -131,6 +131,20 @@
   
   <url>
     <loc>https://a35205905.github.io/tags/laravel/</loc>
+    <lastmod>2021-10-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://a35205905.github.io/tags/node-js/</loc>
+    <lastmod>2021-10-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://a35205905.github.io/tags/wordpress/</loc>
     <lastmod>2021-10-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
