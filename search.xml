@@ -1,187 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Ubuntu 18.04 LTS+Apache+Django</title>
-    <url>/2020/07/20/Ubuntu-18-04-LTS-Apache-Django/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近有大學朋友正在找工作，他希望能夠把自己開發的Django小專案部署至GCP<br>因此剛好了有這個機會，可以把當初在公司摸索到的經驗記錄下來。</p>
-<a id="more"></a>
-
-<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
-
-<p>可切換至<code>root</code>帳號</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
-
-<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>先把所需要的套件裝起來<br>更新APT</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  sudo apt-get update</span></span><br></pre></td></tr></table></figure>
-
-<p>我一般習慣會把專案放置在<code>/var/app</code>裡，因此我們先建立並切換至專案路徑<br>當然你也可以自行更換路徑，這沒有絕對</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="Django"><a href="#Django" class="headerlink" title="Django"></a>Django</h2><p>使用Git將你的專案複製下來並切換目錄</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> &lt;YOUR PROJECT URL&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>以下步驟我都會用我平常的專案架構去部署</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">project</span><br><span class="line">    ├─manage.py</span><br><span class="line">    └─core</span><br><span class="line">        └─settings.py</span><br><span class="line">        └─urls.py</span><br><span class="line">        └─wsgi.py</span><br><span class="line">        └─__init__.py</span><br><span class="line">    ├─.gitignore</span><br><span class="line">    ├─requirements.txt</span><br><span class="line">    ├─common_static</span><br><span class="line">    ├─&lt;App1&gt;</span><br><span class="line">    ├─&lt;App2&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Virtualenv"><a href="#Virtualenv" class="headerlink" title="Virtualenv"></a>Virtualenv</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">安裝虛擬環境</span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install python3-venv</span></span><br><span class="line">建立虛擬環境</span><br><span class="line"><span class="meta">$</span><span class="bash"> python3 -m venv env</span></span><br><span class="line">執行虛擬環境</span><br><span class="line"><span class="meta">$</span><span class="bash"> . env/bin/activate</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h3><p>要特別注意的是，在安裝<code>mysqlclient</code>時要根據<strong>版本</strong>來下載相關的Ubuntu套件<br>而我這裡使用的則是<a href="https://pypi.org/project/mysqlclient/2.0.1/" target="_blank" rel="noopener">mysqlclient 2.0.1</a></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">更新pip</span><br><span class="line"><span class="meta">$</span><span class="bash"> pip3 install --upgrade pip</span></span><br><span class="line">安裝mysqlclient相關套件</span><br><span class="line"><span class="meta">$</span><span class="bash"> apt-get install python3-dev default-libmysqlclient-dev build-essential</span></span><br><span class="line">安裝第三方套件庫</span><br><span class="line"><span class="meta">$</span><span class="bash"> pip3 install -r requirements.txt</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="MySQL-8-0"><a href="#MySQL-8-0" class="headerlink" title="MySQL 8.0"></a>MySQL 8.0</h2><p>MySQL的部分我直接拆開來獨立成<a href="/2021/05/24/MySQL8-0-Backup-Restore/" title="一篇">一篇</a>了，可以直接點進去看</p>
-<h2 id="資料庫遷移"><a href="#資料庫遷移" class="headerlink" title="資料庫遷移"></a>資料庫遷移</h2><p>先切換至專案目錄</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app/&lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>至<code>env/lib/python3.6/site-packages/django/db/backends/mysql/base.py</code>註解下列程式碼</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">version = Database.version_info</span><br><span class="line"><span class="comment"># if version &lt; (1, 3, 13):</span></span><br><span class="line"><span class="comment">#     raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>Python版本可能依系統而有所不同</p>
-</blockquote>
-<p>至<code>core/stteing.py</code>設定Database config <code>NAME</code> <code>USER</code> <code>PASSWORD</code></p>
-<p><code>HOST</code> <code>PORT</code> 預設為本機開發使用</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">DATABASES = &#123;</span><br><span class="line">    <span class="string">'default'</span>: &#123;</span><br><span class="line">        <span class="string">'ENGINE'</span>: <span class="string">'django.db.backends.mysql'</span>,</span><br><span class="line">        <span class="string">'NAME'</span>: <span class="string">'&lt;NAME&gt;'</span>,</span><br><span class="line">        <span class="string">'USER'</span>: <span class="string">'&lt;USER&gt;'</span>,</span><br><span class="line">        <span class="string">'PASSWORD'</span>: <span class="string">'&lt;PASSWORD&gt;'</span>,</span><br><span class="line">        <span class="string">'HOST'</span>: <span class="string">'127.0.0.1'</span>,</span><br><span class="line">        <span class="string">'PORT'</span>: <span class="string">'3306'</span>,</span><br><span class="line">        <span class="string">'OPTIONS'</span>: &#123;<span class="string">'charset'</span>: <span class="string">'utf8mb4'</span>&#125;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>由資料庫遷移檔建立資料表</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python3 manage.py migrate</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>需先確認MySQL是否有該資料庫</p>
-</blockquote>
-<h2 id="靜態資源"><a href="#靜態資源" class="headerlink" title="靜態資源"></a>靜態資源</h2><p>我的<code>core/setting.py</code>的配置如下</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">STATIC_URL = <span class="string">'/static/'</span></span><br><span class="line"><span class="comment"># 部署靜態資源路徑 配合以下指令</span></span><br><span class="line"><span class="comment"># $ python manage.py collectstatic</span></span><br><span class="line">STATIC_ROOT = os.path.join(BASE_DIR, <span class="string">"static/"</span>)</span><br><span class="line"><span class="comment"># 開發靜態資源路徑</span></span><br><span class="line">STATICFILES_DIRS = [</span><br><span class="line">    os.path.join(BASE_DIR, <span class="string">'common_static/'</span>)</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 附件路由</span></span><br><span class="line">MEDIA_URL = <span class="string">'/media/'</span></span><br><span class="line">MEDIA_ROOT = os.path.join(BASE_DIR, <span class="string">'media'</span>)</span><br></pre></td></tr></table></figure>
-
-<p>將靜態資源複製到<code>STATIC_ROOT</code>目錄底下</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python3 manage.py collectstatic</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="建立超級使用者"><a href="#建立超級使用者" class="headerlink" title="建立超級使用者"></a>建立超級使用者</h2><p>這步視專案需求可執行/略過</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python3 manage.py createsuperuser</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>Email可任意填寫，若密碼過於簡單系統會再次詢問是否要使用這組密碼，輸入<code>y</code>即可</p>
-</blockquote>
-<h2 id="Apache2"><a href="#Apache2" class="headerlink" title="Apache2"></a>Apache2</h2><p>架站教學：<a href="https://chenuin.blogspot.com/2019/01/django-ubuntuapache2modwsgi-django.html" target="_blank" rel="noopener">網址</a></p>
-<p>安裝Apache套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install apache2 libapache2-mod-wsgi-py3</span></span><br></pre></td></tr></table></figure>
-
-<p>開機自動啟動Apache</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>
-
-<p>至<code>/etc/apache2/sites-available/django.conf</code>新增下列設定</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    DocumentRoot &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;</span><br><span class="line"></span><br><span class="line">    Alias &#x2F;static &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;static</span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;static&gt;</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;core&gt;</span><br><span class="line">        &lt;Files wsgi.py&gt;</span><br><span class="line">            Require all granted</span><br><span class="line">        &lt;&#x2F;Files&gt;</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line">    WSGIDaemonProcess core python-path&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt; python-home&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;env</span><br><span class="line">    WSGIProcessGroup core</span><br><span class="line">    WSGIScriptAlias &#x2F; &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;core&#x2F;wsgi.py</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>可使用vi/Vim取代：<code>:%s/&lt;SEARCH_FROM&gt;/&lt;REPLACE_TO&gt;/g</code></p>
-</blockquote>
-<p>啟用自訂設定 &amp; 關閉預設設定</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2ensite django.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo a2dissite 000-default.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="檔案-amp-圖片上傳"><a href="#檔案-amp-圖片上傳" class="headerlink" title="檔案&amp;圖片上傳"></a>檔案&amp;圖片上傳</h3><p>至<code>/etc/apache2/sites-available/django.conf</code>新增下列設定</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    ...</span><br><span class="line">    Alias &#x2F;media &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;media</span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;media&gt;</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line">    ...</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
-
-<p>設定Apache寫入權限</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">chown -R www-data /var/app/&lt;PROJECT&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Django-Rest-Framework-JWT"><a href="#Django-Rest-Framework-JWT" class="headerlink" title="Django Rest Framework JWT"></a>Django Rest Framework JWT</h3><p>至<code>/etc/apache2/sites-available/django.conf</code>新增下列設定</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    ...</span><br><span class="line">    WSGIPassAuthorization On</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="部署完成"><a href="#部署完成" class="headerlink" title="部署完成:)"></a>部署完成:)</h3><p><a href="http://localhost:80/" target="_blank" rel="noopener">http://localhost:80/</a></p>
-]]></content>
-      <categories>
-        <category>技術文章</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>django</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu 18.04 LTS+Apache+Laravel</title>
-    <url>/2021/05/28/Ubuntu-18-04-LTS-Apache-Laravel/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>同一時間，最近因工作關係正式學習PHP了，而且馬上就進入到Laravel框架的部分</p>
-<p>可想而知每當學習新的Web Framework，不免俗的還是要來部署一下</p>
-<p>那就話不多說直接開始吧～</p>
-<a id="more"></a>
-
-<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
-
-<p>可切換至<code>root</code>帳號</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
-
-<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>先把所需要的套件裝起來<br>更新APT</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  sudo apt-get update</span></span><br></pre></td></tr></table></figure>
-
-<p>我一般習慣會把專案放置在<code>/var/app</code>裡，因此我們先建立並切換至專案路徑<br>當然你也可以自行更換路徑，這沒有絕對</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
-<h2 id="Laravel"><a href="#Laravel" class="headerlink" title="Laravel"></a>Laravel</h2><p>使用Git將你的專案複製下來並切換目錄</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> &lt;YOUR PROJECT URL&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><p>MySQL的部分我直接拆開來獨立成<a href="/2021/05/24/MySQL8-0-Backup-Restore/" title="一篇">一篇</a>了，可以直接點進去看</p>
-<h2 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h2><p>安裝<code>PHP</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install php</span></span><br></pre></td></tr></table></figure>
-
-<p>查看<code>PHP</code>版本</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ php -v</span><br></pre></td></tr></table></figure>
-
-<h2 id="Composer"><a href="#Composer" class="headerlink" title="Composer"></a>Composer</h2><p>更新APT</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br></pre></td></tr></table></figure>
-
-<p>安裝<code>Composer</code>依賴套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install curl php-cli php-mbstring git unzip</span></span><br></pre></td></tr></table></figure>
-
-<p>下載<code>Composer</code>安裝檔</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cd ~</span><br><span class="line">$ curl -sS https:&#x2F;&#x2F;getcomposer.org&#x2F;installer -o composer-setup.php</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>-sS: 只顯示錯誤提示; -o: 輸出至文件上</p>
-</blockquote>
-<p>驗證安裝檔hash，若hash值不對請到<a href="https://composer.github.io/pubkeys.html" target="_blank" rel="noopener">官方文件</a>上再檢查一次</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ HASH&#x3D;756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3fbc1f233e9b180f061</span><br><span class="line">$ php -r &quot;if (hash_file(&#39;SHA384&#39;, &#39;composer-setup.php&#39;) &#x3D;&#x3D;&#x3D; &#39;$HASH&#39;) &#123; echo &#39;Installer verified&#39;; &#125; else &#123; echo &#39;Installer corrupt&#39;; unlink(&#39;composer-setup.php&#39;); &#125; echo PHP_EOL;&quot;</span><br></pre></td></tr></table></figure>
-<p>驗證成功會看到以下訊息</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Installer verified</span><br></pre></td></tr></table></figure>
-
-<p>安裝<code>Composer</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo php composer-setup.php --install-dir=/usr/<span class="built_in">local</span>/bin --filename=composer</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">All settings correct for using Composer</span><br><span class="line">Downloading...</span><br><span class="line"></span><br><span class="line">Composer (version 2.0.14) successfully installed to: &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br><span class="line">Use it: php &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br></pre></td></tr></table></figure>
-
-<p>查看<code>Composer</code>狀態</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ composer</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">   ______</span><br><span class="line">  &#x2F; ____&#x2F;___  ____ ___  ____  ____  ________  _____</span><br><span class="line"> &#x2F; &#x2F;   &#x2F; __ \&#x2F; __ &#96;__ \&#x2F; __ \&#x2F; __ \&#x2F; ___&#x2F; _ \&#x2F; ___&#x2F;</span><br><span class="line">&#x2F; &#x2F;___&#x2F; &#x2F;_&#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F;_&#x2F; &#x2F; &#x2F;_&#x2F; (__  )  __&#x2F; &#x2F;</span><br><span class="line">\____&#x2F;\____&#x2F;_&#x2F; &#x2F;_&#x2F; &#x2F;_&#x2F; .___&#x2F;\____&#x2F;____&#x2F;\___&#x2F;_&#x2F;</span><br><span class="line">                    &#x2F;_&#x2F;</span><br><span class="line">Composer version 2.0.14 2021-05-21 17:03:37</span><br></pre></td></tr></table></figure>
-
-<p><code>Composer</code>不希望你使用root帳號，因為某些命令包括exec、install、update，允許第三方程式在你的系統上執行，這些腳本具有完全訪問權限，因此強烈建議不要在root帳號上操作</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Do not run Composer as root&#x2F;super user! See https:&#x2F;&#x2F;getcomposer.org&#x2F;root for details</span><br><span class="line">Continue as root&#x2F;super user [yes]</span><br></pre></td></tr></table></figure>
-
-<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
-<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
-
-<p>查看版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.17.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.13</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Yarn"><a href="#Yarn" class="headerlink" title="Yarn"></a>Yarn</h2><p>安裝<code>Yarn</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm install -g yarn</span><br></pre></td></tr></table></figure>
-
-<p>查看<code>Yarn</code>版本</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yarn -v</span><br></pre></td></tr></table></figure>
-
-<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>架站教學：<a href="https://chenuin.blogspot.com/2019/01/django-ubuntuapache2modwsgi-django.html" target="_blank" rel="noopener">網址</a></p>
-<p>安裝Apache套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install apache2 libapache2-mod-wsgi-py3</span></span><br></pre></td></tr></table></figure>
-
-<p>開機自動啟動Apache</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>技術文章</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>php</tag>
-        <tag>laravel</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Ubuntu 18.04 LTS+Apache+WordPress</title>
     <url>/2020/07/16/Ubuntu-18-04-LTS-Apache-WordPress/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>因工作關係需要在<code>GCP</code>上架設<code>WordPress</code><br>趁這個機會趕緊做個筆記，讓自己在往後也能review<br>而之前習慣性都把筆記放在<a href="https://hackmd.io/" target="_blank" rel="noopener">HackMD</a>上<br>也剛好順便練習著如何架設<code>Hexo</code></p>
@@ -414,106 +233,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu 18.04 LTS+Vue-CLI+Ngnix/Apache</title>
-    <url>/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從後台架設完畢後<br>緊接著要幫前端同事把Vue給搬至Server<br>如此一來整個專案就能順利上線了～</p>
-<p>不過即便如此也熬了一陣子的撞牆期<br>因為網路上的教學文章實在太多<br>每一篇都大同小異又有些微的不同<br>因此決定實際演練並趕緊記錄下來<br>這樣未來需要時就不會花太多時間走冤望路了</p>
-<p>那話不多說<br>一起來看是如何操作的吧</p>
-<a id="more"></a>
-
-<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
-
-<p>可切換至<code>root</code>帳號</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
-
-<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
-<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>更新<code>APT</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br></pre></td></tr></table></figure>
-
-<p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
-<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
-
-<p>查看版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.9.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.8</span><br></pre></td></tr></table></figure>
-
-<h2 id="Vue-CLI"><a href="#Vue-CLI" class="headerlink" title="Vue-CLI"></a>Vue-CLI</h2><p>安裝<code>Vue-CLI</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli-init</span></span><br></pre></td></tr></table></figure>
-
-<p>查看版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue -V</span></span><br><span class="line">@vue/cli 4.5.4</span><br></pre></td></tr></table></figure>
-
-<p>切換至存放專案目錄，這裡可自行選擇，我一般習慣放置在<code>/var/app</code>裡</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
-
-<p>建立專案</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue init webpack &lt;project&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>根據提示選擇即可<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_init.png" alt="vue_init"></p>
-<p>切換至剛剛建立的專案目錄，然後打包專案</p>
-<blockquote>
-<p>若是現有的專案可直接<code>git clone</code>到目錄下，再執行以下指令</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;project&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm install</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm run build</span></span><br></pre></td></tr></table></figure>
-
-<p>接著可以在目錄底下看到<code>dist</code>這個資料夾就代表打包完成</p>
-<h2 id="Ngnix"><a href="#Ngnix" class="headerlink" title="Ngnix"></a>Ngnix</h2><p>安裝<code>Ngnix</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nginx</span></span><br></pre></td></tr></table></figure>
-
-<p>查看服務狀態</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service nginx status</span></span><br></pre></td></tr></table></figure>
-
-<p>打開瀏覽器直接輸入<code>http://&lt;server_ip&gt;/</code>就可以看到Nginx的歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/nginx_welcome.png" alt="nginx_welcome"></p>
-<p>根據<code>/etc/nginx/nginx.conf</code>我們可以知道設定檔放置在這兩個地方</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">http &#123;</span><br><span class="line">	...</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;*.conf;</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;*;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<p>Nginx預設的做法會先將設定檔放置<code>/etc/nginx/sites-available</code><br>再經由<code>軟連結</code>將檔案綁定至<code>/etc/nginx/sites-enabled</code><br>而我們同樣依照它的流程先新增自定義設定檔</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/nginx/sites-available/&lt;project&gt;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name localhost;</span><br><span class="line">    root &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">    	index index.html;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>建立軟連結</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ ln -s &#x2F;etc&#x2F;nginx&#x2F;sites-available&#x2F;&lt;project&gt; &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;&lt;project&gt;</span><br></pre></td></tr></table></figure>
-
-<p>刪除預設設定檔的軟連結</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ rm &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;default</span><br></pre></td></tr></table></figure>
-
-<p>測試設定檔配置並重啟</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> nginx -t</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> service nginx reload</span></span><br></pre></td></tr></table></figure>
-
-<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
-<h3 id="補充"><a href="#補充" class="headerlink" title="補充"></a>補充</h3><p>在研究過程中耗費我最多時間的其實是設定檔的配置，由於我對Vue-cli的理解還不夠熟悉<br>裡頭有一些參數還不瞭解作用為何，也不太清楚Vue-cli的router是如何運作<br>因此雖然以上的配置可以讓專案運行，但不代表是完全正確的<br>這部分我還要再琢磨一番後才能寫得更詳細，而以下是我實際專案的配置<br><code>location</code>的部分和原來有些許的不同</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    server_name  easylunch.today;</span><br><span class="line">    root         &#x2F;var&#x2F;app&#x2F;lunch&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        try_files $uri $uri&#x2F; @router;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">    location @router &#123;</span><br><span class="line">        rewrite ^.*$ &#x2F;index.html last;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>Apache其實也是同樣的做法，只是換了一個Web Server而已～</p>
-<p>安裝<code>Apache</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install apache2 libapache2-mod-wsgi-py3</span><br></pre></td></tr></table></figure>
-
-<p>開機自動啟動Apache</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>
-
-<p>至/etc/apache2/sites-available/vue.conf新增下列設定</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/apache2/sites-available/vue.conf</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    DocumentRoot &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist</span><br><span class="line">    ServerName localhost</span><br><span class="line"></span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist&gt;</span><br><span class="line">        Options Indexes FollowSymLinks</span><br><span class="line">        AllowOverride All</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>可使用vi/Vim取代：<code>:%s/&lt;SEARCH_FROM&gt;/&lt;REPLACE_TO&gt;/g</code></p>
-</blockquote>
-<p>啟用自訂設定 &amp; 關閉預設設定</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2ensite vue.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo a2dissite 000-default.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
-
-<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
-]]></content>
-      <categories>
-        <category>技術文章</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>vue</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Ubuntu 18.04 LTS+Wordpress Backup/Restore</title>
     <url>/2020/09/18/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>說到WordPress，備份也是一件討人厭的事情<br>但比起備份，還原至另一台Server更是令人困擾<br>在工作時原本以為順利把WordPress部署至測試機後<br>續後處理起來會輕鬆很多，結果還是吃了不少悶虧<br>趁下班之餘趕緊趁忘記之前好好記起來！</p>
@@ -619,6 +338,287 @@
       </tags>
   </entry>
   <entry>
+    <title>Ubuntu 18.04 LTS+Apache+Django</title>
+    <url>/2020/07/20/Ubuntu-18-04-LTS-Apache-Django/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近有大學朋友正在找工作，他希望能夠把自己開發的Django小專案部署至GCP<br>因此剛好了有這個機會，可以把當初在公司摸索到的經驗記錄下來。</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>先把所需要的套件裝起來<br>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+
+<p>我一般習慣會把專案放置在<code>/var/app</code>裡，因此我們先建立並切換至專案路徑<br>當然你也可以自行更換路徑，這沒有絕對</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Django"><a href="#Django" class="headerlink" title="Django"></a>Django</h2><p>使用Git將你的專案複製下來並切換目錄</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> &lt;YOUR PROJECT URL&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>以下步驟我都會用我平常的專案架構去部署</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">project</span><br><span class="line">    ├─manage.py</span><br><span class="line">    └─core</span><br><span class="line">        └─settings.py</span><br><span class="line">        └─urls.py</span><br><span class="line">        └─wsgi.py</span><br><span class="line">        └─__init__.py</span><br><span class="line">    ├─.gitignore</span><br><span class="line">    ├─requirements.txt</span><br><span class="line">    ├─common_static</span><br><span class="line">    ├─&lt;App1&gt;</span><br><span class="line">    ├─&lt;App2&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Virtualenv"><a href="#Virtualenv" class="headerlink" title="Virtualenv"></a>Virtualenv</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">安裝虛擬環境</span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install python3-venv</span></span><br><span class="line">建立虛擬環境</span><br><span class="line"><span class="meta">$</span><span class="bash"> python3 -m venv env</span></span><br><span class="line">執行虛擬環境</span><br><span class="line"><span class="meta">$</span><span class="bash"> . env/bin/activate</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h3><p>要特別注意的是，在安裝<code>mysqlclient</code>時要根據<strong>版本</strong>來下載相關的Ubuntu套件<br>而我這裡使用的則是<a href="https://pypi.org/project/mysqlclient/2.0.1/" target="_blank" rel="noopener">mysqlclient 2.0.1</a></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">更新pip</span><br><span class="line"><span class="meta">$</span><span class="bash"> pip3 install --upgrade pip</span></span><br><span class="line">安裝mysqlclient相關套件</span><br><span class="line"><span class="meta">$</span><span class="bash"> apt-get install python3-dev default-libmysqlclient-dev build-essential</span></span><br><span class="line">安裝第三方套件庫</span><br><span class="line"><span class="meta">$</span><span class="bash"> pip3 install -r requirements.txt</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL-8-0"><a href="#MySQL-8-0" class="headerlink" title="MySQL 8.0"></a>MySQL 8.0</h2><p>MySQL的部分我直接拆開來獨立成<a href="/2021/05/24/MySQL8-0-Backup-Restore/" title="一篇">一篇</a>了，可以直接點進去看</p>
+<h2 id="資料庫遷移"><a href="#資料庫遷移" class="headerlink" title="資料庫遷移"></a>資料庫遷移</h2><p>先切換至專案目錄</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app/&lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>至<code>env/lib/python3.6/site-packages/django/db/backends/mysql/base.py</code>註解下列程式碼</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">version = Database.version_info</span><br><span class="line"><span class="comment"># if version &lt; (1, 3, 13):</span></span><br><span class="line"><span class="comment">#     raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Python版本可能依系統而有所不同</p>
+</blockquote>
+<p>至<code>core/stteing.py</code>設定Database config <code>NAME</code> <code>USER</code> <code>PASSWORD</code></p>
+<p><code>HOST</code> <code>PORT</code> 預設為本機開發使用</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">DATABASES = &#123;</span><br><span class="line">    <span class="string">'default'</span>: &#123;</span><br><span class="line">        <span class="string">'ENGINE'</span>: <span class="string">'django.db.backends.mysql'</span>,</span><br><span class="line">        <span class="string">'NAME'</span>: <span class="string">'&lt;NAME&gt;'</span>,</span><br><span class="line">        <span class="string">'USER'</span>: <span class="string">'&lt;USER&gt;'</span>,</span><br><span class="line">        <span class="string">'PASSWORD'</span>: <span class="string">'&lt;PASSWORD&gt;'</span>,</span><br><span class="line">        <span class="string">'HOST'</span>: <span class="string">'127.0.0.1'</span>,</span><br><span class="line">        <span class="string">'PORT'</span>: <span class="string">'3306'</span>,</span><br><span class="line">        <span class="string">'OPTIONS'</span>: &#123;<span class="string">'charset'</span>: <span class="string">'utf8mb4'</span>&#125;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由資料庫遷移檔建立資料表</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python3 manage.py migrate</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>需先確認MySQL是否有該資料庫</p>
+</blockquote>
+<h2 id="靜態資源"><a href="#靜態資源" class="headerlink" title="靜態資源"></a>靜態資源</h2><p>我的<code>core/setting.py</code>的配置如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">STATIC_URL = <span class="string">'/static/'</span></span><br><span class="line"><span class="comment"># 部署靜態資源路徑 配合以下指令</span></span><br><span class="line"><span class="comment"># $ python manage.py collectstatic</span></span><br><span class="line">STATIC_ROOT = os.path.join(BASE_DIR, <span class="string">"static/"</span>)</span><br><span class="line"><span class="comment"># 開發靜態資源路徑</span></span><br><span class="line">STATICFILES_DIRS = [</span><br><span class="line">    os.path.join(BASE_DIR, <span class="string">'common_static/'</span>)</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 附件路由</span></span><br><span class="line">MEDIA_URL = <span class="string">'/media/'</span></span><br><span class="line">MEDIA_ROOT = os.path.join(BASE_DIR, <span class="string">'media'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>將靜態資源複製到<code>STATIC_ROOT</code>目錄底下</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python3 manage.py collectstatic</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="建立超級使用者"><a href="#建立超級使用者" class="headerlink" title="建立超級使用者"></a>建立超級使用者</h2><p>這步視專案需求可執行/略過</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python3 manage.py createsuperuser</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Email可任意填寫，若密碼過於簡單系統會再次詢問是否要使用這組密碼，輸入<code>y</code>即可</p>
+</blockquote>
+<h2 id="Apache2"><a href="#Apache2" class="headerlink" title="Apache2"></a>Apache2</h2><p>架站教學：<a href="https://chenuin.blogspot.com/2019/01/django-ubuntuapache2modwsgi-django.html" target="_blank" rel="noopener">網址</a></p>
+<p>安裝Apache套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install apache2 libapache2-mod-wsgi-py3</span></span><br></pre></td></tr></table></figure>
+
+<p>開機自動啟動Apache</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>
+
+<p>至<code>/etc/apache2/sites-available/django.conf</code>新增下列設定</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    DocumentRoot &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;</span><br><span class="line"></span><br><span class="line">    Alias &#x2F;static &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;static</span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;static&gt;</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;core&gt;</span><br><span class="line">        &lt;Files wsgi.py&gt;</span><br><span class="line">            Require all granted</span><br><span class="line">        &lt;&#x2F;Files&gt;</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line">    WSGIDaemonProcess core python-path&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt; python-home&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;env</span><br><span class="line">    WSGIProcessGroup core</span><br><span class="line">    WSGIScriptAlias &#x2F; &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;core&#x2F;wsgi.py</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可使用vi/Vim取代：<code>:%s/&lt;SEARCH_FROM&gt;/&lt;REPLACE_TO&gt;/g</code></p>
+</blockquote>
+<p>啟用自訂設定 &amp; 關閉預設設定</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2ensite django.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo a2dissite 000-default.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="檔案-amp-圖片上傳"><a href="#檔案-amp-圖片上傳" class="headerlink" title="檔案&amp;圖片上傳"></a>檔案&amp;圖片上傳</h3><p>至<code>/etc/apache2/sites-available/django.conf</code>新增下列設定</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    ...</span><br><span class="line">    Alias &#x2F;media &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;media</span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;PROJECT&gt;&#x2F;media&gt;</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line">    ...</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+
+<p>設定Apache寫入權限</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">chown -R www-data /var/app/&lt;PROJECT&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Django-Rest-Framework-JWT"><a href="#Django-Rest-Framework-JWT" class="headerlink" title="Django Rest Framework JWT"></a>Django Rest Framework JWT</h3><p>至<code>/etc/apache2/sites-available/django.conf</code>新增下列設定</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    ...</span><br><span class="line">    WSGIPassAuthorization On</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署完成"><a href="#部署完成" class="headerlink" title="部署完成:)"></a>部署完成:)</h3><p><a href="http://localhost:80/" target="_blank" rel="noopener">http://localhost:80/</a></p>
+]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>django</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 LTS+Apache+Laravel</title>
+    <url>/2021/05/28/Ubuntu-18-04-LTS-Apache-Laravel/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>同一時間，最近因工作關係正式學習PHP了，而且馬上就進入到Laravel框架的部分</p>
+<p>可想而知每當學習新的Web Framework，不免俗的還是要來部署一下</p>
+<p>那就話不多說直接開始吧～</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>先把所需要的套件裝起來<br>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+
+<p>我一般習慣會把專案放置在<code>/var/app</code>裡，因此我們先建立並切換至專案路徑<br>當然你也可以自行更換路徑，這沒有絕對</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
+<h2 id="Laravel"><a href="#Laravel" class="headerlink" title="Laravel"></a>Laravel</h2><p>使用Git將你的專案複製下來並切換目錄</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> &lt;YOUR PROJECT URL&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><p>MySQL的部分我直接拆開來獨立成<a href="/2021/05/24/MySQL8-0-Backup-Restore/" title="一篇">一篇</a>了，可以直接點進去看</p>
+<h2 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h2><p>安裝<code>PHP</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install php</span></span><br></pre></td></tr></table></figure>
+
+<p>查看<code>PHP</code>版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ php -v</span><br></pre></td></tr></table></figure>
+
+<h2 id="Composer"><a href="#Composer" class="headerlink" title="Composer"></a>Composer</h2><p>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝<code>Composer</code>依賴套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install curl php-cli php-mbstring git unzip</span></span><br></pre></td></tr></table></figure>
+
+<p>下載<code>Composer</code>安裝檔</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cd ~</span><br><span class="line">$ curl -sS https:&#x2F;&#x2F;getcomposer.org&#x2F;installer -o composer-setup.php</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>-sS: 只顯示錯誤提示; -o: 輸出至文件上</p>
+</blockquote>
+<p>驗證安裝檔hash，若hash值不對請到<a href="https://composer.github.io/pubkeys.html" target="_blank" rel="noopener">官方文件</a>上再檢查一次</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ HASH&#x3D;756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3fbc1f233e9b180f061</span><br><span class="line">$ php -r &quot;if (hash_file(&#39;SHA384&#39;, &#39;composer-setup.php&#39;) &#x3D;&#x3D;&#x3D; &#39;$HASH&#39;) &#123; echo &#39;Installer verified&#39;; &#125; else &#123; echo &#39;Installer corrupt&#39;; unlink(&#39;composer-setup.php&#39;); &#125; echo PHP_EOL;&quot;</span><br></pre></td></tr></table></figure>
+<p>驗證成功會看到以下訊息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Installer verified</span><br></pre></td></tr></table></figure>
+
+<p>安裝<code>Composer</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo php composer-setup.php --install-dir=/usr/<span class="built_in">local</span>/bin --filename=composer</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">All settings correct for using Composer</span><br><span class="line">Downloading...</span><br><span class="line"></span><br><span class="line">Composer (version 2.0.14) successfully installed to: &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br><span class="line">Use it: php &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br></pre></td></tr></table></figure>
+
+<p>查看<code>Composer</code>狀態</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ composer</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">   ______</span><br><span class="line">  &#x2F; ____&#x2F;___  ____ ___  ____  ____  ________  _____</span><br><span class="line"> &#x2F; &#x2F;   &#x2F; __ \&#x2F; __ &#96;__ \&#x2F; __ \&#x2F; __ \&#x2F; ___&#x2F; _ \&#x2F; ___&#x2F;</span><br><span class="line">&#x2F; &#x2F;___&#x2F; &#x2F;_&#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F;_&#x2F; &#x2F; &#x2F;_&#x2F; (__  )  __&#x2F; &#x2F;</span><br><span class="line">\____&#x2F;\____&#x2F;_&#x2F; &#x2F;_&#x2F; &#x2F;_&#x2F; .___&#x2F;\____&#x2F;____&#x2F;\___&#x2F;_&#x2F;</span><br><span class="line">                    &#x2F;_&#x2F;</span><br><span class="line">Composer version 2.0.14 2021-05-21 17:03:37</span><br></pre></td></tr></table></figure>
+
+<p><code>Composer</code>不希望你使用root帳號，因為某些命令包括exec、install、update，允許第三方程式在你的系統上執行，這些腳本具有完全訪問權限，因此強烈建議不要在root帳號上操作</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Do not run Composer as root&#x2F;super user! See https:&#x2F;&#x2F;getcomposer.org&#x2F;root for details</span><br><span class="line">Continue as root&#x2F;super user [yes]</span><br></pre></td></tr></table></figure>
+
+<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
+<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.17.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.13</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Yarn"><a href="#Yarn" class="headerlink" title="Yarn"></a>Yarn</h2><p>安裝<code>Yarn</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm install -g yarn</span><br></pre></td></tr></table></figure>
+
+<p>查看<code>Yarn</code>版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yarn -v</span><br></pre></td></tr></table></figure>
+
+<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>架站教學：<a href="https://chenuin.blogspot.com/2019/01/django-ubuntuapache2modwsgi-django.html" target="_blank" rel="noopener">網址</a></p>
+<p>安裝Apache套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install apache2 libapache2-mod-wsgi-py3</span></span><br></pre></td></tr></table></figure>
+
+<p>開機自動啟動Apache</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>php</tag>
+        <tag>laravel</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 LTS+Vue-CLI+Ngnix/Apache</title>
+    <url>/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從後台架設完畢後<br>緊接著要幫前端同事把Vue給搬至Server<br>如此一來整個專案就能順利上線了～</p>
+<p>不過即便如此也熬了一陣子的撞牆期<br>因為網路上的教學文章實在太多<br>每一篇都大同小異又有些微的不同<br>因此決定實際演練並趕緊記錄下來<br>這樣未來需要時就不會花太多時間走冤望路了</p>
+<p>那話不多說<br>一起來看是如何操作的吧</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>更新<code>APT</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+
+<p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
+<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.9.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.8</span><br></pre></td></tr></table></figure>
+
+<h2 id="Vue-CLI"><a href="#Vue-CLI" class="headerlink" title="Vue-CLI"></a>Vue-CLI</h2><p>安裝<code>Vue-CLI</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli-init</span></span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue -V</span></span><br><span class="line">@vue/cli 4.5.4</span><br></pre></td></tr></table></figure>
+
+<p>切換至存放專案目錄，這裡可自行選擇，我一般習慣放置在<code>/var/app</code>裡</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
+
+<p>建立專案</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue init webpack &lt;project&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>根據提示選擇即可<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_init.png" alt="vue_init"></p>
+<p>切換至剛剛建立的專案目錄，然後打包專案</p>
+<blockquote>
+<p>若是現有的專案可直接<code>git clone</code>到目錄下，再執行以下指令</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;project&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm install</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm run build</span></span><br></pre></td></tr></table></figure>
+
+<p>接著可以在目錄底下看到<code>dist</code>這個資料夾就代表打包完成</p>
+<h2 id="Ngnix"><a href="#Ngnix" class="headerlink" title="Ngnix"></a>Ngnix</h2><p>安裝<code>Ngnix</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nginx</span></span><br></pre></td></tr></table></figure>
+
+<p>查看服務狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service nginx status</span></span><br></pre></td></tr></table></figure>
+
+<p>打開瀏覽器直接輸入<code>http://&lt;server_ip&gt;/</code>就可以看到Nginx的歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/nginx_welcome.png" alt="nginx_welcome"></p>
+<p>根據<code>/etc/nginx/nginx.conf</code>我們可以知道設定檔放置在這兩個地方</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">http &#123;</span><br><span class="line">	...</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;*.conf;</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;*;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>Nginx預設的做法會先將設定檔放置<code>/etc/nginx/sites-available</code><br>再經由<code>軟連結</code>將檔案綁定至<code>/etc/nginx/sites-enabled</code><br>而我們同樣依照它的流程先新增自定義設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/nginx/sites-available/&lt;project&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name localhost;</span><br><span class="line">    root &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">    	index index.html;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>建立軟連結</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ ln -s &#x2F;etc&#x2F;nginx&#x2F;sites-available&#x2F;&lt;project&gt; &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;&lt;project&gt;</span><br></pre></td></tr></table></figure>
+
+<p>刪除預設設定檔的軟連結</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ rm &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;default</span><br></pre></td></tr></table></figure>
+
+<p>測試設定檔配置並重啟</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> nginx -t</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> service nginx reload</span></span><br></pre></td></tr></table></figure>
+
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
+<h3 id="補充"><a href="#補充" class="headerlink" title="補充"></a>補充</h3><p>在研究過程中耗費我最多時間的其實是設定檔的配置，由於我對Vue-cli的理解還不夠熟悉<br>裡頭有一些參數還不瞭解作用為何，也不太清楚Vue-cli的router是如何運作<br>因此雖然以上的配置可以讓專案運行，但不代表是完全正確的<br>這部分我還要再琢磨一番後才能寫得更詳細，而以下是我實際專案的配置<br><code>location</code>的部分和原來有些許的不同</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    server_name  easylunch.today;</span><br><span class="line">    root         &#x2F;var&#x2F;app&#x2F;lunch&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        try_files $uri $uri&#x2F; @router;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">    location @router &#123;</span><br><span class="line">        rewrite ^.*$ &#x2F;index.html last;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>Apache其實也是同樣的做法，只是換了一個Web Server而已～</p>
+<p>安裝<code>Apache</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install apache2 libapache2-mod-wsgi-py3</span><br></pre></td></tr></table></figure>
+
+<p>開機自動啟動Apache</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>
+
+<p>至/etc/apache2/sites-available/vue.conf新增下列設定</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/apache2/sites-available/vue.conf</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    DocumentRoot &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist</span><br><span class="line">    ServerName localhost</span><br><span class="line"></span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist&gt;</span><br><span class="line">        Options Indexes FollowSymLinks</span><br><span class="line">        AllowOverride All</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可使用vi/Vim取代：<code>:%s/&lt;SEARCH_FROM&gt;/&lt;REPLACE_TO&gt;/g</code></p>
+</blockquote>
+<p>啟用自訂設定 &amp; 關閉預設設定</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2ensite vue.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo a2dissite 000-default.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
+]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>vue</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>MySQL8.0+Backup/Restore</title>
     <url>/2021/05/24/MySQL8-0-Backup-Restore/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>經過了漫長的等待及當兵的時間後，我終於順利退伍回來繼續當個碼農了</p>
@@ -719,7 +719,7 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| information_schema |</span><br><span class="line">| mysql              |</span><br><span class="line">| mysql_example      |</span><br><span class="line">| performance_schema |</span><br><span class="line">| sys                |</span><br><span class="line">+--------------------+</span><br></pre></td></tr></table></figure>
 
 <p>進入剛剛建立的Database</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">USE</span> &lt;<span class="keyword">DATABASES</span>&gt;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">USE</span> &lt;<span class="keyword">DATABASE</span>&gt;;</span><br></pre></td></tr></table></figure>
 
 <p>建立一張資料表</p>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> customers (</span><br><span class="line">  C_Id <span class="built_in">INT</span>,</span><br><span class="line">  <span class="keyword">Name</span> <span class="built_in">varchar</span>(<span class="number">50</span>),</span><br><span class="line">  Address <span class="built_in">varchar</span>(<span class="number">255</span>),</span><br><span class="line">  Phone <span class="built_in">varchar</span>(<span class="number">20</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
@@ -727,6 +727,15 @@
 <p>查看資料表</p>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">TABLES</span>;</span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">+-------------------------+</span><br><span class="line">| Tables_in_mysql_example |</span><br><span class="line">+-------------------------+</span><br><span class="line">| customers               |</span><br><span class="line">+-------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>如果要刪除資料庫可以這麼做</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">DATABASE</span> &lt;<span class="keyword">DATABASE</span>&gt;;</span><br></pre></td></tr></table></figure>
+
+<p>如果是資料表</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> &lt;<span class="keyword">TABLE</span> <span class="keyword">NAME</span>&gt;;</span><br></pre></td></tr></table></figure>
+
+<p>如果只想保留資料表結構刪除資料</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">TRUNCATE</span> <span class="keyword">TABLE</span> &lt;<span class="keyword">TABLE</span> <span class="keyword">NAME</span>&gt;;</span><br></pre></td></tr></table></figure>
 
 <p>接下來在這裡你就可以開始操作熟悉的SQL語法了<br>關於SQL教學的部分我非常推薦<a href="https://www.fooish.com/sql/" target="_blank" rel="noopener">Fooish 程式技術</a><br>大家有興趣可以去裡面探索，基本上我的語法都是在那裡學的</p>
 <h2 id="User"><a href="#User" class="headerlink" title="User"></a>User</h2><p>在先前的安全設定中，我們將root設為只允許localhost登入<br>因此如果我們要從外部連線進來時，我們必須建立一組可以遠端登入的User</p>
@@ -752,6 +761,9 @@
 <p>這時就可以看到新建立好的使用者</p>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">user</span>, host <span class="keyword">FROM</span> mysql.user;</span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">+------------------+-----------+</span><br><span class="line">| user             | host      |</span><br><span class="line">+------------------+-----------+</span><br><span class="line">| user_example     | %         |</span><br><span class="line">| mysql.infoschema | localhost |</span><br><span class="line">| mysql.session    | localhost |</span><br><span class="line">| mysql.sys        | localhost |</span><br><span class="line">| root             | localhost |</span><br><span class="line">+------------------+-----------+</span><br></pre></td></tr></table></figure>
+
+<p>如果要刪除使用者的話</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">USER</span> <span class="string">'&lt;USER NAME&gt;'</span>@<span class="string">'&lt;HOST&gt;'</span>;</span><br></pre></td></tr></table></figure>
 
 
 <h3 id="權限"><a href="#權限" class="headerlink" title="權限"></a>權限</h3><p>賦予User Database權限</p>
