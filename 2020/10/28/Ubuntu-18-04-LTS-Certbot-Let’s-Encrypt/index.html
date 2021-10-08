@@ -31,7 +31,7 @@
 <meta property="og:description" content="前言打了幾篇文章之後發現，要想前言真的是一件挺燒腦的事情，明明也不是特別為了什麼才寫文章 單純地只是為了把工作上遇到困難的解決辦法，記錄在這裡所以才打開hexo(攤手 而因為最近部署了越來越多次的Server，導致我也面臨各種申請SSL&#x2F;TLS的需求 因此我把這一塊拉出來寫成一篇文章，好讓我以後再架設不同Web Server時也能快速上手 那一樣就直接開始吧～">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2020-10-28T09:31:00.000Z">
-<meta property="article:modified_time" content="2021-08-10T01:30:39.837Z">
+<meta property="article:modified_time" content="2021-10-06T11:45:41.005Z">
 <meta property="article:author" content="LinChi">
 <meta property="article:tag" content="ubuntu">
 <meta name="twitter:card" content="summary">
@@ -237,7 +237,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2021-08-10 09:30:39" itemprop="dateModified" datetime="2021-08-10T09:30:39+08:00">2021-08-10</time>
+                <time title="修改時間：2021-10-06 19:45:41" itemprop="dateModified" datetime="2021-10-06T19:45:41+08:00">2021-10-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -317,7 +317,10 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
 
 <p>現在你可以打開瀏覽器輸入<code>https://&lt;YOUR_DOMAIN&gt;</code>就可以看到SSL囉～</p>
-<h2 id="更換SSL-TLS憑證"><a href="#更換SSL-TLS憑證" class="headerlink" title="更換SSL/TLS憑證"></a>更換SSL/TLS憑證</h2><p>值得注意的是，<code>Let’s Encrypt</code>憑證是只有三個月的效期的，如果你想更換憑證可以這麼做</p>
+<h2 id="更換SSL-TLS憑證"><a href="#更換SSL-TLS憑證" class="headerlink" title="更換SSL/TLS憑證"></a>更換SSL/TLS憑證</h2><p>值得注意的是，<code>Let’s Encrypt</code>憑證是只有三個月的效期的，你可以手動查看目前申請的憑證狀態</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot certificates</span></span><br></pre></td></tr></table></figure>
+
+<p>如果你想更換憑證可以這麼做</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew -v</span></span><br></pre></td></tr></table></figure>
 
 <p>但這樣做太不人性化了，等於每三個月都還要手動更換，因此推薦用Corntab的方式幫我們每個禮拜去確認憑證狀態，如果效期低於一個月就會自動更換憑證</p>
