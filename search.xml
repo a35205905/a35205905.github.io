@@ -95,93 +95,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu 18.04 LTS+Apache+Laravel</title>
-    <url>/2021/05/28/Ubuntu-18-04-LTS-Apache-Laravel/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>同一時間，最近因工作關係正式學習PHP了，而且馬上就進入到Laravel框架的部分</p>
-<p>可想而知每當學習新的Web Framework，不免俗的還是要來部署一下</p>
-<p>那就話不多說直接開始吧～</p>
-<a id="more"></a>
-
-<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
-
-<p>可切換至<code>root</code>帳號</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
-
-<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>先把所需要的套件裝起來<br>更新APT</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  sudo apt-get update</span></span><br></pre></td></tr></table></figure>
-
-<p>我一般習慣會把專案放置在<code>/var/app</code>裡，因此我們先建立並切換至專案路徑<br>當然你也可以自行更換路徑，這沒有絕對</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
-<h2 id="Laravel"><a href="#Laravel" class="headerlink" title="Laravel"></a>Laravel</h2><p>使用Git將你的專案複製下來並切換目錄</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> &lt;YOUR PROJECT URL&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><p>MySQL的部分我直接拆開來獨立成<a href="/2021/05/24/MySQL8-0-Backup-Restore/" title="一篇">一篇</a>了，可以直接點進去看</p>
-<h2 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h2><p>安裝<code>PHP</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install php</span></span><br></pre></td></tr></table></figure>
-
-<p>查看<code>PHP</code>版本</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ php -v</span><br></pre></td></tr></table></figure>
-
-<h2 id="Composer"><a href="#Composer" class="headerlink" title="Composer"></a>Composer</h2><p>更新APT</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br></pre></td></tr></table></figure>
-
-<p>安裝<code>Composer</code>依賴套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install curl php-cli php-mbstring git unzip</span></span><br></pre></td></tr></table></figure>
-
-<p>下載<code>Composer</code>安裝檔</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cd ~</span><br><span class="line">$ curl -sS https:&#x2F;&#x2F;getcomposer.org&#x2F;installer -o composer-setup.php</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>-sS: 只顯示錯誤提示; -o: 輸出至文件上</p>
-</blockquote>
-<p>驗證安裝檔hash，若hash值不對請到<a href="https://composer.github.io/pubkeys.html" target="_blank" rel="noopener">官方文件</a>上再檢查一次</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ HASH&#x3D;756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3fbc1f233e9b180f061</span><br><span class="line">$ php -r &quot;if (hash_file(&#39;SHA384&#39;, &#39;composer-setup.php&#39;) &#x3D;&#x3D;&#x3D; &#39;$HASH&#39;) &#123; echo &#39;Installer verified&#39;; &#125; else &#123; echo &#39;Installer corrupt&#39;; unlink(&#39;composer-setup.php&#39;); &#125; echo PHP_EOL;&quot;</span><br></pre></td></tr></table></figure>
-<p>驗證成功會看到以下訊息</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Installer verified</span><br></pre></td></tr></table></figure>
-
-<p>安裝<code>Composer</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo php composer-setup.php --install-dir=/usr/<span class="built_in">local</span>/bin --filename=composer</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">All settings correct for using Composer</span><br><span class="line">Downloading...</span><br><span class="line"></span><br><span class="line">Composer (version 2.0.14) successfully installed to: &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br><span class="line">Use it: php &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br></pre></td></tr></table></figure>
-
-<p>查看<code>Composer</code>狀態</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ composer</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">   ______</span><br><span class="line">  &#x2F; ____&#x2F;___  ____ ___  ____  ____  ________  _____</span><br><span class="line"> &#x2F; &#x2F;   &#x2F; __ \&#x2F; __ &#96;__ \&#x2F; __ \&#x2F; __ \&#x2F; ___&#x2F; _ \&#x2F; ___&#x2F;</span><br><span class="line">&#x2F; &#x2F;___&#x2F; &#x2F;_&#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F;_&#x2F; &#x2F; &#x2F;_&#x2F; (__  )  __&#x2F; &#x2F;</span><br><span class="line">\____&#x2F;\____&#x2F;_&#x2F; &#x2F;_&#x2F; &#x2F;_&#x2F; .___&#x2F;\____&#x2F;____&#x2F;\___&#x2F;_&#x2F;</span><br><span class="line">                    &#x2F;_&#x2F;</span><br><span class="line">Composer version 2.0.14 2021-05-21 17:03:37</span><br></pre></td></tr></table></figure>
-
-<p><code>Composer</code>不希望你使用root帳號，因為某些命令包括exec、install、update，允許第三方程式在你的系統上執行，這些腳本具有完全訪問權限，因此強烈建議不要在root帳號上操作</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Do not run Composer as root&#x2F;super user! See https:&#x2F;&#x2F;getcomposer.org&#x2F;root for details</span><br><span class="line">Continue as root&#x2F;super user [yes]</span><br></pre></td></tr></table></figure>
-
-<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
-<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
-
-<p>查看版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.17.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.13</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Yarn"><a href="#Yarn" class="headerlink" title="Yarn"></a>Yarn</h2><p>安裝<code>Yarn</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm install -g yarn</span><br></pre></td></tr></table></figure>
-
-<p>查看<code>Yarn</code>版本</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yarn -v</span><br></pre></td></tr></table></figure>
-
-<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>架站教學：<a href="https://chenuin.blogspot.com/2019/01/django-ubuntuapache2modwsgi-django.html" target="_blank" rel="noopener">網址</a></p>
-<p>安裝Apache套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install apache2 libapache2-mod-wsgi-py3</span></span><br></pre></td></tr></table></figure>
-
-<p>開機自動啟動Apache</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>技術文章</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>php</tag>
-        <tag>laravel</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Ubuntu 18.04 LTS+Apache+WordPress</title>
     <url>/2020/07/16/Ubuntu-18-04-LTS-Apache-WordPress/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>因工作關係需要在<code>GCP</code>上架設<code>WordPress</code><br>趁這個機會趕緊做個筆記，讓自己在往後也能review<br>而之前習慣性都把筆記放在<a href="https://hackmd.io/" target="_blank" rel="noopener">HackMD</a>上<br>也剛好順便練習著如何架設<code>Hexo</code></p>
@@ -315,6 +228,9 @@
 <p>啟用WordPress設定檔</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2ensite wp.conf</span></span><br></pre></td></tr></table></figure>
 
+<p>開啟mod_rewrite</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2enmod rewrite</span></span><br></pre></td></tr></table></figure>
+
 <p>重啟Apache2</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service apache2 reload</span></span><br></pre></td></tr></table></figure>
 
@@ -325,293 +241,6 @@
 <p>phpMyAdmin：<a href="http://localhost/phpMyAdmin" target="_blank" rel="noopener">http://localhost/phpMyAdmin</a></p>
 </blockquote>
 <p>以上做到一步你已經可以順利把WordPress畫面給順利開啟<br>剩下的部分就按照指示設定以及新增管理員<br>就可以登入進去管理後台囉～</p>
-]]></content>
-      <categories>
-        <category>技術文章</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>wordpress</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu 18.04 LTS+Certbot(Let’s Encrypt)</title>
-    <url>/2020/10/28/Ubuntu-18-04-LTS-Certbot-Let%E2%80%99s-Encrypt/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>打了幾篇文章之後發現，要想前言真的是一件挺燒腦的事情，明明也不是特別為了什麼才寫文章</p>
-<p>單純地只是為了把工作上遇到困難的解決辦法，記錄在這裡所以才打開<code>hexo</code>(攤手</p>
-<p>而因為最近部署了越來越多次的Server，導致我也面臨各種申請SSL/TLS的需求</p>
-<p>因此我把這一塊拉出來寫成一篇文章，好讓我以後再架設不同Web Server時也能快速上手</p>
-<p>那一樣就直接開始吧～</p>
-<a id="more"></a>
-
-<h2 id="在開始之前"><a href="#在開始之前" class="headerlink" title="在開始之前"></a>在開始之前</h2><p>有幾個名詞可以簡單介紹一下</p>
-<ul>
-<li><p><a href="https://certbot.eff.org/" target="_blank" rel="noopener">Let’s Encrypt</a>: 免費、自動化和開放的憑證(SSL/TLS)頒發機構</p>
-</li>
-<li><p><a href="https://letsencrypt.org/zh-tw/" target="_blank" rel="noopener">Certbot</a>: 協助向<code>Let’s Encrypt</code>申請憑證(SSL/TLS)的開源軟體</p>
-</li>
-</ul>
-<p>更多的相關知識你可以在網路上找到不少專業文章，這裡就只單純記錄實作上需要用到的部分<br>但在操作以下步驟之前，你必須先符合以下條件：</p>
-<ol>
-<li>已先向域名商(Web hosts)註冊一組網域名稱</li>
-<li>已設定<code>DNS</code>指向該Server IP</li>
-<li>已在<code>Apache</code>/<code>Nginx</code>設定檔中新增域名至<code>ServerName</code>中</li>
-</ol>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>接著我們可以先根據<code>PPA</code>下載最新版本的<code>Certobt</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:certbot/certbot</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install python-certbot-apache</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>按照提示按下<code>Enter</code></p>
-</blockquote>
-<h2 id="申請SSL-TLS憑證"><a href="#申請SSL-TLS憑證" class="headerlink" title="申請SSL/TLS憑證"></a>申請SSL/TLS憑證</h2><p>這裡先採用<code>Apache</code>作為實作範例，其實只要理解操作，要更換為<code>Nginx</code>並不會太困難</p>
-<p>建立SSL憑證</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo certbot --apache -d &lt;YOUR_DOMAIN&gt; -d &lt;YOUR_DOMAIN2&gt;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>–apache: 使用Apache Web Server / -d: domain(可以依照域名新增至好幾個)</p>
-</blockquote>
-<blockquote>
-<p>如果不想讓<code>Certbot</code>覆寫設定檔只產生憑證，可以加入<code>certonly</code>參數</p>
-</blockquote>
-<p>如果是第一次申請，將會出現輸入Email的提示，之後<code>Cerbot</code>就會向<code>Let&#39;s Encrypt</code>進行申請SSL動作<br>同時驗證DNS配置是否正確，如果成功，<code>Cerbot</code>會再問你要如何設置<code>HTTPS</code>：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Please choose whether or not to redirect HTTP traffic to HTTPS, removing HTTP access.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">1: No redirect - Make no further changes to the webserver configuration.</span><br><span class="line">2: Redirect - Make all requests redirect to secure HTTPS access. Choose this for</span><br><span class="line">new sites, or if you&#39;re confident your site works on HTTPS. You can undo this</span><br><span class="line">change by editing your web server&#39;s configuration.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">Select the appropriate number [1-2] then [enter] (press &#39;c&#39; to cancel):</span><br></pre></td></tr></table></figure>
-<p>如果你想要讓瀏覽器輸入<code>http://&lt;DOMAIN&gt;/</code>時自動導向<code>https://&lt;DOMAIN&gt;</code>就輸入<code>2</code><br>接著<code>Certbot</code>就會在<code>/etc/apache2/sites-available/</code>中，將含有你輸入DOMAIN的設定檔進行配置，若你原先的設定內只有http<code>&lt;VirtualHost *:80&gt;</code>，那麼<code>Certbot</code>還會幫你再新增一份https<code>&lt;VirtualHost *:443&gt;</code>的設定檔，聽起來很難以理解對吧，實際做過一遍會更清楚這其中的流程</p>
-<ul>
-<li><p><code>&lt;YOUR CONF&gt;.conf</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">        ...</span><br><span class="line">RewriteEngine on</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN2&gt; [OR]</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN&gt;</span><br><span class="line">RewriteRule ^ https:&#x2F;&#x2F;%&#123;SERVER_NAME&#125;%&#123;REQUEST_URI&#125; [END,NE,R&#x3D;permanent]</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>&lt;YOUR CONF&gt;-le-ssl.conf</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;IfModule mod_ssl.c&gt;</span><br><span class="line">&lt;VirtualHost *:443&gt;</span><br><span class="line">        ...</span><br><span class="line">Include &#x2F;etc&#x2F;letsencrypt&#x2F;options-ssl-apache.conf</span><br><span class="line">SSLCertificateFile &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;kiitzu.com&#x2F;fullchain.pem</span><br><span class="line">SSLCertificateKeyFile &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;kiitzu.com&#x2F;privkey.pem</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br><span class="line">&lt;&#x2F;IfModule&gt;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<p>到這裡我們的憑證就已經申請好了，我們重啟<code>Apache</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
-
-<p>現在你可以打開瀏覽器輸入<code>https://&lt;YOUR_DOMAIN&gt;</code>就可以看到SSL囉～</p>
-<h2 id="更換SSL-TLS憑證"><a href="#更換SSL-TLS憑證" class="headerlink" title="更換SSL/TLS憑證"></a>更換SSL/TLS憑證</h2><p>值得注意的是，<code>Let’s Encrypt</code>憑證是只有三個月的效期的，你可以手動查看目前申請的憑證狀態</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot certificates</span></span><br></pre></td></tr></table></figure>
-
-<p>如果你想更換憑證可以這麼做</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew -v</span></span><br></pre></td></tr></table></figure>
-
-<p>但這樣做太不人性化了，等於每三個月都還要手動更換，因此推薦用Corntab的方式幫我們每個禮拜去確認憑證狀態，如果效期低於一個月就會自動更換憑證</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew --dry-run</span></span><br></pre></td></tr></table></figure>
-
-<p>確認Corntab狀態</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl status certbot.timer</span></span><br></pre></td></tr></table></figure>
-
-<p>而想要移除憑證可以這麼做</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot delete</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>可以加入<code>--cert-name &lt;DOMAIN&gt;</code>參數直接根據域名刪除</p>
-</blockquote>
-<h2 id="Django"><a href="#Django" class="headerlink" title="Django"></a>Django</h2><p>若你的專案正好是Django，那有一個地方要特別注意<br>再申請SSL之前，我們必須先把<code>.conf</code>裡有關WSGI的配置全部拿掉</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">WSGIDaemonProcess core python-path&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt; python-home&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt;&#x2F;.venv</span><br><span class="line">WSGIProcessGroup core</span><br><span class="line">WSGIScriptAlias &#x2F; &#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt;&#x2F;core&#x2F;wsgi.py</span><br><span class="line">WSGIPassAuthorization On</span><br></pre></td></tr></table></figure>
-
-<p>然後申請完後再把這些配置加回置<code>&lt;YOUR CONF&gt;-le-ssl.conf</code>裡<br>這麼做的目的是為了避免WSGI配置放在<code>&lt;YOUR CONF&gt;.conf</code>而導致的衝突發生</p>
-]]></content>
-      <categories>
-        <category>技術文章</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu 18.04 LTS+Vue-CLI+Ngnix/Apache</title>
-    <url>/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從後台架設完畢後<br>緊接著要幫前端同事把Vue給搬至Server<br>如此一來整個專案就能順利上線了～</p>
-<p>不過即便如此也熬了一陣子的撞牆期<br>因為網路上的教學文章實在太多<br>每一篇都大同小異又有些微的不同<br>因此決定實際演練並趕緊記錄下來<br>這樣未來需要時就不會花太多時間走冤望路了</p>
-<p>那話不多說<br>一起來看是如何操作的吧</p>
-<a id="more"></a>
-
-<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
-
-<p>可切換至<code>root</code>帳號</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
-
-<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
-<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>更新<code>APT</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br></pre></td></tr></table></figure>
-
-<p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
-<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
-
-<p>查看版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.9.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.8</span><br></pre></td></tr></table></figure>
-
-<h2 id="Vue-CLI"><a href="#Vue-CLI" class="headerlink" title="Vue-CLI"></a>Vue-CLI</h2><p>安裝<code>Vue-CLI</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli-init</span></span><br></pre></td></tr></table></figure>
-
-<p>查看版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue -V</span></span><br><span class="line">@vue/cli 4.5.4</span><br></pre></td></tr></table></figure>
-
-<p>切換至存放專案目錄，這裡可自行選擇，我一般習慣放置在<code>/var/app</code>裡</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
-
-<p>建立專案</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue init webpack &lt;project&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>根據提示選擇即可<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_init.png" alt="vue_init"></p>
-<p>切換至剛剛建立的專案目錄，然後打包專案</p>
-<blockquote>
-<p>若是現有的專案可直接<code>git clone</code>到目錄下，再執行以下指令</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;project&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm install</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm run build</span></span><br></pre></td></tr></table></figure>
-
-<p>接著可以在目錄底下看到<code>dist</code>這個資料夾就代表打包完成</p>
-<h2 id="Ngnix"><a href="#Ngnix" class="headerlink" title="Ngnix"></a>Ngnix</h2><p>安裝<code>Ngnix</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nginx</span></span><br></pre></td></tr></table></figure>
-
-<p>查看服務狀態</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service nginx status</span></span><br></pre></td></tr></table></figure>
-
-<p>打開瀏覽器直接輸入<code>http://&lt;server_ip&gt;/</code>就可以看到Nginx的歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/nginx_welcome.png" alt="nginx_welcome"></p>
-<p>根據<code>/etc/nginx/nginx.conf</code>我們可以知道設定檔放置在這兩個地方</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">http &#123;</span><br><span class="line">	...</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;*.conf;</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;*;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<p>Nginx預設的做法會先將設定檔放置<code>/etc/nginx/sites-available</code><br>再經由<code>軟連結</code>將檔案綁定至<code>/etc/nginx/sites-enabled</code><br>而我們同樣依照它的流程先新增自定義設定檔</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/nginx/sites-available/&lt;project&gt;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name localhost;</span><br><span class="line">    root &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">    	index index.html;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>建立軟連結</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ ln -s &#x2F;etc&#x2F;nginx&#x2F;sites-available&#x2F;&lt;project&gt; &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;&lt;project&gt;</span><br></pre></td></tr></table></figure>
-
-<p>刪除預設設定檔的軟連結</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ rm &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;default</span><br></pre></td></tr></table></figure>
-
-<p>測試設定檔配置並重啟</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> nginx -t</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> service nginx reload</span></span><br></pre></td></tr></table></figure>
-
-<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
-<h3 id="補充"><a href="#補充" class="headerlink" title="補充"></a>補充</h3><p>在研究過程中耗費我最多時間的其實是設定檔的配置，由於我對Vue-cli的理解還不夠熟悉<br>裡頭有一些參數還不瞭解作用為何，也不太清楚Vue-cli的router是如何運作<br>因此雖然以上的配置可以讓專案運行，但不代表是完全正確的<br>這部分我還要再琢磨一番後才能寫得更詳細，而以下是我實際專案的配置<br><code>location</code>的部分和原來有些許的不同</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    server_name  easylunch.today;</span><br><span class="line">    root         &#x2F;var&#x2F;app&#x2F;lunch&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        try_files $uri $uri&#x2F; @router;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">    location @router &#123;</span><br><span class="line">        rewrite ^.*$ &#x2F;index.html last;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>Apache其實也是同樣的做法，只是換了一個Web Server而已～</p>
-<p>安裝<code>Apache</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install apache2 libapache2-mod-wsgi-py3</span><br></pre></td></tr></table></figure>
-
-<p>開機自動啟動Apache</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>
-
-<p>至/etc/apache2/sites-available/vue.conf新增下列設定</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/apache2/sites-available/vue.conf</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    DocumentRoot &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist</span><br><span class="line">    ServerName localhost</span><br><span class="line"></span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist&gt;</span><br><span class="line">        Options Indexes FollowSymLinks</span><br><span class="line">        AllowOverride All</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>可使用vi/Vim取代：<code>:%s/&lt;SEARCH_FROM&gt;/&lt;REPLACE_TO&gt;/g</code></p>
-</blockquote>
-<p>啟用自訂設定 &amp; 關閉預設設定</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2ensite vue.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo a2dissite 000-default.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
-
-<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
-]]></content>
-      <categories>
-        <category>技術文章</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>vue</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu 18.04 LTS+Wordpress Backup/Restore</title>
-    <url>/2020/09/18/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>說到WordPress，備份也是一件討人厭的事情<br>但比起備份，還原至另一台Server更是令人困擾<br>在工作時原本以為順利把WordPress部署至測試機後<br>續後處理起來會輕鬆很多，結果還是吃了不少悶虧<br>趁下班之餘趕緊趁忘記之前好好記起來！</p>
-<a id="more"></a>
-
-<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
-
-<p>可切換至<code>root</code>帳號</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
-
-<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
-<h2 id="Backup"><a href="#Backup" class="headerlink" title="Backup"></a>Backup</h2><h3 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h3><p>首先先從資料庫把資料備份出來</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysqldump -u &lt;USER&gt; -p &lt;DATABASE&gt; &gt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>u: user / p: password</p>
-</blockquote>
-<h3 id="WordPress"><a href="#WordPress" class="headerlink" title="WordPress"></a>WordPress</h3><p>這裡我們先以最簡單暴力的做法來呈現，也就是手動將整個WordPress備份下來</p>
-<p>先切換至存放WordPess的目錄</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/www/html</span></span><br></pre></td></tr></table></figure>
-
-<p>壓縮WordPress</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tar -zcvf wordpress_backup.tar.gz &lt;WORDPRESS&gt;</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>c: 壓縮 / z: gzip格式 / v: 顯示過程 / f: 指定檔案(後面一定要接檔名)</p>
-</blockquote>
-<p>其實到這邊備份的部分就完成了，是不是超級簡單<br>這就是最笨但也是最快速的方式</p>
-<h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><p>其實Apache要備份只有<code>/etc/apache2/sites-available/&lt;WORDPRESS&gt;.conf</code>這個設定檔而已<br>因此你可以把它直接下載下來即可</p>
-<h3 id="Dowload"><a href="#Dowload" class="headerlink" title="Dowload"></a>Dowload</h3><p>而關於下載的部分，這邊也教一個<code>GCP</code>提供的功能<br>如果你是以SSL用瀏覽器打開的話，在畫面右上角會有一個工具欄<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_01.png" alt="vue_init"></p>
-<p>點選下載檔案<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_02.png" alt="vue_init"></p>
-<p>接著會出現視窗讓你輸入路徑<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_03.png" alt="vue_init"></p>
-<p>用這樣的方式就可以很簡單的把備份檔下載下來了<br>同理上傳檔案也是如此，上傳後檔案會放至在<code>/home/&lt;GCP_ACCOUNT&gt;</code>下<br>接著就可以開始著手處理還原的部分囉～</p>
-<h2 id="Restore"><a href="#Restore" class="headerlink" title="Restore"></a>Restore</h2><p>還原就有很多小細節要注意了，如果沒有處理好，不僅是WordPress打開來畫面跟原先的不一樣<br>甚至有可能會出現連網頁都開不了的窘境，因此這裡會一步一步教大家如何操作</p>
-<h3 id="Before"><a href="#Before" class="headerlink" title="Before"></a>Before</h3><p>我們先假設你已經將備份檔及Apache設定檔上傳至新的Server<br>這邊是透過<code>GCP</code>上傳，因此檔案會位於我<code>GCP</code>帳號的家目錄底下</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /home/&lt;GCP_ACCOUNT&gt;</span></span><br></pre></td></tr></table></figure>
-<p>如果是需要透過FTP的話，也可以參考<a href="/2020/09/29/Ubuntu-18-04-LTS-vsftpd/">這一篇</a>安裝</p>
-<p>也已經安裝好<code>PHP</code>, <code>MySQL</code>, <code>Apache</code>, <code>phpMyAdmin</code>等工具<br>如果對這方面不熟悉的人可以回去參考<a href="/2020/07/16/Ubuntu-18-04-LTS-Apache-WordPress/">這一篇</a>來複習，裡頭所提及的流程這邊就暫且不多做敘述</p>
-<blockquote>
-<p>一樣可以使用<code>su -</code>切換root帳號以便後續操作</p>
-</blockquote>
-<h3 id="MySQL-1"><a href="#MySQL-1" class="headerlink" title="MySQL"></a>MySQL</h3><p>在已建立好資料庫的情況下，這邊要做的事情就是先還原</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u &lt;USER&gt; -p &lt;DATABASE&gt; &lt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>u: user / p: password</p>
-</blockquote>
-<h4 id="網址更換"><a href="#網址更換" class="headerlink" title="網址更換"></a>網址更換</h4><p>WordPress很多資料裡頭<code>url</code>都是寫死的，例如超連結或是圖片檔<br>因此如果不論你有沒有移機，<strong>只要有更換網址的需求</strong>都要更新<code>MySQL</code>裡頭的資料</p>
-<p>進入MySQL並操作WordPress資料庫</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u &lt;USER&gt; -p &lt;DATABASE&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>以取代方式更換網址</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> wp_options <span class="keyword">SET</span> option_value = <span class="keyword">replace</span>(option_value, <span class="string">'&lt;OLD_URL&gt;'</span>, <span class="string">'&lt;NEW_URL&gt;'</span>) <span class="keyword">WHERE</span> option_name = <span class="string">'home'</span> <span class="keyword">OR</span> option_name = <span class="string">'siteurl'</span>;</span><br><span class="line"><span class="keyword">UPDATE</span> wp_posts <span class="keyword">SET</span> guid = <span class="keyword">replace</span>(guid, <span class="string">'&lt;OLD_URL&gt;'</span>,<span class="string">'&lt;NEW_URL&gt;'</span>);</span><br><span class="line"><span class="keyword">UPDATE</span> wp_posts <span class="keyword">SET</span> post_content = <span class="keyword">replace</span>(post_content, <span class="string">'&lt;OLD_URL&gt;'</span>, <span class="string">'&lt;NEW_URL&gt;'</span>);</span><br><span class="line"><span class="keyword">UPDATE</span> wp_postmeta <span class="keyword">SET</span> meta_value = <span class="keyword">replace</span>(meta_value,<span class="string">'&lt;OLD_URL&gt;'</span>,<span class="string">'&lt;NEW_URL&gt;'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># Query OK, X rows affected (0.00 sec)</span></span><br><span class="line"><span class="comment"># Rows matched: X  Changed: X  Warnings: X</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>可先用編輯器取代完字串後再貼進MySQL-CLI裡</p>
-</blockquote>
-<p>退出MySQL</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">$ exit</span><br><span class="line"><span class="comment"># Bye</span></span><br></pre></td></tr></table></figure>
-
-<p>但這裡還是要留意，如果有套用主題可能會有例外<br>因此還是要以實際的狀況為主，這一步可以符合大部分的需求</p>
-<h3 id="WordPress-1"><a href="#WordPress-1" class="headerlink" title="WordPress"></a>WordPress</h3><p>將備份檔移至WordPress目錄並切換過去</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mv &lt;WORDPRESS&gt;.tar.gz /var/www/html</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/www/html</span></span><br></pre></td></tr></table></figure>
-
-<p>解壓縮備份檔</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tar zxvf wordpress-5.2.4-zh_TW.tar.gz</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>x: 解壓縮 / z: gzip格式 / v: 顯示過程 / f: 指定檔案(後面一定要接檔名)</p>
-</blockquote>
-<p>可自己選擇要不要刪除壓縮檔</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> rm &lt;WORDPRESS&gt;.tar.gz</span></span><br></pre></td></tr></table></figure>
-
-<p>根據專案選擇要不要修改<code>wordpres/wp-config.php</code>的<code>DB_NAME</code> <code>DB_USER</code> <code>DB_PASSWORD</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">define(&#39;DB_NAME&#39;, &#39;&lt;DB_NAME&gt;&#39;);</span><br><span class="line"></span><br><span class="line">define(&#39;DB_USER&#39;, &#39;&lt;DB_USER&gt;&#39;);</span><br><span class="line"> </span><br><span class="line">define(&#39;DB_PASSWORD&#39;, &#39;&lt;DB_PASSWORD&gt;&#39;);</span><br><span class="line"></span><br><span class="line">define(&#39;DB_HOST&#39;, &#39;localhost&#39;);</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<h3 id="Apache-1"><a href="#Apache-1" class="headerlink" title="Apache"></a>Apache</h3><p>將設定檔移至Apache目錄並切換過去</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mv /home/&lt;GCP_ACCOUNT&gt;/&lt;WORDPRESS&gt;.conf /etc/apache2/sites-available</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /etc/apache2/sites-available</span></span><br></pre></td></tr></table></figure>
-
-<p>停用預設設定檔</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2dissite 000-default.conf</span></span><br></pre></td></tr></table></figure>
-
-<p>啟用WordPress設定檔</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2ensite &lt;WORDPRESS&gt;.conf</span></span><br></pre></td></tr></table></figure>
-
-<p>重新啟動Apache</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
-
-<p>這裡要注意的是，如果你原本的Apache有使用WordPress裡<code>.htaccess</code>的設定<br>而在Apache的<code>.conf</code>檔裡也有添加這幾行</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;Directory &quot;&#x2F;var&#x2F;www&#x2F;html&#x2F;wordpress&#x2F;&quot;&gt;</span><br><span class="line">    AllowOverride All</span><br><span class="line">&lt;&#x2F;Directory&gt;</span><br></pre></td></tr></table></figure>
-<p>那你一定要記得啟動Apache mod_rewrite<br>要不然網頁打開來會是掛掉的情況</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2enmod rewrite</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>小小抱怨一下，我之前因為忘記做這件事，害得我花了將近一天的時間在DeBug，網頁開起來直接掛掉的當下讓我很緊張，還重舊Server上備份了好幾次，搞了老半天才意識到我沒有把mod_rewrite啟動，當下真的是想把自己給掐死，也因為這樣才衍生出了寫這篇文章的衝動。</p>
-</blockquote>
-<p>接著你就可以在新的Server上開啟WordPress囉～</p>
-<blockquote>
-<p><a href="http://localhost:80/" target="_blank" rel="noopener">http://localhost:80/</a></p>
-</blockquote>
 ]]></content>
       <categories>
         <category>技術文章</category>
@@ -740,6 +369,380 @@
       <tags>
         <tag>ubuntu</tag>
         <tag>node.js</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 LTS+Apache+Laravel</title>
+    <url>/2021/05/28/Ubuntu-18-04-LTS-Apache-Laravel/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>同一時間，最近因工作關係正式學習PHP了，而且馬上就進入到Laravel框架的部分</p>
+<p>可想而知每當學習新的Web Framework，不免俗的還是要來部署一下</p>
+<p>那就話不多說直接開始吧～</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>先把所需要的套件裝起來<br>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+
+<p>我一般習慣會把專案放置在<code>/var/app</code>裡，因此我們先建立並切換至專案路徑<br>當然你也可以自行更換路徑，這沒有絕對</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
+<h2 id="Laravel"><a href="#Laravel" class="headerlink" title="Laravel"></a>Laravel</h2><p>使用Git將你的專案複製下來並切換目錄</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> &lt;YOUR PROJECT URL&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><p>MySQL的部分我直接拆開來獨立成<a href="/2021/05/24/MySQL8-0-Backup-Restore/" title="一篇">一篇</a>了，可以直接點進去看</p>
+<h2 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h2><p>安裝<code>PHP</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install php</span></span><br></pre></td></tr></table></figure>
+
+<p>查看<code>PHP</code>版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ php -v</span><br></pre></td></tr></table></figure>
+
+<h2 id="Composer"><a href="#Composer" class="headerlink" title="Composer"></a>Composer</h2><p>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝<code>Composer</code>依賴套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install curl php-cli php-mbstring git unzip</span></span><br></pre></td></tr></table></figure>
+
+<p>下載<code>Composer</code>安裝檔</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cd ~</span><br><span class="line">$ curl -sS https:&#x2F;&#x2F;getcomposer.org&#x2F;installer -o composer-setup.php</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>-sS: 只顯示錯誤提示; -o: 輸出至文件上</p>
+</blockquote>
+<p>驗證安裝檔hash，若hash值不對請到<a href="https://composer.github.io/pubkeys.html" target="_blank" rel="noopener">官方文件</a>上再檢查一次</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ HASH&#x3D;756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3fbc1f233e9b180f061</span><br><span class="line">$ php -r &quot;if (hash_file(&#39;SHA384&#39;, &#39;composer-setup.php&#39;) &#x3D;&#x3D;&#x3D; &#39;$HASH&#39;) &#123; echo &#39;Installer verified&#39;; &#125; else &#123; echo &#39;Installer corrupt&#39;; unlink(&#39;composer-setup.php&#39;); &#125; echo PHP_EOL;&quot;</span><br></pre></td></tr></table></figure>
+<p>驗證成功會看到以下訊息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Installer verified</span><br></pre></td></tr></table></figure>
+
+<p>安裝<code>Composer</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo php composer-setup.php --install-dir=/usr/<span class="built_in">local</span>/bin --filename=composer</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">All settings correct for using Composer</span><br><span class="line">Downloading...</span><br><span class="line"></span><br><span class="line">Composer (version 2.0.14) successfully installed to: &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br><span class="line">Use it: php &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br></pre></td></tr></table></figure>
+
+<p>查看<code>Composer</code>狀態</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ composer</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">   ______</span><br><span class="line">  &#x2F; ____&#x2F;___  ____ ___  ____  ____  ________  _____</span><br><span class="line"> &#x2F; &#x2F;   &#x2F; __ \&#x2F; __ &#96;__ \&#x2F; __ \&#x2F; __ \&#x2F; ___&#x2F; _ \&#x2F; ___&#x2F;</span><br><span class="line">&#x2F; &#x2F;___&#x2F; &#x2F;_&#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F;_&#x2F; &#x2F; &#x2F;_&#x2F; (__  )  __&#x2F; &#x2F;</span><br><span class="line">\____&#x2F;\____&#x2F;_&#x2F; &#x2F;_&#x2F; &#x2F;_&#x2F; .___&#x2F;\____&#x2F;____&#x2F;\___&#x2F;_&#x2F;</span><br><span class="line">                    &#x2F;_&#x2F;</span><br><span class="line">Composer version 2.0.14 2021-05-21 17:03:37</span><br></pre></td></tr></table></figure>
+
+<p><code>Composer</code>不希望你使用root帳號，因為某些命令包括exec、install、update，允許第三方程式在你的系統上執行，這些腳本具有完全訪問權限，因此強烈建議不要在root帳號上操作</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Do not run Composer as root&#x2F;super user! See https:&#x2F;&#x2F;getcomposer.org&#x2F;root for details</span><br><span class="line">Continue as root&#x2F;super user [yes]</span><br></pre></td></tr></table></figure>
+
+<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
+<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.17.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.13</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Yarn"><a href="#Yarn" class="headerlink" title="Yarn"></a>Yarn</h2><p>安裝<code>Yarn</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm install -g yarn</span><br></pre></td></tr></table></figure>
+
+<p>查看<code>Yarn</code>版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yarn -v</span><br></pre></td></tr></table></figure>
+
+<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>架站教學：<a href="https://chenuin.blogspot.com/2019/01/django-ubuntuapache2modwsgi-django.html" target="_blank" rel="noopener">網址</a></p>
+<p>安裝Apache套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install apache2 libapache2-mod-wsgi-py3</span></span><br></pre></td></tr></table></figure>
+
+<p>開機自動啟動Apache</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>php</tag>
+        <tag>laravel</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 LTS+Certbot(Let’s Encrypt)</title>
+    <url>/2020/10/28/Ubuntu-18-04-LTS-Certbot-Let%E2%80%99s-Encrypt/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>打了幾篇文章之後發現，要想前言真的是一件挺燒腦的事情，明明也不是特別為了什麼才寫文章</p>
+<p>單純地只是為了把工作上遇到困難的解決辦法，記錄在這裡所以才打開<code>hexo</code>(攤手</p>
+<p>而因為最近部署了越來越多次的Server，導致我也面臨各種申請SSL/TLS的需求</p>
+<p>因此我把這一塊拉出來寫成一篇文章，好讓我以後再架設不同Web Server時也能快速上手</p>
+<p>那一樣就直接開始吧～</p>
+<a id="more"></a>
+
+<h2 id="在開始之前"><a href="#在開始之前" class="headerlink" title="在開始之前"></a>在開始之前</h2><p>有幾個名詞可以簡單介紹一下</p>
+<ul>
+<li><p><a href="https://certbot.eff.org/" target="_blank" rel="noopener">Let’s Encrypt</a>: 免費、自動化和開放的憑證(SSL/TLS)頒發機構</p>
+</li>
+<li><p><a href="https://letsencrypt.org/zh-tw/" target="_blank" rel="noopener">Certbot</a>: 協助向<code>Let’s Encrypt</code>申請憑證(SSL/TLS)的開源軟體</p>
+</li>
+</ul>
+<p>更多的相關知識你可以在網路上找到不少專業文章，這裡就只單純記錄實作上需要用到的部分<br>但在操作以下步驟之前，你必須先符合以下條件：</p>
+<ol>
+<li>已先向域名商(Web hosts)註冊一組網域名稱</li>
+<li>已設定<code>DNS</code>指向該Server IP</li>
+<li>已在<code>Apache</code>/<code>Nginx</code>設定檔中新增域名至<code>ServerName</code>中</li>
+</ol>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>接著我們可以先根據<code>PPA</code>下載最新版本的<code>Certobt</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:certbot/certbot</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install python-certbot-apache</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>按照提示按下<code>Enter</code></p>
+</blockquote>
+<h2 id="申請SSL-TLS憑證"><a href="#申請SSL-TLS憑證" class="headerlink" title="申請SSL/TLS憑證"></a>申請SSL/TLS憑證</h2><p>這裡先採用<code>Apache</code>作為實作範例，其實只要理解操作，要更換為<code>Nginx</code>並不會太困難</p>
+<p>建立SSL憑證</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo certbot --apache -d &lt;YOUR_DOMAIN&gt; -d &lt;YOUR_DOMAIN2&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>–apache: 使用Apache Web Server / -d: domain(可以依照域名新增至好幾個)</p>
+</blockquote>
+<blockquote>
+<p>如果不想讓<code>Certbot</code>覆寫設定檔只產生憑證，可以加入<code>certonly</code>參數</p>
+</blockquote>
+<p>如果是第一次申請，將會出現輸入Email的提示，之後<code>Cerbot</code>就會向<code>Let&#39;s Encrypt</code>進行申請SSL動作<br>同時驗證DNS配置是否正確，如果成功，<code>Cerbot</code>會再問你要如何設置<code>HTTPS</code>：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Please choose whether or not to redirect HTTP traffic to HTTPS, removing HTTP access.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">1: No redirect - Make no further changes to the webserver configuration.</span><br><span class="line">2: Redirect - Make all requests redirect to secure HTTPS access. Choose this for</span><br><span class="line">new sites, or if you&#39;re confident your site works on HTTPS. You can undo this</span><br><span class="line">change by editing your web server&#39;s configuration.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">Select the appropriate number [1-2] then [enter] (press &#39;c&#39; to cancel):</span><br></pre></td></tr></table></figure>
+<p>如果你想要讓瀏覽器輸入<code>http://&lt;DOMAIN&gt;/</code>時自動導向<code>https://&lt;DOMAIN&gt;</code>就輸入<code>2</code><br>接著<code>Certbot</code>就會在<code>/etc/apache2/sites-available/</code>中，將含有你輸入DOMAIN的設定檔進行配置，若你原先的設定內只有http<code>&lt;VirtualHost *:80&gt;</code>，那麼<code>Certbot</code>還會幫你再新增一份https<code>&lt;VirtualHost *:443&gt;</code>的設定檔，聽起來很難以理解對吧，實際做過一遍會更清楚這其中的流程</p>
+<ul>
+<li><p><code>&lt;YOUR CONF&gt;.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">        ...</span><br><span class="line">RewriteEngine on</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN2&gt; [OR]</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN&gt;</span><br><span class="line">RewriteRule ^ https:&#x2F;&#x2F;%&#123;SERVER_NAME&#125;%&#123;REQUEST_URI&#125; [END,NE,R&#x3D;permanent]</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>&lt;YOUR CONF&gt;-le-ssl.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;IfModule mod_ssl.c&gt;</span><br><span class="line">&lt;VirtualHost *:443&gt;</span><br><span class="line">        ...</span><br><span class="line">Include &#x2F;etc&#x2F;letsencrypt&#x2F;options-ssl-apache.conf</span><br><span class="line">SSLCertificateFile &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;kiitzu.com&#x2F;fullchain.pem</span><br><span class="line">SSLCertificateKeyFile &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;kiitzu.com&#x2F;privkey.pem</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br><span class="line">&lt;&#x2F;IfModule&gt;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>到這裡我們的憑證就已經申請好了，我們重啟<code>Apache</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+
+<p>現在你可以打開瀏覽器輸入<code>https://&lt;YOUR_DOMAIN&gt;</code>就可以看到SSL囉～</p>
+<h2 id="更換SSL-TLS憑證"><a href="#更換SSL-TLS憑證" class="headerlink" title="更換SSL/TLS憑證"></a>更換SSL/TLS憑證</h2><p>值得注意的是，<code>Let’s Encrypt</code>憑證是只有三個月的效期的，你可以手動查看目前申請的憑證狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot certificates</span></span><br></pre></td></tr></table></figure>
+
+<p>如果你想更換憑證可以這麼做</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew -v</span></span><br></pre></td></tr></table></figure>
+
+<p>但這樣做太不人性化了，等於每三個月都還要手動更換，因此推薦用Corntab的方式幫我們每個禮拜去確認憑證狀態，如果效期低於一個月就會自動更換憑證</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew --dry-run</span></span><br></pre></td></tr></table></figure>
+
+<p>確認Corntab狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl status certbot.timer</span></span><br></pre></td></tr></table></figure>
+
+<p>而想要移除憑證可以這麼做</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot delete</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可以加入<code>--cert-name &lt;DOMAIN&gt;</code>參數直接根據域名刪除</p>
+</blockquote>
+<h2 id="Django"><a href="#Django" class="headerlink" title="Django"></a>Django</h2><p>若你的專案正好是Django，那有一個地方要特別注意<br>再申請SSL之前，我們必須先把<code>.conf</code>裡有關WSGI的配置全部拿掉</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">WSGIDaemonProcess core python-path&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt; python-home&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt;&#x2F;.venv</span><br><span class="line">WSGIProcessGroup core</span><br><span class="line">WSGIScriptAlias &#x2F; &#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt;&#x2F;core&#x2F;wsgi.py</span><br><span class="line">WSGIPassAuthorization On</span><br></pre></td></tr></table></figure>
+
+<p>然後申請完後再把這些配置加回置<code>&lt;YOUR CONF&gt;-le-ssl.conf</code>裡<br>這麼做的目的是為了避免WSGI配置放在<code>&lt;YOUR CONF&gt;.conf</code>而導致的衝突發生</p>
+]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 LTS+Wordpress Backup/Restore</title>
+    <url>/2020/09/18/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>說到WordPress，備份也是一件討人厭的事情<br>但比起備份，還原至另一台Server更是令人困擾<br>在工作時原本以為順利把WordPress部署至測試機後<br>續後處理起來會輕鬆很多，結果還是吃了不少悶虧<br>趁下班之餘趕緊趁忘記之前好好記起來！</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="Backup"><a href="#Backup" class="headerlink" title="Backup"></a>Backup</h2><h3 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h3><p>首先先從資料庫把資料備份出來</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysqldump -u &lt;USER&gt; -p &lt;DATABASE&gt; &gt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>u: user / p: password</p>
+</blockquote>
+<h3 id="WordPress"><a href="#WordPress" class="headerlink" title="WordPress"></a>WordPress</h3><p>這裡我們先以最簡單暴力的做法來呈現，也就是手動將整個WordPress備份下來</p>
+<p>先切換至存放WordPess的目錄</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/www/html</span></span><br></pre></td></tr></table></figure>
+
+<p>壓縮WordPress</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tar -zcvf wordpress_backup.tar.gz &lt;WORDPRESS&gt;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>c: 壓縮 / z: gzip格式 / v: 顯示過程 / f: 指定檔案(後面一定要接檔名)</p>
+</blockquote>
+<p>其實到這邊備份的部分就完成了，是不是超級簡單<br>這就是最笨但也是最快速的方式</p>
+<h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><p>其實Apache要備份只有<code>/etc/apache2/sites-available/&lt;WORDPRESS&gt;.conf</code>這個設定檔而已<br>因此你可以把它直接下載下來即可</p>
+<h3 id="Dowload"><a href="#Dowload" class="headerlink" title="Dowload"></a>Dowload</h3><p>而關於下載的部分，這邊也教一個<code>GCP</code>提供的功能<br>如果你是以SSL用瀏覽器打開的話，在畫面右上角會有一個工具欄<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_01.png" alt="vue_init"></p>
+<p>點選下載檔案<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_02.png" alt="vue_init"></p>
+<p>接著會出現視窗讓你輸入路徑<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_03.png" alt="vue_init"></p>
+<p>用這樣的方式就可以很簡單的把備份檔下載下來了<br>同理上傳檔案也是如此，上傳後檔案會放至在<code>/home/&lt;GCP_ACCOUNT&gt;</code>下<br>接著就可以開始著手處理還原的部分囉～</p>
+<h2 id="Restore"><a href="#Restore" class="headerlink" title="Restore"></a>Restore</h2><p>還原就有很多小細節要注意了，如果沒有處理好，不僅是WordPress打開來畫面跟原先的不一樣<br>甚至有可能會出現連網頁都開不了的窘境，因此這裡會一步一步教大家如何操作</p>
+<h3 id="Before"><a href="#Before" class="headerlink" title="Before"></a>Before</h3><p>我們先假設你已經將備份檔及Apache設定檔上傳至新的Server<br>這邊是透過<code>GCP</code>上傳，因此檔案會位於我<code>GCP</code>帳號的家目錄底下</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /home/&lt;GCP_ACCOUNT&gt;</span></span><br></pre></td></tr></table></figure>
+<p>如果是需要透過FTP的話，也可以參考<a href="/2020/09/29/Ubuntu-18-04-LTS-vsftpd/">這一篇</a>安裝</p>
+<p>也已經安裝好<code>PHP</code>, <code>MySQL</code>, <code>Apache</code>, <code>phpMyAdmin</code>等工具<br>如果對這方面不熟悉的人可以回去參考<a href="/2020/07/16/Ubuntu-18-04-LTS-Apache-WordPress/">這一篇</a>來複習，裡頭所提及的流程這邊就暫且不多做敘述</p>
+<blockquote>
+<p>一樣可以使用<code>su -</code>切換root帳號以便後續操作</p>
+</blockquote>
+<h3 id="MySQL-1"><a href="#MySQL-1" class="headerlink" title="MySQL"></a>MySQL</h3><p>在已建立好資料庫的情況下，這邊要做的事情就是先還原</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u &lt;USER&gt; -p &lt;DATABASE&gt; &lt; &lt;BACK_SQL&gt;.sql</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>u: user / p: password</p>
+</blockquote>
+<h4 id="網址更換"><a href="#網址更換" class="headerlink" title="網址更換"></a>網址更換</h4><p>WordPress很多資料裡頭<code>url</code>都是寫死的，例如超連結或是圖片檔<br>因此如果不論你有沒有移機，<strong>只要有更換網址的需求</strong>都要更新<code>MySQL</code>裡頭的資料</p>
+<p>進入MySQL並操作WordPress資料庫</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql -u &lt;USER&gt; -p &lt;DATABASE&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>以取代方式更換網址</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> wp_options <span class="keyword">SET</span> option_value = <span class="keyword">replace</span>(option_value, <span class="string">'&lt;OLD_URL&gt;'</span>, <span class="string">'&lt;NEW_URL&gt;'</span>) <span class="keyword">WHERE</span> option_name = <span class="string">'home'</span> <span class="keyword">OR</span> option_name = <span class="string">'siteurl'</span>;</span><br><span class="line"><span class="keyword">UPDATE</span> wp_posts <span class="keyword">SET</span> guid = <span class="keyword">replace</span>(guid, <span class="string">'&lt;OLD_URL&gt;'</span>,<span class="string">'&lt;NEW_URL&gt;'</span>);</span><br><span class="line"><span class="keyword">UPDATE</span> wp_posts <span class="keyword">SET</span> post_content = <span class="keyword">replace</span>(post_content, <span class="string">'&lt;OLD_URL&gt;'</span>, <span class="string">'&lt;NEW_URL&gt;'</span>);</span><br><span class="line"><span class="keyword">UPDATE</span> wp_postmeta <span class="keyword">SET</span> meta_value = <span class="keyword">replace</span>(meta_value,<span class="string">'&lt;OLD_URL&gt;'</span>,<span class="string">'&lt;NEW_URL&gt;'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># Query OK, X rows affected (0.00 sec)</span></span><br><span class="line"><span class="comment"># Rows matched: X  Changed: X  Warnings: X</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可先用編輯器取代完字串後再貼進MySQL-CLI裡</p>
+</blockquote>
+<p>退出MySQL</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">$ exit</span><br><span class="line"><span class="comment"># Bye</span></span><br></pre></td></tr></table></figure>
+
+<p>但這裡還是要留意，如果有套用主題可能會有例外<br>因此還是要以實際的狀況為主，這一步可以符合大部分的需求</p>
+<h3 id="WordPress-1"><a href="#WordPress-1" class="headerlink" title="WordPress"></a>WordPress</h3><p>將備份檔移至WordPress目錄並切換過去</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mv &lt;WORDPRESS&gt;.tar.gz /var/www/html</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/www/html</span></span><br></pre></td></tr></table></figure>
+
+<p>解壓縮備份檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tar zxvf wordpress-5.2.4-zh_TW.tar.gz</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>x: 解壓縮 / z: gzip格式 / v: 顯示過程 / f: 指定檔案(後面一定要接檔名)</p>
+</blockquote>
+<p>可自己選擇要不要刪除壓縮檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> rm &lt;WORDPRESS&gt;.tar.gz</span></span><br></pre></td></tr></table></figure>
+
+<p>根據專案選擇要不要修改<code>wordpres/wp-config.php</code>的<code>DB_NAME</code> <code>DB_USER</code> <code>DB_PASSWORD</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">define(&#39;DB_NAME&#39;, &#39;&lt;DB_NAME&gt;&#39;);</span><br><span class="line"></span><br><span class="line">define(&#39;DB_USER&#39;, &#39;&lt;DB_USER&gt;&#39;);</span><br><span class="line"> </span><br><span class="line">define(&#39;DB_PASSWORD&#39;, &#39;&lt;DB_PASSWORD&gt;&#39;);</span><br><span class="line"></span><br><span class="line">define(&#39;DB_HOST&#39;, &#39;localhost&#39;);</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h3 id="Apache-1"><a href="#Apache-1" class="headerlink" title="Apache"></a>Apache</h3><p>將設定檔移至Apache目錄並切換過去</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mv /home/&lt;GCP_ACCOUNT&gt;/&lt;WORDPRESS&gt;.conf /etc/apache2/sites-available</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /etc/apache2/sites-available</span></span><br></pre></td></tr></table></figure>
+
+<p>停用預設設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2dissite 000-default.conf</span></span><br></pre></td></tr></table></figure>
+
+<p>啟用WordPress設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2ensite &lt;WORDPRESS&gt;.conf</span></span><br></pre></td></tr></table></figure>
+
+<p>重新啟動Apache</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+
+<p>這裡要注意的是，如果你原本的Apache有使用WordPress裡<code>.htaccess</code>的設定<br>而在Apache的<code>.conf</code>檔裡也有添加這幾行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;Directory &quot;&#x2F;var&#x2F;www&#x2F;html&#x2F;wordpress&#x2F;&quot;&gt;</span><br><span class="line">    AllowOverride All</span><br><span class="line">&lt;&#x2F;Directory&gt;</span><br></pre></td></tr></table></figure>
+<p>那你一定要記得啟動Apache mod_rewrite<br>要不然網頁打開來會是掛掉的情況</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2enmod rewrite</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>小小抱怨一下，我之前因為忘記做這件事，害得我花了將近一天的時間在DeBug，網頁開起來直接掛掉的當下讓我很緊張，還重舊Server上備份了好幾次，搞了老半天才意識到我沒有把mod_rewrite啟動，當下真的是想把自己給掐死，也因為這樣才衍生出了寫這篇文章的衝動。</p>
+</blockquote>
+<p>接著你就可以在新的Server上開啟WordPress囉～</p>
+<blockquote>
+<p><a href="http://localhost:80/" target="_blank" rel="noopener">http://localhost:80/</a></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>wordpress</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 LTS+Vue-CLI+Ngnix/Apache</title>
+    <url>/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從後台架設完畢後<br>緊接著要幫前端同事把Vue給搬至Server<br>如此一來整個專案就能順利上線了～</p>
+<p>不過即便如此也熬了一陣子的撞牆期<br>因為網路上的教學文章實在太多<br>每一篇都大同小異又有些微的不同<br>因此決定實際演練並趕緊記錄下來<br>這樣未來需要時就不會花太多時間走冤望路了</p>
+<p>那話不多說<br>一起來看是如何操作的吧</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>更新<code>APT</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+
+<p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
+<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.9.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.8</span><br></pre></td></tr></table></figure>
+
+<h2 id="Vue-CLI"><a href="#Vue-CLI" class="headerlink" title="Vue-CLI"></a>Vue-CLI</h2><p>安裝<code>Vue-CLI</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli-init</span></span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue -V</span></span><br><span class="line">@vue/cli 4.5.4</span><br></pre></td></tr></table></figure>
+
+<p>切換至存放專案目錄，這裡可自行選擇，我一般習慣放置在<code>/var/app</code>裡</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
+
+<p>建立專案</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue init webpack &lt;project&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>根據提示選擇即可<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_init.png" alt="vue_init"></p>
+<p>切換至剛剛建立的專案目錄，然後打包專案</p>
+<blockquote>
+<p>若是現有的專案可直接<code>git clone</code>到目錄下，再執行以下指令</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;project&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm install</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm run build</span></span><br></pre></td></tr></table></figure>
+
+<p>接著可以在目錄底下看到<code>dist</code>這個資料夾就代表打包完成</p>
+<h2 id="Ngnix"><a href="#Ngnix" class="headerlink" title="Ngnix"></a>Ngnix</h2><p>安裝<code>Ngnix</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nginx</span></span><br></pre></td></tr></table></figure>
+
+<p>查看服務狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service nginx status</span></span><br></pre></td></tr></table></figure>
+
+<p>打開瀏覽器直接輸入<code>http://&lt;server_ip&gt;/</code>就可以看到Nginx的歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/nginx_welcome.png" alt="nginx_welcome"></p>
+<p>根據<code>/etc/nginx/nginx.conf</code>我們可以知道設定檔放置在這兩個地方</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">http &#123;</span><br><span class="line">	...</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;*.conf;</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;*;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>Nginx預設的做法會先將設定檔放置<code>/etc/nginx/sites-available</code><br>再經由<code>軟連結</code>將檔案綁定至<code>/etc/nginx/sites-enabled</code><br>而我們同樣依照它的流程先新增自定義設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/nginx/sites-available/&lt;project&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name localhost;</span><br><span class="line">    root &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">    	index index.html;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>建立軟連結</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ ln -s &#x2F;etc&#x2F;nginx&#x2F;sites-available&#x2F;&lt;project&gt; &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;&lt;project&gt;</span><br></pre></td></tr></table></figure>
+
+<p>刪除預設設定檔的軟連結</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ rm &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;default</span><br></pre></td></tr></table></figure>
+
+<p>測試設定檔配置並重啟</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> nginx -t</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> service nginx reload</span></span><br></pre></td></tr></table></figure>
+
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
+<h3 id="補充"><a href="#補充" class="headerlink" title="補充"></a>補充</h3><p>在研究過程中耗費我最多時間的其實是設定檔的配置，由於我對Vue-cli的理解還不夠熟悉<br>裡頭有一些參數還不瞭解作用為何，也不太清楚Vue-cli的router是如何運作<br>因此雖然以上的配置可以讓專案運行，但不代表是完全正確的<br>這部分我還要再琢磨一番後才能寫得更詳細，而以下是我實際專案的配置<br><code>location</code>的部分和原來有些許的不同</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    server_name  easylunch.today;</span><br><span class="line">    root         &#x2F;var&#x2F;app&#x2F;lunch&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        try_files $uri $uri&#x2F; @router;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">    location @router &#123;</span><br><span class="line">        rewrite ^.*$ &#x2F;index.html last;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>Apache其實也是同樣的做法，只是換了一個Web Server而已～</p>
+<p>安裝<code>Apache</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install apache2 libapache2-mod-wsgi-py3</span><br></pre></td></tr></table></figure>
+
+<p>開機自動啟動Apache</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>
+
+<p>至/etc/apache2/sites-available/vue.conf新增下列設定</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/apache2/sites-available/vue.conf</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    DocumentRoot &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist</span><br><span class="line">    ServerName localhost</span><br><span class="line"></span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist&gt;</span><br><span class="line">        Options Indexes FollowSymLinks</span><br><span class="line">        AllowOverride All</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可使用vi/Vim取代：<code>:%s/&lt;SEARCH_FROM&gt;/&lt;REPLACE_TO&gt;/g</code></p>
+</blockquote>
+<p>啟用自訂設定 &amp; 關閉預設設定</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2ensite vue.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo a2dissite 000-default.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
+]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>vue</tag>
       </tags>
   </entry>
   <entry>
