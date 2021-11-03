@@ -23,16 +23,25 @@
     var CONFIG = {"hostname":"a35205905.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="LinChi 叩叮俱樂部">
-<meta property="og:url" content="https://a35205905.github.io/archives/2021/07/index.html">
+  <meta name="description" content="前言從進公司到現在以來，在連線GCP時都是採用以下兩種方式：  從GCP平台透過瀏覽器開啟主機shell  安裝Google Cloud SDK方式ssh遠端   而自從接觸了AWS後我才又學到了第三種方式，只要透過ssh key就可以不用再設定任何東西 直接在CLI上ssh遠端至主機！！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GCP+SSH">
+<meta property="og:url" content="https://a35205905.github.io/2021/11/03/GCP-SSH/index.html">
 <meta property="og:site_name" content="LinChi 叩叮俱樂部">
+<meta property="og:description" content="前言從進公司到現在以來，在連線GCP時都是採用以下兩種方式：  從GCP平台透過瀏覽器開啟主機shell  安裝Google Cloud SDK方式ssh遠端   而自從接觸了AWS後我才又學到了第三種方式，只要透過ssh key就可以不用再設定任何東西 直接在CLI上ssh遠端至主機！！">
 <meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://a35205905.github.io/images/loading.gif">
+<meta property="og:image" content="https://a35205905.github.io/images/loading.gif">
+<meta property="og:image" content="https://a35205905.github.io/images/loading.gif">
+<meta property="og:image" content="https://a35205905.github.io/images/loading.gif">
+<meta property="article:published_time" content="2021-11-03T09:45:00.000Z">
+<meta property="article:modified_time" content="2021-11-03T10:36:45.740Z">
 <meta property="article:author" content="LinChi">
-<meta property="article:tag" content="python">
+<meta property="article:tag" content="gcp">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://a35205905.github.io/images/loading.gif">
 
-<link rel="canonical" href="https://a35205905.github.io/archives/2021/07/">
+<link rel="canonical" href="https://a35205905.github.io/2021/11/03/GCP-SSH/">
 
 
 <script id="page-configurations">
@@ -40,12 +49,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-TW'
   };
 </script>
 
-  <title>歸檔 | LinChi 叩叮俱樂部</title>
+  <title>GCP+SSH | LinChi 叩叮俱樂部</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-180982767-1"></script>
     <script data-pjax>
@@ -196,50 +205,154 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共有 11 篇文章。 繼續努力。</span>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://a35205905.github.io/2021/11/03/GCP-SSH/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LinChi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LinChi 叩叮俱樂部">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GCP+SSH
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2021-11-03 17:45:00 / 修改時間：18:36:45" itemprop="dateCreated datePublished" datetime="2021-11-03T17:45:00+08:00">2021-11-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E8%A1%93%E6%96%87%E7%AB%A0/" itemprop="url" rel="index"><span itemprop="name">技術文章</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>從進公司到現在以來，在連線GCP時都是採用以下兩種方式：</p>
+<ol>
+<li><p>從GCP平台透過瀏覽器開啟主機shell</p>
+</li>
+<li><p>安裝<code>Google Cloud SDK</code>方式ssh遠端</p>
+</li>
+</ol>
+<p>而自從接觸了AWS後我才又學到了第三種方式，只要透過<code>ssh key</code>就可以不用再設定任何東西</p>
+<p>直接在CLI上ssh遠端至主機！！</p>
+<a id="more"></a>
+
+<h2 id="ssh-keygen"><a href="#ssh-keygen" class="headerlink" title="ssh-keygen"></a>ssh-keygen</h2><p>只要透過<code>ssh-keygen</code>就能夠產生一組公私鑰，接著它會問你基本問題</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh-keygen</span></span><br></pre></td></tr></table></figure>
+
+<p>選擇<code>ssh key</code>放置的目錄及金鑰名稱，一般來說都會放在家目錄底下<code>~/.ssh</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Generating public&#x2F;private rsa key pair.</span><br><span class="line">Enter file in which to save the key (&#x2F;Users&#x2F;a35205905&#x2F;.ssh&#x2F;id_rsa):Users&#x2F;&lt;USER&gt;&#x2F;.ssh&#x2F;&lt;KEY NAME&gt;.pem</span><br></pre></td></tr></table></figure>
+
+<p>選擇是否在連線時需要輸入密碼，這邊建議要設定來提高安全性</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enter passphrase (empty for no passphrase):</span><br></pre></td></tr></table></figure>
+
+<p>完成後這時就會得到一組金鑰：</p>
+<ul>
+<li><p>公鑰：<code>&lt;KEY NAME&gt;.pem.pub</code></p>
+</li>
+<li><p>私鑰：<code>&lt;KEY NAME&gt;.pem</code></p>
+</li>
+</ul>
+<p>如果想自定義設定也可以這麼做</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh-keygen -t rsa -f ~/.ssh/&lt;KEY NAME&gt;.pem -C &lt;COMMIT&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>最後把我們把公鑰給複製起來</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> less `~/.ssh/&lt;KEY NAME&gt;.pem.pub`</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>-f:金鑰目錄及檔名 / -t:加密方式(預設RSA) / -C:註解</p>
+</blockquote>
+<h2 id="GCP"><a href="#GCP" class="headerlink" title="GCP"></a>GCP</h2><p>接著打開GCP平台並進入到<code>Compute Engine</code>底下的<code>VM執行個體</code><br><img src="/images/loading.gif" data-original="/images/GCP-SSH/vm_list.png" alt="vue_init"></p>
+<p>進入專案詳細資訊並點選編輯<br><img src="/images/loading.gif" data-original="/images/GCP-SSH/vm_info.png" alt="vue_init"></p>
+<p>在<code>SSH金鑰</code>中貼上剛剛所複製的公鑰，並點選儲存<br><img src="/images/loading.gif" data-original="/images/GCP-SSH/vm_edit.png" alt="vue_init"></p>
+<p>接著回到專案詳細資訊就會看到已經設定好的<code>SSH Key</code><br><img src="/images/loading.gif" data-original="/images/GCP-SSH/vm_info_done.png" alt="vue_init"></p>
+<p>最後只要打開CLI就能透過<code>ssh</code>的方式直接連接至GCP囉</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh &lt;USER&gt;@&lt;HOST&gt; -i ~/.ssh/&lt;KEY NAME&gt;.pem</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 輸入所設定的密碼</span></span><br></pre></td></tr></table></figure>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
+        
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-07-23T19:24:00+08:00"
-              content="2021-07-23">
-          07-23
-        </time>
-      </div>
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>作者： </strong>LinChi
+  </li>
+  <li class="post-copyright-link">
+    <strong>文章連結：</strong>
+    <a href="https://a35205905.github.io/2021/11/03/GCP-SSH/" title="GCP+SSH">https://a35205905.github.io/2021/11/03/GCP-SSH/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版權聲明： </strong>本網誌所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 許可協議。轉載請註明出處！
+  </li>
+</ul>
+</div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/07/23/macOS-pipenv-pyenv/" itemprop="url">
-            <span itemprop="name">macOS+pipenv+pyenv</span>
-          </a>
-      </div>
 
-    </header>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/gcp/" rel="tag"># gcp</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/10/06/Ubuntu-18-04-LTS-Apache-PM2/" rel="prev" title="Ubuntu 18.04 LTS+Apache+PM2">
+      <i class="fa fa-chevron-left"></i> Ubuntu 18.04 LTS+Apache+PM2
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
   </article>
-
-
-    </div>
-  </div>
   
   
-  
-
   
 
 
@@ -292,6 +405,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ssh-keygen"><span class="nav-number">2.</span> <span class="nav-text">ssh-keygen</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCP"><span class="nav-number">3.</span> <span class="nav-text">GCP</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
