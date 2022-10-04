@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>GCP+SSH</title>
-    <url>/2021/11/03/GCP-SSH/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>從進公司到現在以來，在連線GCP時都是採用以下兩種方式：</p>
+    <title>GCE+SSH</title>
+    <url>/2021/11/03/GCE-SSH/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>從進公司到現在以來，在連線Google Compute Engine時都是採用以下兩種方式：</p>
 <ol>
 <li><p>從GCP平台透過瀏覽器開啟主機shell</p>
 </li>
@@ -14,7 +14,8 @@
 <p>直接在CLI上ssh遠端至主機！！</p>
 <a id="more"></a>
 
-<h2 id="ssh-keygen"><a href="#ssh-keygen" class="headerlink" title="ssh-keygen"></a>ssh-keygen</h2><p>只要透過<code>ssh-keygen</code>就能夠產生一組公私鑰，接著它會問你基本問題</p>
+<h2 id="ssh-keygen"><a href="#ssh-keygen" class="headerlink" title="ssh-keygen"></a>ssh-keygen</h2><p>本篇文章參考至<a href="https://cloud.google.com/compute/docs/connect/create-ssh-keys" target="_blank" rel="noopener">Google Cloud官方文件</a></p>
+<p>只要透過<code>ssh-keygen</code>就能夠產生一組公私鑰，接著它會問你基本問題</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh-keygen</span></span><br></pre></td></tr></table></figure>
 
 <p>選擇<code>ssh key</code>放置的目錄及金鑰名稱，一般來說都會放在家目錄底下<code>~/.ssh</code></p>
@@ -39,18 +40,104 @@
 <blockquote>
 <p>-f:金鑰目錄及檔名 / -t:加密方式(預設RSA) / -C:註解</p>
 </blockquote>
-<h2 id="GCP"><a href="#GCP" class="headerlink" title="GCP"></a>GCP</h2><p>接著打開GCP平台並進入到<code>Compute Engine</code>底下的<code>VM執行個體</code><br><img src="/images/loading.gif" data-original="/images/GCP-SSH/vm_list.png" alt="vue_init"></p>
-<p>進入專案詳細資訊並點選編輯<br><img src="/images/loading.gif" data-original="/images/GCP-SSH/vm_info.png" alt="vue_init"></p>
-<p>在<code>SSH金鑰</code>中貼上剛剛所複製的公鑰，並點選儲存<br><img src="/images/loading.gif" data-original="/images/GCP-SSH/vm_edit.png" alt="vue_init"></p>
-<p>接著回到專案詳細資訊就會看到已經設定好的<code>SSH Key</code><br><img src="/images/loading.gif" data-original="/images/GCP-SSH/vm_info_done.png" alt="vue_init"></p>
-<p>最後只要打開CLI就能透過<code>ssh</code>的方式直接連接至GCP囉</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh &lt;USER&gt;@&lt;HOST&gt; -i ~/.ssh/&lt;KEY NAME&gt;.pem</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 輸入所設定的密碼</span></span><br></pre></td></tr></table></figure>
-]]></content>
+<h2 id="GCP"><a href="#GCP" class="headerlink" title="GCP"></a>GCP</h2><p>接著打開GCP平台並進入到<code>Compute Engine</code>底下的<code>VM執行個體</code><br><img src="/images/GCP-SSH/vm_list.png" alt="vue_init"></p>
+<p>進入專案詳細資訊並點選編輯<br><img src="/images/GCP-SSH/vm_info.png" alt="vue_init"></p>
+<p>在<code>SSH金鑰</code>中貼上剛剛所複製的公鑰，並點選儲存<br><img src="/images/GCP-SSH/vm_edit.png" alt="vue_init"></p>
+<p>接著回到專案詳細資訊就會看到已經設定好的<code>SSH Key</code><br><img src="/images/GCP-SSH/vm_info_done.png" alt="vue_init"></p>
+<p>最後只要打開CLI就能透過<code>ssh</code>的方式直接連接至GCE囉</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh &lt;USER&gt;@&lt;HOST&gt; -i ~/.ssh/&lt;KEY NAME&gt;.pem</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 輸入所設定的密碼</span></span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>技術文章</category>
       </categories>
       <tags>
         <tag>gcp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 LTS+Apache+Laravel</title>
+    <url>/2021/05/28/Ubuntu-18-04-LTS-Apache-Laravel/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>同一時間，最近因工作關係正式學習PHP了，而且馬上就進入到Laravel框架的部分</p>
+<p>可想而知每當學習新的Web Framework，不免俗的還是要來部署一下</p>
+<p>那就話不多說直接開始吧～</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>先把所需要的套件裝起來<br>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+
+<p>我一般習慣會把專案放置在<code>/var/app</code>裡，因此我們先建立並切換至專案路徑<br>當然你也可以自行更換路徑，這沒有絕對</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
+<h2 id="Laravel"><a href="#Laravel" class="headerlink" title="Laravel"></a>Laravel</h2><p>使用Git將你的專案複製下來並切換目錄</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> &lt;YOUR PROJECT URL&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><p>MySQL的部分我直接拆開來獨立成<a href="/2021/05/24/MySQL8-0-Backup-Restore/" title="一篇">一篇</a>了，可以直接點進去看</p>
+<h2 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h2><p>安裝<code>PHP</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install php</span></span><br></pre></td></tr></table></figure>
+
+<p>查看<code>PHP</code>版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ php -v</span><br></pre></td></tr></table></figure>
+
+<h2 id="Composer"><a href="#Composer" class="headerlink" title="Composer"></a>Composer</h2><p>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝<code>Composer</code>依賴套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install curl php-cli php-mbstring git unzip</span></span><br></pre></td></tr></table></figure>
+
+<p>下載<code>Composer</code>安裝檔</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cd ~</span><br><span class="line">$ curl -sS https:&#x2F;&#x2F;getcomposer.org&#x2F;installer -o composer-setup.php</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>-sS: 只顯示錯誤提示; -o: 輸出至文件上</p>
+</blockquote>
+<p>驗證安裝檔hash，若hash值不對請到<a href="https://composer.github.io/pubkeys.html" target="_blank" rel="noopener">官方文件</a>上再檢查一次</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ HASH&#x3D;756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3fbc1f233e9b180f061</span><br><span class="line">$ php -r &quot;if (hash_file(&#39;SHA384&#39;, &#39;composer-setup.php&#39;) &#x3D;&#x3D;&#x3D; &#39;$HASH&#39;) &#123; echo &#39;Installer verified&#39;; &#125; else &#123; echo &#39;Installer corrupt&#39;; unlink(&#39;composer-setup.php&#39;); &#125; echo PHP_EOL;&quot;</span><br></pre></td></tr></table></figure>
+<p>驗證成功會看到以下訊息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Installer verified</span><br></pre></td></tr></table></figure>
+
+<p>安裝<code>Composer</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo php composer-setup.php --install-dir=/usr/<span class="built_in">local</span>/bin --filename=composer</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">All settings correct for using Composer</span><br><span class="line">Downloading...</span><br><span class="line"></span><br><span class="line">Composer (version 2.0.14) successfully installed to: &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br><span class="line">Use it: php &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br></pre></td></tr></table></figure>
+
+<p>查看<code>Composer</code>狀態</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ composer</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">   ______</span><br><span class="line">  &#x2F; ____&#x2F;___  ____ ___  ____  ____  ________  _____</span><br><span class="line"> &#x2F; &#x2F;   &#x2F; __ \&#x2F; __ &#96;__ \&#x2F; __ \&#x2F; __ \&#x2F; ___&#x2F; _ \&#x2F; ___&#x2F;</span><br><span class="line">&#x2F; &#x2F;___&#x2F; &#x2F;_&#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F;_&#x2F; &#x2F; &#x2F;_&#x2F; (__  )  __&#x2F; &#x2F;</span><br><span class="line">\____&#x2F;\____&#x2F;_&#x2F; &#x2F;_&#x2F; &#x2F;_&#x2F; .___&#x2F;\____&#x2F;____&#x2F;\___&#x2F;_&#x2F;</span><br><span class="line">                    &#x2F;_&#x2F;</span><br><span class="line">Composer version 2.0.14 2021-05-21 17:03:37</span><br></pre></td></tr></table></figure>
+
+<p><code>Composer</code>不希望你使用root帳號，因為某些命令包括exec、install、update，允許第三方程式在你的系統上執行，這些腳本具有完全訪問權限，因此強烈建議不要在root帳號上操作</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Do not run Composer as root&#x2F;super user! See https:&#x2F;&#x2F;getcomposer.org&#x2F;root for details</span><br><span class="line">Continue as root&#x2F;super user [yes]</span><br></pre></td></tr></table></figure>
+
+<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
+<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.17.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.13</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Yarn"><a href="#Yarn" class="headerlink" title="Yarn"></a>Yarn</h2><p>安裝<code>Yarn</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm install -g yarn</span><br></pre></td></tr></table></figure>
+
+<p>查看<code>Yarn</code>版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yarn -v</span><br></pre></td></tr></table></figure>
+
+<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>架站教學：<a href="https://chenuin.blogspot.com/2019/01/django-ubuntuapache2modwsgi-django.html" target="_blank" rel="noopener">網址</a></p>
+<p>安裝Apache套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install apache2 libapache2-mod-wsgi-py3</span></span><br></pre></td></tr></table></figure>
+
+<p>開機自動啟動Apache</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>php</tag>
+        <tag>laravel</tag>
+        <tag>ubuntu</tag>
       </tags>
   </entry>
   <entry>
@@ -148,93 +235,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu 18.04 LTS+Apache+Laravel</title>
-    <url>/2021/05/28/Ubuntu-18-04-LTS-Apache-Laravel/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>同一時間，最近因工作關係正式學習PHP了，而且馬上就進入到Laravel框架的部分</p>
-<p>可想而知每當學習新的Web Framework，不免俗的還是要來部署一下</p>
-<p>那就話不多說直接開始吧～</p>
-<a id="more"></a>
-
-<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
-
-<p>可切換至<code>root</code>帳號</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
-
-<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>先把所需要的套件裝起來<br>更新APT</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  sudo apt-get update</span></span><br></pre></td></tr></table></figure>
-
-<p>我一般習慣會把專案放置在<code>/var/app</code>裡，因此我們先建立並切換至專案路徑<br>當然你也可以自行更換路徑，這沒有絕對</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
-<h2 id="Laravel"><a href="#Laravel" class="headerlink" title="Laravel"></a>Laravel</h2><p>使用Git將你的專案複製下來並切換目錄</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> &lt;YOUR PROJECT URL&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><p>MySQL的部分我直接拆開來獨立成<a href="/2021/05/24/MySQL8-0-Backup-Restore/" title="一篇">一篇</a>了，可以直接點進去看</p>
-<h2 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h2><p>安裝<code>PHP</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install php</span></span><br></pre></td></tr></table></figure>
-
-<p>查看<code>PHP</code>版本</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ php -v</span><br></pre></td></tr></table></figure>
-
-<h2 id="Composer"><a href="#Composer" class="headerlink" title="Composer"></a>Composer</h2><p>更新APT</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br></pre></td></tr></table></figure>
-
-<p>安裝<code>Composer</code>依賴套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install curl php-cli php-mbstring git unzip</span></span><br></pre></td></tr></table></figure>
-
-<p>下載<code>Composer</code>安裝檔</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cd ~</span><br><span class="line">$ curl -sS https:&#x2F;&#x2F;getcomposer.org&#x2F;installer -o composer-setup.php</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>-sS: 只顯示錯誤提示; -o: 輸出至文件上</p>
-</blockquote>
-<p>驗證安裝檔hash，若hash值不對請到<a href="https://composer.github.io/pubkeys.html" target="_blank" rel="noopener">官方文件</a>上再檢查一次</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ HASH&#x3D;756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3fbc1f233e9b180f061</span><br><span class="line">$ php -r &quot;if (hash_file(&#39;SHA384&#39;, &#39;composer-setup.php&#39;) &#x3D;&#x3D;&#x3D; &#39;$HASH&#39;) &#123; echo &#39;Installer verified&#39;; &#125; else &#123; echo &#39;Installer corrupt&#39;; unlink(&#39;composer-setup.php&#39;); &#125; echo PHP_EOL;&quot;</span><br></pre></td></tr></table></figure>
-<p>驗證成功會看到以下訊息</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Installer verified</span><br></pre></td></tr></table></figure>
-
-<p>安裝<code>Composer</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo php composer-setup.php --install-dir=/usr/<span class="built_in">local</span>/bin --filename=composer</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">All settings correct for using Composer</span><br><span class="line">Downloading...</span><br><span class="line"></span><br><span class="line">Composer (version 2.0.14) successfully installed to: &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br><span class="line">Use it: php &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br></pre></td></tr></table></figure>
-
-<p>查看<code>Composer</code>狀態</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ composer</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">   ______</span><br><span class="line">  &#x2F; ____&#x2F;___  ____ ___  ____  ____  ________  _____</span><br><span class="line"> &#x2F; &#x2F;   &#x2F; __ \&#x2F; __ &#96;__ \&#x2F; __ \&#x2F; __ \&#x2F; ___&#x2F; _ \&#x2F; ___&#x2F;</span><br><span class="line">&#x2F; &#x2F;___&#x2F; &#x2F;_&#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F;_&#x2F; &#x2F; &#x2F;_&#x2F; (__  )  __&#x2F; &#x2F;</span><br><span class="line">\____&#x2F;\____&#x2F;_&#x2F; &#x2F;_&#x2F; &#x2F;_&#x2F; .___&#x2F;\____&#x2F;____&#x2F;\___&#x2F;_&#x2F;</span><br><span class="line">                    &#x2F;_&#x2F;</span><br><span class="line">Composer version 2.0.14 2021-05-21 17:03:37</span><br></pre></td></tr></table></figure>
-
-<p><code>Composer</code>不希望你使用root帳號，因為某些命令包括exec、install、update，允許第三方程式在你的系統上執行，這些腳本具有完全訪問權限，因此強烈建議不要在root帳號上操作</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Do not run Composer as root&#x2F;super user! See https:&#x2F;&#x2F;getcomposer.org&#x2F;root for details</span><br><span class="line">Continue as root&#x2F;super user [yes]</span><br></pre></td></tr></table></figure>
-
-<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
-<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
-
-<p>查看版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.17.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.13</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Yarn"><a href="#Yarn" class="headerlink" title="Yarn"></a>Yarn</h2><p>安裝<code>Yarn</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm install -g yarn</span><br></pre></td></tr></table></figure>
-
-<p>查看<code>Yarn</code>版本</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yarn -v</span><br></pre></td></tr></table></figure>
-
-<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>架站教學：<a href="https://chenuin.blogspot.com/2019/01/django-ubuntuapache2modwsgi-django.html" target="_blank" rel="noopener">網址</a></p>
-<p>安裝Apache套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install apache2 libapache2-mod-wsgi-py3</span></span><br></pre></td></tr></table></figure>
-
-<p>開機自動啟動Apache</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>技術文章</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>php</tag>
-        <tag>laravel</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Ubuntu 18.04 LTS+Apache+PM2</title>
     <url>/2021/10/06/Ubuntu-18-04-LTS-Apache-PM2/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從進來公司後所有的專案都是採用SPA開發，但在部署上時常會碰到一些小問題</p>
@@ -312,13 +312,13 @@
 </ul>
 <h3 id="管理程序"><a href="#管理程序" class="headerlink" title="管理程序"></a>管理程序</h3><p>顯示管理程序狀態</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 [list|ls|status]</span></span><br></pre></td></tr></table></figure>
-<p><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_list.png" alt="vue_init"></p>
+<p><img src="/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_list.png" alt="vue_init"></p>
 <p>顯示管理程序CPU及記憶體使用狀態</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 monit</span></span><br></pre></td></tr></table></figure>
-<p><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_monit.png" alt="vue_init"></p>
+<p><img src="/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_monit.png" alt="vue_init"></p>
 <p>顯示指定程序狀態</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 show &lt;APP NAME&gt;</span></span><br></pre></td></tr></table></figure>
-<p><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_show.png" alt="vue_init"></p>
+<p><img src="/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_show.png" alt="vue_init"></p>
 <p>直接kill再重啟程序</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 restart &lt;APP NAME&gt;</span></span><br></pre></td></tr></table></figure>
 
@@ -631,7 +631,7 @@
 <p>建立專案</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue init webpack &lt;project&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p>根據提示選擇即可<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_init.png" alt="vue_init"></p>
+<p>根據提示選擇即可<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_init.png" alt="vue_init"></p>
 <p>切換至剛剛建立的專案目錄，然後打包專案</p>
 <blockquote>
 <p>若是現有的專案可直接<code>git clone</code>到目錄下，再執行以下指令</p>
@@ -645,7 +645,7 @@
 <p>查看服務狀態</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service nginx status</span></span><br></pre></td></tr></table></figure>
 
-<p>打開瀏覽器直接輸入<code>http://&lt;server_ip&gt;/</code>就可以看到Nginx的歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/nginx_welcome.png" alt="nginx_welcome"></p>
+<p>打開瀏覽器直接輸入<code>http://&lt;server_ip&gt;/</code>就可以看到Nginx的歡迎頁面<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/nginx_welcome.png" alt="nginx_welcome"></p>
 <p>根據<code>/etc/nginx/nginx.conf</code>我們可以知道設定檔放置在這兩個地方</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">http &#123;</span><br><span class="line">	...</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;*.conf;</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;*;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
@@ -662,7 +662,7 @@
 <p>測試設定檔配置並重啟</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> nginx -t</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> service nginx reload</span></span><br></pre></td></tr></table></figure>
 
-<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
 <h3 id="補充"><a href="#補充" class="headerlink" title="補充"></a>補充</h3><p>在研究過程中耗費我最多時間的其實是設定檔的配置，由於我對Vue-cli的理解還不夠熟悉<br>裡頭有一些參數還不瞭解作用為何，也不太清楚Vue-cli的router是如何運作<br>因此雖然以上的配置可以讓專案運行，但不代表是完全正確的<br>這部分我還要再琢磨一番後才能寫得更詳細，而以下是我實際專案的配置<br><code>location</code>的部分和原來有些許的不同</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    server_name  easylunch.today;</span><br><span class="line">    root         &#x2F;var&#x2F;app&#x2F;lunch&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        try_files $uri $uri&#x2F; @router;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">    location @router &#123;</span><br><span class="line">        rewrite ^.*$ &#x2F;index.html last;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -683,7 +683,7 @@
 <p>啟用自訂設定 &amp; 關閉預設設定</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2ensite vue.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo a2dissite 000-default.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
 
-<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
 ]]></content>
       <categories>
         <category>技術文章</category>
@@ -722,9 +722,9 @@
 </blockquote>
 <p>其實到這邊備份的部分就完成了，是不是超級簡單<br>這就是最笨但也是最快速的方式</p>
 <h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><p>其實Apache要備份只有<code>/etc/apache2/sites-available/&lt;WORDPRESS&gt;.conf</code>這個設定檔而已<br>因此你可以把它直接下載下來即可</p>
-<h3 id="Dowload"><a href="#Dowload" class="headerlink" title="Dowload"></a>Dowload</h3><p>而關於下載的部分，這邊也教一個<code>GCP</code>提供的功能<br>如果你是以SSL用瀏覽器打開的話，在畫面右上角會有一個工具欄<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_01.png" alt="vue_init"></p>
-<p>點選下載檔案<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_02.png" alt="vue_init"></p>
-<p>接著會出現視窗讓你輸入路徑<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_03.png" alt="vue_init"></p>
+<h3 id="Dowload"><a href="#Dowload" class="headerlink" title="Dowload"></a>Dowload</h3><p>而關於下載的部分，這邊也教一個<code>GCP</code>提供的功能<br>如果你是以SSL用瀏覽器打開的話，在畫面右上角會有一個工具欄<br><img src="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_01.png" alt="vue_init"></p>
+<p>點選下載檔案<br><img src="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_02.png" alt="vue_init"></p>
+<p>接著會出現視窗讓你輸入路徑<br><img src="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_03.png" alt="vue_init"></p>
 <p>用這樣的方式就可以很簡單的把備份檔下載下來了<br>同理上傳檔案也是如此，上傳後檔案會放至在<code>/home/&lt;GCP_ACCOUNT&gt;</code>下<br>接著就可以開始著手處理還原的部分囉～</p>
 <h2 id="Restore"><a href="#Restore" class="headerlink" title="Restore"></a>Restore</h2><p>還原就有很多小細節要注意了，如果沒有處理好，不僅是WordPress打開來畫面跟原先的不一樣<br>甚至有可能會出現連網頁都開不了的窘境，因此這裡會一步一步教大家如何操作</p>
 <h3 id="Before"><a href="#Before" class="headerlink" title="Before"></a>Before</h3><p>我們先假設你已經將備份檔及Apache設定檔上傳至新的Server<br>這邊是透過<code>GCP</code>上傳，因此檔案會位於我<code>GCP</code>帳號的家目錄底下</p>
@@ -835,7 +835,7 @@
 <blockquote>
 <p>dpkg: 本機軟體包管理器 / apt: 線上軟體包管理器 / .deb: Debian的軟體包格式(Debian又為Ubuntu父版本)</p>
 </blockquote>
-<p>這時候你會看到這個畫面，採用預設的設定直接選最後一項<code>ok</code>就行<br><img src="/images/loading.gif" data-original="/images/MySQL8-0-Backup-Restore/mysql_config.png" alt="vue_init"></p>
+<p>這時候你會看到這個畫面，採用預設的設定直接選最後一項<code>ok</code>就行<br><img src="/images/MySQL8-0-Backup-Restore/mysql_config.png" alt="vue_init"></p>
 <p>更新APT</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br></pre></td></tr></table></figure>
 
@@ -845,10 +845,10 @@
 <p>這時候就可以依據配置好的設定檔安裝我們的主角<code>MySQL</code></p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install mysql-server -y</span></span><br></pre></td></tr></table></figure>
 
-<p>這時候MySQL會要你輸入root密碼，記住這是MySQL自己的root帳號，跟Ubuntu的root是不一樣的歐！<br><img src="/images/loading.gif" data-original="/images/MySQL8-0-Backup-Restore/mysql_password.png" alt="vue_init"></p>
-<p>再次輸入密碼<br><img src="/images/loading.gif" data-original="/images/MySQL8-0-Backup-Restore/mysql_re_password.png" alt="vue_init"></p>
+<p>這時候MySQL會要你輸入root密碼，記住這是MySQL自己的root帳號，跟Ubuntu的root是不一樣的歐！<br><img src="/images/MySQL8-0-Backup-Restore/mysql_password.png" alt="vue_init"></p>
+<p>再次輸入密碼<br><img src="/images/MySQL8-0-Backup-Restore/mysql_re_password.png" alt="vue_init"></p>
 <p>再來MySQL還會問你是否要使用8.0版的<code>caching_sha2_password</code>還是5.7的<code>mysql_native_password</code>驗證方式，這會影響你其他Server連接MySQL時的相容性，這裡選第二個舊版的選項</p>
-<p><img src="/images/loading.gif" data-original="/images/MySQL8-0-Backup-Restore/mysql_authentication.png" alt="vue_init"></p>
+<p><img src="/images/MySQL8-0-Backup-Restore/mysql_authentication.png" alt="vue_init"></p>
 <p>查看<code>MySQL</code>狀態</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service mysql status</span></span><br></pre></td></tr></table></figure>
 <p>會看到綠色的<code>active (running)</code>顯示正在運行</p>
@@ -1251,12 +1251,12 @@
 <p><code>chmod</code>: 更改檔案(目錄)權限 / <code>chown</code>: 更改檔案(目錄)擁有者</p>
 </blockquote>
 <h2 id="GCP"><a href="#GCP" class="headerlink" title="GCP"></a>GCP</h2><p>別忘了我們的<code>Ubuntu</code>是綁在<code>GCP</code>底下，因此我們還要到GCP設置防火牆<br>不然連線至FTP時，會硬是活生生的被Google給擋了下來</p>
-<p>這邊要記得<code>Port</code>要根據你在設定檔配置的範圍<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-vsftpd/gcp_firewall_ftp.png" alt="vue_welcome"></p>
+<p>這邊要記得<code>Port</code>要根據你在設定檔配置的範圍<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/gcp_firewall_ftp.png" alt="vue_welcome"></p>
 <h2 id="FileZilla"><a href="#FileZilla" class="headerlink" title="FileZilla"></a>FileZilla</h2><p>所有的步驟都做好後，我們就可以在本機端連線至FTP了<br>我是使用<a href="https://filezilla-project.org/" target="_blank" rel="noopener">FileZilla</a>這套老牌的FTP軟體</p>
-<p>點擊左上角新增站台<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-vsftpd/filezilla01.png" alt="vue_welcome"></p>
-<p>配置好<code>主機</code>、<code>加密</code>、<code>使用者</code>後，點選連線<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-vsftpd/filezilla02.png" alt="vue_welcome"></p>
-<p>這就是我們之前建立好的憑證，點選確認<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-vsftpd/openssl_ftp.png" alt="vue_welcome"></p>
-<p>我們的目錄就會出現在畫面右方<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-vsftpd/filezilla03.png" alt="vue_welcome"></p>
+<p>點擊左上角新增站台<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/filezilla01.png" alt="vue_welcome"></p>
+<p>配置好<code>主機</code>、<code>加密</code>、<code>使用者</code>後，點選連線<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/filezilla02.png" alt="vue_welcome"></p>
+<p>這就是我們之前建立好的憑證，點選確認<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/openssl_ftp.png" alt="vue_welcome"></p>
+<p>我們的目錄就會出現在畫面右方<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/filezilla03.png" alt="vue_welcome"></p>
 <p>接著你就可以在目錄下存取檔案囉～</p>
 <h2 id="WordPress"><a href="#WordPress" class="headerlink" title="WordPress"></a>WordPress</h2><p>如果你想在FTP上直接存取<code>WordPress</code>的話，可以這麼做</p>
 <p>先將<code>WordPress</code>目錄移至<code>ftp</code></p>

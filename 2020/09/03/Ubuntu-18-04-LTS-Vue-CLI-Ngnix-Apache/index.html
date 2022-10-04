@@ -27,20 +27,20 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Ubuntu 18.04 LTS+Vue-CLI+Ngnix&#x2F;Apache">
 <meta property="og:url" content="https://a35205905.github.io/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/index.html">
-<meta property="og:site_name" content="LinChi 叩叮俱樂部">
+<meta property="og:site_name" content="Ricky 叩叮俱樂部">
 <meta property="og:description" content="前言自從後台架設完畢後緊接著要幫前端同事把Vue給搬至Server如此一來整個專案就能順利上線了～ 不過即便如此也熬了一陣子的撞牆期因為網路上的教學文章實在太多每一篇都大同小異又有些微的不同因此決定實際演練並趕緊記錄下來這樣未來需要時就不會花太多時間走冤望路了 那話不多說一起來看是如何操作的吧">
 <meta property="og:locale" content="zh_TW">
-<meta property="og:image" content="https://a35205905.github.io/images/loading.gif">
-<meta property="og:image" content="https://a35205905.github.io/images/loading.gif">
-<meta property="og:image" content="https://a35205905.github.io/images/loading.gif">
-<meta property="og:image" content="https://a35205905.github.io/images/loading.gif">
+<meta property="og:image" content="https://a35205905.github.io/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_init.png">
+<meta property="og:image" content="https://a35205905.github.io/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/nginx_welcome.png">
+<meta property="og:image" content="https://a35205905.github.io/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png">
+<meta property="og:image" content="https://a35205905.github.io/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png">
 <meta property="article:published_time" content="2020-09-03T10:08:00.000Z">
-<meta property="article:modified_time" content="2021-07-23T19:50:25.835Z">
-<meta property="article:author" content="LinChi">
+<meta property="article:modified_time" content="2021-07-23T19:50:25.000Z">
+<meta property="article:author" content="Ricky">
 <meta property="article:tag" content="ubuntu">
 <meta property="article:tag" content="vue">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://a35205905.github.io/images/loading.gif">
+<meta name="twitter:image" content="https://a35205905.github.io/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_init.png">
 
 <link rel="canonical" href="https://a35205905.github.io/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/">
 
@@ -55,7 +55,7 @@
   };
 </script>
 
-  <title>Ubuntu 18.04 LTS+Vue-CLI+Ngnix/Apache | LinChi 叩叮俱樂部</title>
+  <title>Ubuntu 18.04 LTS+Vue-CLI+Ngnix/Apache | Ricky 叩叮俱樂部</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-180982767-1"></script>
     <script data-pjax>
@@ -115,7 +115,7 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">LinChi 叩叮俱樂部</h1>
+      <h1 class="site-title">Ricky 叩叮俱樂部</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
       <p class="site-subtitle" itemprop="description">在開始之前，先來杯長島冰茶吧～</p>
@@ -217,12 +217,12 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="LinChi">
+      <meta itemprop="name" content="Ricky">
       <meta itemprop="description" content="">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LinChi 叩叮俱樂部">
+      <meta itemprop="name" content="Ricky 叩叮俱樂部">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -308,7 +308,7 @@
 <p>建立專案</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue init webpack &lt;project&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p>根據提示選擇即可<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_init.png" alt="vue_init"></p>
+<p>根據提示選擇即可<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_init.png" alt="vue_init"></p>
 <p>切換至剛剛建立的專案目錄，然後打包專案</p>
 <blockquote>
 <p>若是現有的專案可直接<code>git clone</code>到目錄下，再執行以下指令</p>
@@ -322,7 +322,7 @@
 <p>查看服務狀態</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service nginx status</span></span><br></pre></td></tr></table></figure>
 
-<p>打開瀏覽器直接輸入<code>http://&lt;server_ip&gt;/</code>就可以看到Nginx的歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/nginx_welcome.png" alt="nginx_welcome"></p>
+<p>打開瀏覽器直接輸入<code>http://&lt;server_ip&gt;/</code>就可以看到Nginx的歡迎頁面<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/nginx_welcome.png" alt="nginx_welcome"></p>
 <p>根據<code>/etc/nginx/nginx.conf</code>我們可以知道設定檔放置在這兩個地方</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">http &#123;</span><br><span class="line">	...</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;*.conf;</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;*;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
@@ -339,7 +339,7 @@
 <p>測試設定檔配置並重啟</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> nginx -t</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> service nginx reload</span></span><br></pre></td></tr></table></figure>
 
-<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
 <h3 id="補充"><a href="#補充" class="headerlink" title="補充"></a>補充</h3><p>在研究過程中耗費我最多時間的其實是設定檔的配置，由於我對Vue-cli的理解還不夠熟悉<br>裡頭有一些參數還不瞭解作用為何，也不太清楚Vue-cli的router是如何運作<br>因此雖然以上的配置可以讓專案運行，但不代表是完全正確的<br>這部分我還要再琢磨一番後才能寫得更詳細，而以下是我實際專案的配置<br><code>location</code>的部分和原來有些許的不同</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    server_name  easylunch.today;</span><br><span class="line">    root         &#x2F;var&#x2F;app&#x2F;lunch&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        try_files $uri $uri&#x2F; @router;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">    location @router &#123;</span><br><span class="line">        rewrite ^.*$ &#x2F;index.html last;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -360,7 +360,7 @@
 <p>啟用自訂設定 &amp; 關閉預設設定</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2ensite vue.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo a2dissite 000-default.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
 
-<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/loading.gif" data-original="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome"></p>
 
     </div>
 
@@ -468,7 +468,7 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">LinChi</p>
+  <p class="site-author-name" itemprop="name">Ricky</p>
   <div class="site-description" itemprop="description"></div>
 </div>
 <div class="site-state-wrap motion-element">
@@ -503,7 +503,7 @@
       </span>
   </div>
   <div class="cc-license motion-element" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/loading.gif" data-original="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
   </div>
 
 
@@ -527,11 +527,11 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">LinChi</span>
+  <span class="author" itemprop="copyrightHolder">Ricky</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 強力驅動
   </div>
@@ -675,11 +675,5 @@ window.addEventListener('pjax:success', () => {
   
 
     </div>
-<script>
-            window.imageLazyLoadSetting = {
-                isSPA: false,
-                preloadRatio: 1,
-                processImages: null,
-            };
-        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+</body>
 </html>
