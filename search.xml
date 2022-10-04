@@ -214,90 +214,88 @@
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu 18.04 LTS+Apache+Laravel</title>
-    <url>/2021/05/28/Ubuntu-18-04-LTS-Apache-Laravel/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>同一時間，最近因工作關係正式學習PHP了，而且馬上就進入到Laravel框架的部分</p>
-<p>可想而知每當學習新的Web Framework，不免俗的還是要來部署一下</p>
-<p>那就話不多說直接開始吧～</p>
+    <title>Ubuntu 18.04 LTS+Certbot(Let’s Encrypt)</title>
+    <url>/2020/10/28/Ubuntu-18-04-LTS-Certbot-Let%E2%80%99s-Encrypt/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>打了幾篇文章之後發現，要想前言真的是一件挺燒腦的事情，明明也不是特別為了什麼才寫文章</p>
+<p>單純地只是為了把工作上遇到困難的解決辦法，記錄在這裡所以才打開<code>hexo</code>(攤手</p>
+<p>而因為最近部署了越來越多次的Server，導致我也面臨各種申請SSL/TLS的需求</p>
+<p>因此我把這一塊拉出來寫成一篇文章，好讓我以後再架設不同Web Server時也能快速上手</p>
+<p>那一樣就直接開始吧～</p>
 <a id="more"></a>
 
-<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
-
-<p>可切換至<code>root</code>帳號</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
-
-<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>先把所需要的套件裝起來<br>更新APT</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  sudo apt-get update</span></span><br></pre></td></tr></table></figure>
-
-<p>我一般習慣會把專案放置在<code>/var/app</code>裡，因此我們先建立並切換至專案路徑<br>當然你也可以自行更換路徑，這沒有絕對</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
-<h2 id="Laravel"><a href="#Laravel" class="headerlink" title="Laravel"></a>Laravel</h2><p>使用Git將你的專案複製下來並切換目錄</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> &lt;YOUR PROJECT URL&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><p>MySQL的部分我直接拆開來獨立成<a href="/2021/05/24/MySQL8-0-Backup-Restore/" title="一篇">一篇</a>了，可以直接點進去看</p>
-<h2 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h2><p>安裝<code>PHP</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install php</span></span><br></pre></td></tr></table></figure>
-
-<p>查看<code>PHP</code>版本</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ php -v</span><br></pre></td></tr></table></figure>
-
-<h2 id="Composer"><a href="#Composer" class="headerlink" title="Composer"></a>Composer</h2><p>更新APT</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br></pre></td></tr></table></figure>
-
-<p>安裝<code>Composer</code>依賴套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install curl php-cli php-mbstring git unzip</span></span><br></pre></td></tr></table></figure>
-
-<p>下載<code>Composer</code>安裝檔</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cd ~</span><br><span class="line">$ curl -sS https:&#x2F;&#x2F;getcomposer.org&#x2F;installer -o composer-setup.php</span><br></pre></td></tr></table></figure>
+<h2 id="在開始之前"><a href="#在開始之前" class="headerlink" title="在開始之前"></a>在開始之前</h2><p>有幾個名詞可以簡單介紹一下</p>
+<ul>
+<li><p><a href="https://certbot.eff.org/" target="_blank" rel="noopener">Let’s Encrypt</a>: 免費、自動化和開放的憑證(SSL/TLS)頒發機構</p>
+</li>
+<li><p><a href="https://letsencrypt.org/zh-tw/" target="_blank" rel="noopener">Certbot</a>: 協助向<code>Let’s Encrypt</code>申請憑證(SSL/TLS)的開源軟體</p>
+</li>
+</ul>
+<p>更多的相關知識你可以在網路上找到不少專業文章，這裡就只單純記錄實作上需要用到的部分<br>但在操作以下步驟之前，你必須先符合以下條件：</p>
+<ol>
+<li>已先向域名商(Web hosts)註冊一組網域名稱</li>
+<li>已設定<code>DNS</code>指向該Server IP</li>
+<li>已在<code>Apache</code>/<code>Nginx</code>設定檔中新增域名至<code>ServerName</code>中</li>
+</ol>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>接著我們可以先根據<code>PPA</code>下載最新版本的<code>Certobt</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:certbot/certbot</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install python-certbot-apache</span></span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>-sS: 只顯示錯誤提示; -o: 輸出至文件上</p>
+<p>按照提示按下<code>Enter</code></p>
 </blockquote>
-<p>驗證安裝檔hash，若hash值不對請到<a href="https://composer.github.io/pubkeys.html" target="_blank" rel="noopener">官方文件</a>上再檢查一次</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ HASH&#x3D;756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3fbc1f233e9b180f061</span><br><span class="line">$ php -r &quot;if (hash_file(&#39;SHA384&#39;, &#39;composer-setup.php&#39;) &#x3D;&#x3D;&#x3D; &#39;$HASH&#39;) &#123; echo &#39;Installer verified&#39;; &#125; else &#123; echo &#39;Installer corrupt&#39;; unlink(&#39;composer-setup.php&#39;); &#125; echo PHP_EOL;&quot;</span><br></pre></td></tr></table></figure>
-<p>驗證成功會看到以下訊息</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Installer verified</span><br></pre></td></tr></table></figure>
+<h2 id="申請SSL-TLS憑證"><a href="#申請SSL-TLS憑證" class="headerlink" title="申請SSL/TLS憑證"></a>申請SSL/TLS憑證</h2><p>這裡先採用<code>Apache</code>作為實作範例，其實只要理解操作，要更換為<code>Nginx</code>並不會太困難</p>
+<p>建立SSL憑證</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo certbot --apache -d &lt;YOUR_DOMAIN&gt; -d &lt;YOUR_DOMAIN2&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>–apache: 使用Apache Web Server / -d: domain(可以依照域名新增至好幾個)</p>
+</blockquote>
+<blockquote>
+<p>如果不想讓<code>Certbot</code>覆寫設定檔只產生憑證，可以加入<code>certonly</code>參數</p>
+</blockquote>
+<p>如果是第一次申請，將會出現輸入Email的提示，之後<code>Cerbot</code>就會向<code>Let&#39;s Encrypt</code>進行申請SSL動作<br>同時驗證DNS配置是否正確，如果成功，<code>Cerbot</code>會再問你要如何設置<code>HTTPS</code>：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Please choose whether or not to redirect HTTP traffic to HTTPS, removing HTTP access.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">1: No redirect - Make no further changes to the webserver configuration.</span><br><span class="line">2: Redirect - Make all requests redirect to secure HTTPS access. Choose this for</span><br><span class="line">new sites, or if you&#39;re confident your site works on HTTPS. You can undo this</span><br><span class="line">change by editing your web server&#39;s configuration.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">Select the appropriate number [1-2] then [enter] (press &#39;c&#39; to cancel):</span><br></pre></td></tr></table></figure>
+<p>如果你想要讓瀏覽器輸入<code>http://&lt;DOMAIN&gt;/</code>時自動導向<code>https://&lt;DOMAIN&gt;</code>就輸入<code>2</code><br>接著<code>Certbot</code>就會在<code>/etc/apache2/sites-available/</code>中，將含有你輸入DOMAIN的設定檔進行配置，若你原先的設定內只有http<code>&lt;VirtualHost *:80&gt;</code>，那麼<code>Certbot</code>還會幫你再新增一份https<code>&lt;VirtualHost *:443&gt;</code>的設定檔，聽起來很難以理解對吧，實際做過一遍會更清楚這其中的流程</p>
+<ul>
+<li><p><code>&lt;YOUR CONF&gt;.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">        ...</span><br><span class="line">RewriteEngine on</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN2&gt; [OR]</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN&gt;</span><br><span class="line">RewriteRule ^ https:&#x2F;&#x2F;%&#123;SERVER_NAME&#125;%&#123;REQUEST_URI&#125; [END,NE,R&#x3D;permanent]</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>&lt;YOUR CONF&gt;-le-ssl.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;IfModule mod_ssl.c&gt;</span><br><span class="line">&lt;VirtualHost *:443&gt;</span><br><span class="line">        ...</span><br><span class="line">Include &#x2F;etc&#x2F;letsencrypt&#x2F;options-ssl-apache.conf</span><br><span class="line">SSLCertificateFile &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;kiitzu.com&#x2F;fullchain.pem</span><br><span class="line">SSLCertificateKeyFile &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;kiitzu.com&#x2F;privkey.pem</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br><span class="line">&lt;&#x2F;IfModule&gt;</span><br></pre></td></tr></table></figure>
 
-<p>安裝<code>Composer</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo php composer-setup.php --install-dir=/usr/<span class="built_in">local</span>/bin --filename=composer</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">All settings correct for using Composer</span><br><span class="line">Downloading...</span><br><span class="line"></span><br><span class="line">Composer (version 2.0.14) successfully installed to: &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br><span class="line">Use it: php &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>若是Aapche記得要手動開啟SSL</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2enmod ssl</span></span><br></pre></td></tr></table></figure>
 
-<p>查看<code>Composer</code>狀態</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ composer</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">   ______</span><br><span class="line">  &#x2F; ____&#x2F;___  ____ ___  ____  ____  ________  _____</span><br><span class="line"> &#x2F; &#x2F;   &#x2F; __ \&#x2F; __ &#96;__ \&#x2F; __ \&#x2F; __ \&#x2F; ___&#x2F; _ \&#x2F; ___&#x2F;</span><br><span class="line">&#x2F; &#x2F;___&#x2F; &#x2F;_&#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F;_&#x2F; &#x2F; &#x2F;_&#x2F; (__  )  __&#x2F; &#x2F;</span><br><span class="line">\____&#x2F;\____&#x2F;_&#x2F; &#x2F;_&#x2F; &#x2F;_&#x2F; .___&#x2F;\____&#x2F;____&#x2F;\___&#x2F;_&#x2F;</span><br><span class="line">                    &#x2F;_&#x2F;</span><br><span class="line">Composer version 2.0.14 2021-05-21 17:03:37</span><br></pre></td></tr></table></figure>
+<p>到這裡我們的憑證就已經申請好了，我們重啟<code>Apache</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
 
-<p><code>Composer</code>不希望你使用root帳號，因為某些命令包括exec、install、update，允許第三方程式在你的系統上執行，這些腳本具有完全訪問權限，因此強烈建議不要在root帳號上操作</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Do not run Composer as root&#x2F;super user! See https:&#x2F;&#x2F;getcomposer.org&#x2F;root for details</span><br><span class="line">Continue as root&#x2F;super user [yes]</span><br></pre></td></tr></table></figure>
+<p>現在你可以打開瀏覽器輸入<code>https://&lt;YOUR_DOMAIN&gt;</code>就可以看到SSL囉～</p>
+<h2 id="更換SSL-TLS憑證"><a href="#更換SSL-TLS憑證" class="headerlink" title="更換SSL/TLS憑證"></a>更換SSL/TLS憑證</h2><p>值得注意的是，<code>Let’s Encrypt</code>憑證是只有三個月的效期的，你可以手動查看目前申請的憑證狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot certificates</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
-<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
+<p>如果你想更換憑證可以這麼做</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew -v</span></span><br></pre></td></tr></table></figure>
 
-<p>查看版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.17.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.13</span><br></pre></td></tr></table></figure>
+<p>但這樣做太不人性化了，等於每三個月都還要手動更換，因此推薦用Corntab的方式幫我們每個禮拜去確認憑證狀態，如果效期低於一個月就會自動更換憑證</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew --dry-run</span></span><br></pre></td></tr></table></figure>
 
+<p>確認Corntab狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl status certbot.timer</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="Yarn"><a href="#Yarn" class="headerlink" title="Yarn"></a>Yarn</h2><p>安裝<code>Yarn</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm install -g yarn</span><br></pre></td></tr></table></figure>
+<p>而想要移除憑證可以這麼做</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot delete</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可以加入<code>--cert-name &lt;DOMAIN&gt;</code>參數直接根據域名刪除</p>
+</blockquote>
+<h2 id="Django"><a href="#Django" class="headerlink" title="Django"></a>Django</h2><p>若你的專案正好是Django，那有一個地方要特別注意<br>再申請SSL之前，我們必須先把<code>.conf</code>裡有關WSGI的配置全部拿掉</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">WSGIDaemonProcess core python-path&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt; python-home&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt;&#x2F;.venv</span><br><span class="line">WSGIProcessGroup core</span><br><span class="line">WSGIScriptAlias &#x2F; &#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt;&#x2F;core&#x2F;wsgi.py</span><br><span class="line">WSGIPassAuthorization On</span><br></pre></td></tr></table></figure>
 
-<p>查看<code>Yarn</code>版本</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yarn -v</span><br></pre></td></tr></table></figure>
-
-<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>架站教學：<a href="https://chenuin.blogspot.com/2019/01/django-ubuntuapache2modwsgi-django.html" target="_blank" rel="noopener">網址</a></p>
-<p>安裝Apache套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install apache2 libapache2-mod-wsgi-py3</span></span><br></pre></td></tr></table></figure>
-
-<p>開機自動啟動Apache</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>]]></content>
+<p>然後申請完後再把這些配置加回置<code>&lt;YOUR CONF&gt;-le-ssl.conf</code>裡<br>這麼做的目的是為了避免WSGI配置放在<code>&lt;YOUR CONF&gt;.conf</code>而導致的衝突發生</p>
+]]></content>
       <categories>
         <category>技術文章</category>
       </categories>
       <tags>
         <tag>ubuntu</tag>
-        <tag>php</tag>
-        <tag>laravel</tag>
       </tags>
   </entry>
   <entry>
@@ -578,85 +576,90 @@
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu 18.04 LTS+Certbot(Let’s Encrypt)</title>
-    <url>/2020/10/28/Ubuntu-18-04-LTS-Certbot-Let%E2%80%99s-Encrypt/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>打了幾篇文章之後發現，要想前言真的是一件挺燒腦的事情，明明也不是特別為了什麼才寫文章</p>
-<p>單純地只是為了把工作上遇到困難的解決辦法，記錄在這裡所以才打開<code>hexo</code>(攤手</p>
-<p>而因為最近部署了越來越多次的Server，導致我也面臨各種申請SSL/TLS的需求</p>
-<p>因此我把這一塊拉出來寫成一篇文章，好讓我以後再架設不同Web Server時也能快速上手</p>
-<p>那一樣就直接開始吧～</p>
+    <title>Ubuntu 18.04 LTS+Apache+Laravel</title>
+    <url>/2021/05/28/Ubuntu-18-04-LTS-Apache-Laravel/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>同一時間，最近因工作關係正式學習PHP了，而且馬上就進入到Laravel框架的部分</p>
+<p>可想而知每當學習新的Web Framework，不免俗的還是要來部署一下</p>
+<p>那就話不多說直接開始吧～</p>
 <a id="more"></a>
 
-<h2 id="在開始之前"><a href="#在開始之前" class="headerlink" title="在開始之前"></a>在開始之前</h2><p>有幾個名詞可以簡單介紹一下</p>
-<ul>
-<li><p><a href="https://certbot.eff.org/" target="_blank" rel="noopener">Let’s Encrypt</a>: 免費、自動化和開放的憑證(SSL/TLS)頒發機構</p>
-</li>
-<li><p><a href="https://letsencrypt.org/zh-tw/" target="_blank" rel="noopener">Certbot</a>: 協助向<code>Let’s Encrypt</code>申請憑證(SSL/TLS)的開源軟體</p>
-</li>
-</ul>
-<p>更多的相關知識你可以在網路上找到不少專業文章，這裡就只單純記錄實作上需要用到的部分<br>但在操作以下步驟之前，你必須先符合以下條件：</p>
-<ol>
-<li>已先向域名商(Web hosts)註冊一組網域名稱</li>
-<li>已設定<code>DNS</code>指向該Server IP</li>
-<li>已在<code>Apache</code>/<code>Nginx</code>設定檔中新增域名至<code>ServerName</code>中</li>
-</ol>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>接著我們可以先根據<code>PPA</code>下載最新版本的<code>Certobt</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:certbot/certbot</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install python-certbot-apache</span></span><br></pre></td></tr></table></figure>
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>先把所需要的套件裝起來<br>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+
+<p>我一般習慣會把專案放置在<code>/var/app</code>裡，因此我們先建立並切換至專案路徑<br>當然你也可以自行更換路徑，這沒有絕對</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
+<h2 id="Laravel"><a href="#Laravel" class="headerlink" title="Laravel"></a>Laravel</h2><p>使用Git將你的專案複製下來並切換目錄</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git <span class="built_in">clone</span> &lt;YOUR PROJECT URL&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;PROJECT&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><p>MySQL的部分我直接拆開來獨立成<a href="/2021/05/24/MySQL8-0-Backup-Restore/" title="一篇">一篇</a>了，可以直接點進去看</p>
+<h2 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h2><p>安裝<code>PHP</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install php</span></span><br></pre></td></tr></table></figure>
+
+<p>查看<code>PHP</code>版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ php -v</span><br></pre></td></tr></table></figure>
+
+<h2 id="Composer"><a href="#Composer" class="headerlink" title="Composer"></a>Composer</h2><p>更新APT</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝<code>Composer</code>依賴套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install curl php-cli php-mbstring git unzip</span></span><br></pre></td></tr></table></figure>
+
+<p>下載<code>Composer</code>安裝檔</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cd ~</span><br><span class="line">$ curl -sS https:&#x2F;&#x2F;getcomposer.org&#x2F;installer -o composer-setup.php</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>按照提示按下<code>Enter</code></p>
+<p>-sS: 只顯示錯誤提示; -o: 輸出至文件上</p>
 </blockquote>
-<h2 id="申請SSL-TLS憑證"><a href="#申請SSL-TLS憑證" class="headerlink" title="申請SSL/TLS憑證"></a>申請SSL/TLS憑證</h2><p>這裡先採用<code>Apache</code>作為實作範例，其實只要理解操作，要更換為<code>Nginx</code>並不會太困難</p>
-<p>建立SSL憑證</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo certbot --apache -d &lt;YOUR_DOMAIN&gt; -d &lt;YOUR_DOMAIN2&gt;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>–apache: 使用Apache Web Server / -d: domain(可以依照域名新增至好幾個)</p>
-</blockquote>
-<blockquote>
-<p>如果不想讓<code>Certbot</code>覆寫設定檔只產生憑證，可以加入<code>certonly</code>參數</p>
-</blockquote>
-<p>如果是第一次申請，將會出現輸入Email的提示，之後<code>Cerbot</code>就會向<code>Let&#39;s Encrypt</code>進行申請SSL動作<br>同時驗證DNS配置是否正確，如果成功，<code>Cerbot</code>會再問你要如何設置<code>HTTPS</code>：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Please choose whether or not to redirect HTTP traffic to HTTPS, removing HTTP access.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">1: No redirect - Make no further changes to the webserver configuration.</span><br><span class="line">2: Redirect - Make all requests redirect to secure HTTPS access. Choose this for</span><br><span class="line">new sites, or if you&#39;re confident your site works on HTTPS. You can undo this</span><br><span class="line">change by editing your web server&#39;s configuration.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">Select the appropriate number [1-2] then [enter] (press &#39;c&#39; to cancel):</span><br></pre></td></tr></table></figure>
-<p>如果你想要讓瀏覽器輸入<code>http://&lt;DOMAIN&gt;/</code>時自動導向<code>https://&lt;DOMAIN&gt;</code>就輸入<code>2</code><br>接著<code>Certbot</code>就會在<code>/etc/apache2/sites-available/</code>中，將含有你輸入DOMAIN的設定檔進行配置，若你原先的設定內只有http<code>&lt;VirtualHost *:80&gt;</code>，那麼<code>Certbot</code>還會幫你再新增一份https<code>&lt;VirtualHost *:443&gt;</code>的設定檔，聽起來很難以理解對吧，實際做過一遍會更清楚這其中的流程</p>
-<ul>
-<li><p><code>&lt;YOUR CONF&gt;.conf</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">        ...</span><br><span class="line">RewriteEngine on</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN2&gt; [OR]</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN&gt;</span><br><span class="line">RewriteRule ^ https:&#x2F;&#x2F;%&#123;SERVER_NAME&#125;%&#123;REQUEST_URI&#125; [END,NE,R&#x3D;permanent]</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>&lt;YOUR CONF&gt;-le-ssl.conf</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;IfModule mod_ssl.c&gt;</span><br><span class="line">&lt;VirtualHost *:443&gt;</span><br><span class="line">        ...</span><br><span class="line">Include &#x2F;etc&#x2F;letsencrypt&#x2F;options-ssl-apache.conf</span><br><span class="line">SSLCertificateFile &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;kiitzu.com&#x2F;fullchain.pem</span><br><span class="line">SSLCertificateKeyFile &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;kiitzu.com&#x2F;privkey.pem</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br><span class="line">&lt;&#x2F;IfModule&gt;</span><br></pre></td></tr></table></figure>
+<p>驗證安裝檔hash，若hash值不對請到<a href="https://composer.github.io/pubkeys.html" target="_blank" rel="noopener">官方文件</a>上再檢查一次</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ HASH&#x3D;756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3fbc1f233e9b180f061</span><br><span class="line">$ php -r &quot;if (hash_file(&#39;SHA384&#39;, &#39;composer-setup.php&#39;) &#x3D;&#x3D;&#x3D; &#39;$HASH&#39;) &#123; echo &#39;Installer verified&#39;; &#125; else &#123; echo &#39;Installer corrupt&#39;; unlink(&#39;composer-setup.php&#39;); &#125; echo PHP_EOL;&quot;</span><br></pre></td></tr></table></figure>
+<p>驗證成功會看到以下訊息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Installer verified</span><br></pre></td></tr></table></figure>
 
-</li>
-</ul>
-<p>到這裡我們的憑證就已經申請好了，我們重啟<code>Apache</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+<p>安裝<code>Composer</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo php composer-setup.php --install-dir=/usr/<span class="built_in">local</span>/bin --filename=composer</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">All settings correct for using Composer</span><br><span class="line">Downloading...</span><br><span class="line"></span><br><span class="line">Composer (version 2.0.14) successfully installed to: &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br><span class="line">Use it: php &#x2F;usr&#x2F;local&#x2F;bin&#x2F;composer</span><br></pre></td></tr></table></figure>
 
-<p>現在你可以打開瀏覽器輸入<code>https://&lt;YOUR_DOMAIN&gt;</code>就可以看到SSL囉～</p>
-<h2 id="更換SSL-TLS憑證"><a href="#更換SSL-TLS憑證" class="headerlink" title="更換SSL/TLS憑證"></a>更換SSL/TLS憑證</h2><p>值得注意的是，<code>Let’s Encrypt</code>憑證是只有三個月的效期的，你可以手動查看目前申請的憑證狀態</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot certificates</span></span><br></pre></td></tr></table></figure>
+<p>查看<code>Composer</code>狀態</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ composer</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">   ______</span><br><span class="line">  &#x2F; ____&#x2F;___  ____ ___  ____  ____  ________  _____</span><br><span class="line"> &#x2F; &#x2F;   &#x2F; __ \&#x2F; __ &#96;__ \&#x2F; __ \&#x2F; __ \&#x2F; ___&#x2F; _ \&#x2F; ___&#x2F;</span><br><span class="line">&#x2F; &#x2F;___&#x2F; &#x2F;_&#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F; &#x2F;_&#x2F; &#x2F; &#x2F;_&#x2F; (__  )  __&#x2F; &#x2F;</span><br><span class="line">\____&#x2F;\____&#x2F;_&#x2F; &#x2F;_&#x2F; &#x2F;_&#x2F; .___&#x2F;\____&#x2F;____&#x2F;\___&#x2F;_&#x2F;</span><br><span class="line">                    &#x2F;_&#x2F;</span><br><span class="line">Composer version 2.0.14 2021-05-21 17:03:37</span><br></pre></td></tr></table></figure>
 
-<p>如果你想更換憑證可以這麼做</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew -v</span></span><br></pre></td></tr></table></figure>
+<p><code>Composer</code>不希望你使用root帳號，因為某些命令包括exec、install、update，允許第三方程式在你的系統上執行，這些腳本具有完全訪問權限，因此強烈建議不要在root帳號上操作</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Do not run Composer as root&#x2F;super user! See https:&#x2F;&#x2F;getcomposer.org&#x2F;root for details</span><br><span class="line">Continue as root&#x2F;super user [yes]</span><br></pre></td></tr></table></figure>
 
-<p>但這樣做太不人性化了，等於每三個月都還要手動更換，因此推薦用Corntab的方式幫我們每個禮拜去確認憑證狀態，如果效期低於一個月就會自動更換憑證</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew --dry-run</span></span><br></pre></td></tr></table></figure>
+<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
+<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
 
-<p>確認Corntab狀態</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl status certbot.timer</span></span><br></pre></td></tr></table></figure>
+<p>查看版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.17.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.13</span><br></pre></td></tr></table></figure>
 
-<p>而想要移除憑證可以這麼做</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot delete</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>可以加入<code>--cert-name &lt;DOMAIN&gt;</code>參數直接根據域名刪除</p>
-</blockquote>
-<h2 id="Django"><a href="#Django" class="headerlink" title="Django"></a>Django</h2><p>若你的專案正好是Django，那有一個地方要特別注意<br>再申請SSL之前，我們必須先把<code>.conf</code>裡有關WSGI的配置全部拿掉</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">WSGIDaemonProcess core python-path&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt; python-home&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt;&#x2F;.venv</span><br><span class="line">WSGIProcessGroup core</span><br><span class="line">WSGIScriptAlias &#x2F; &#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt;&#x2F;core&#x2F;wsgi.py</span><br><span class="line">WSGIPassAuthorization On</span><br></pre></td></tr></table></figure>
 
-<p>然後申請完後再把這些配置加回置<code>&lt;YOUR CONF&gt;-le-ssl.conf</code>裡<br>這麼做的目的是為了避免WSGI配置放在<code>&lt;YOUR CONF&gt;.conf</code>而導致的衝突發生</p>
-]]></content>
+<h2 id="Yarn"><a href="#Yarn" class="headerlink" title="Yarn"></a>Yarn</h2><p>安裝<code>Yarn</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm install -g yarn</span><br></pre></td></tr></table></figure>
+
+<p>查看<code>Yarn</code>版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yarn -v</span><br></pre></td></tr></table></figure>
+
+<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>架站教學：<a href="https://chenuin.blogspot.com/2019/01/django-ubuntuapache2modwsgi-django.html" target="_blank" rel="noopener">網址</a></p>
+<p>安裝Apache套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install apache2 libapache2-mod-wsgi-py3</span></span><br></pre></td></tr></table></figure>
+
+<p>開機自動啟動Apache</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>技術文章</category>
       </categories>
       <tags>
         <tag>ubuntu</tag>
+        <tag>php</tag>
+        <tag>laravel</tag>
       </tags>
   </entry>
   <entry>

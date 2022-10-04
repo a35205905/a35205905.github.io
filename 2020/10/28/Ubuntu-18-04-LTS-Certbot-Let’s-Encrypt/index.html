@@ -31,7 +31,7 @@
 <meta property="og:description" content="前言打了幾篇文章之後發現，要想前言真的是一件挺燒腦的事情，明明也不是特別為了什麼才寫文章 單純地只是為了把工作上遇到困難的解決辦法，記錄在這裡所以才打開hexo(攤手 而因為最近部署了越來越多次的Server，導致我也面臨各種申請SSL&#x2F;TLS的需求 因此我把這一塊拉出來寫成一篇文章，好讓我以後再架設不同Web Server時也能快速上手 那一樣就直接開始吧～">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2020-10-28T09:31:00.000Z">
-<meta property="article:modified_time" content="2021-10-06T11:45:41.000Z">
+<meta property="article:modified_time" content="2022-10-04T22:37:13.616Z">
 <meta property="article:author" content="Ricky">
 <meta property="article:tag" content="ubuntu">
 <meta name="twitter:card" content="summary">
@@ -237,7 +237,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2021-10-06 19:45:41" itemprop="dateModified" datetime="2021-10-06T19:45:41+08:00">2021-10-06</time>
+                <time title="修改時間：2022-10-05 06:37:13" itemprop="dateModified" datetime="2022-10-05T06:37:13+08:00">2022-10-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -313,6 +313,9 @@
 
 </li>
 </ul>
+<p>若是Aapche記得要手動開啟SSL</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2enmod ssl</span></span><br></pre></td></tr></table></figure>
+
 <p>到這裡我們的憑證就已經申請好了，我們重啟<code>Apache</code></p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
 

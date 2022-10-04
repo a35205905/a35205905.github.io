@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://a35205905.github.io/2020/10/28/Ubuntu-18-04-LTS-Certbot-Let%E2%80%99s-Encrypt/</loc>
+    
+    <lastmod>2022-10-04</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://a35205905.github.io/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/</loc>
     
     <lastmod>2022-10-04</lastmod>
@@ -72,13 +79,6 @@
   </url>
   
   <url>
-    <loc>https://a35205905.github.io/2020/10/28/Ubuntu-18-04-LTS-Certbot-Let%E2%80%99s-Encrypt/</loc>
-    
-    <lastmod>2021-10-06</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://a35205905.github.io/lib/fancybox/README.html</loc>
     
     <lastmod>2021-07-23</lastmod>
@@ -144,20 +144,6 @@
   </url>
   
   <url>
-    <loc>https://a35205905.github.io/tags/php/</loc>
-    <lastmod>2022-10-04</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://a35205905.github.io/tags/laravel/</loc>
-    <lastmod>2022-10-04</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://a35205905.github.io/tags/node-js/</loc>
     <lastmod>2022-10-04</lastmod>
     <changefreq>daily</changefreq>
@@ -166,6 +152,20 @@
   
   <url>
     <loc>https://a35205905.github.io/tags/wordpress/</loc>
+    <lastmod>2022-10-04</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://a35205905.github.io/tags/php/</loc>
+    <lastmod>2022-10-04</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://a35205905.github.io/tags/laravel/</loc>
     <lastmod>2022-10-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
