@@ -36,7 +36,7 @@
 <meta property="og:image" content="https://a35205905.github.io/images/Ubuntu-18-04-LTS-vsftpd/openssl_ftp.png">
 <meta property="og:image" content="https://a35205905.github.io/images/Ubuntu-18-04-LTS-vsftpd/filezilla03.png">
 <meta property="article:published_time" content="2020-09-29T13:23:00.000Z">
-<meta property="article:modified_time" content="2021-07-23T19:56:01.000Z">
+<meta property="article:modified_time" content="2022-10-04T21:01:02.780Z">
 <meta property="article:author" content="Ricky">
 <meta property="article:tag" content="ubuntu">
 <meta name="twitter:card" content="summary">
@@ -243,7 +243,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2021-07-24 03:56:01" itemprop="dateModified" datetime="2021-07-24T03:56:01+08:00">2021-07-24</time>
+                <time title="修改時間：2022-10-05 05:01:02" itemprop="dateModified" datetime="2022-10-05T05:01:02+08:00">2022-10-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -350,12 +350,12 @@
 <p><code>chmod</code>: 更改檔案(目錄)權限 / <code>chown</code>: 更改檔案(目錄)擁有者</p>
 </blockquote>
 <h2 id="GCP"><a href="#GCP" class="headerlink" title="GCP"></a>GCP</h2><p>別忘了我們的<code>Ubuntu</code>是綁在<code>GCP</code>底下，因此我們還要到GCP設置防火牆<br>不然連線至FTP時，會硬是活生生的被Google給擋了下來</p>
-<p>這邊要記得<code>Port</code>要根據你在設定檔配置的範圍<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/gcp_firewall_ftp.png" alt="vue_welcome"></p>
+<p>這邊要記得<code>Port</code>要根據你在設定檔配置的範圍<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/gcp_firewall_ftp.png" alt="gcp_firewall_ftp.png"></p>
 <h2 id="FileZilla"><a href="#FileZilla" class="headerlink" title="FileZilla"></a>FileZilla</h2><p>所有的步驟都做好後，我們就可以在本機端連線至FTP了<br>我是使用<a href="https://filezilla-project.org/" target="_blank" rel="noopener">FileZilla</a>這套老牌的FTP軟體</p>
-<p>點擊左上角新增站台<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/filezilla01.png" alt="vue_welcome"></p>
-<p>配置好<code>主機</code>、<code>加密</code>、<code>使用者</code>後，點選連線<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/filezilla02.png" alt="vue_welcome"></p>
-<p>這就是我們之前建立好的憑證，點選確認<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/openssl_ftp.png" alt="vue_welcome"></p>
-<p>我們的目錄就會出現在畫面右方<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/filezilla03.png" alt="vue_welcome"></p>
+<p>點擊左上角新增站台<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/filezilla01.png" alt="filezilla01.png"></p>
+<p>配置好<code>主機</code>、<code>加密</code>、<code>使用者</code>後，點選連線<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/filezilla02.png" alt="filezilla02.png"></p>
+<p>這就是我們之前建立好的憑證，點選確認<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/openssl_ftp.png" alt="openssl_ftp.png"></p>
+<p>我們的目錄就會出現在畫面右方<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/filezilla03.png" alt="filezilla03.png"></p>
 <p>接著你就可以在目錄下存取檔案囉～</p>
 <h2 id="WordPress"><a href="#WordPress" class="headerlink" title="WordPress"></a>WordPress</h2><p>如果你想在FTP上直接存取<code>WordPress</code>的話，可以這麼做</p>
 <p>先將<code>WordPress</code>目錄移至<code>ftp</code></p>

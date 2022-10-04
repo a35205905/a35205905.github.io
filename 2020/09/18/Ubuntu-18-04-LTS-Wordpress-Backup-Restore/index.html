@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://a35205905.github.io/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_02.png">
 <meta property="og:image" content="https://a35205905.github.io/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_03.png">
 <meta property="article:published_time" content="2020-09-18T11:42:00.000Z">
-<meta property="article:modified_time" content="2021-07-23T19:51:55.000Z">
+<meta property="article:modified_time" content="2022-10-04T21:01:33.337Z">
 <meta property="article:author" content="Ricky">
 <meta property="article:tag" content="ubuntu">
 <meta property="article:tag" content="wordpress">
@@ -242,7 +242,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2021-07-24 03:51:55" itemprop="dateModified" datetime="2021-07-24T03:51:55+08:00">2021-07-24</time>
+                <time title="修改時間：2022-10-05 05:01:33" itemprop="dateModified" datetime="2022-10-05T05:01:33+08:00">2022-10-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -298,9 +298,9 @@
 </blockquote>
 <p>其實到這邊備份的部分就完成了，是不是超級簡單<br>這就是最笨但也是最快速的方式</p>
 <h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><p>其實Apache要備份只有<code>/etc/apache2/sites-available/&lt;WORDPRESS&gt;.conf</code>這個設定檔而已<br>因此你可以把它直接下載下來即可</p>
-<h3 id="Dowload"><a href="#Dowload" class="headerlink" title="Dowload"></a>Dowload</h3><p>而關於下載的部分，這邊也教一個<code>GCP</code>提供的功能<br>如果你是以SSL用瀏覽器打開的話，在畫面右上角會有一個工具欄<br><img src="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_01.png" alt="vue_init"></p>
-<p>點選下載檔案<br><img src="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_02.png" alt="vue_init"></p>
-<p>接著會出現視窗讓你輸入路徑<br><img src="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_03.png" alt="vue_init"></p>
+<h3 id="Dowload"><a href="#Dowload" class="headerlink" title="Dowload"></a>Dowload</h3><p>而關於下載的部分，這邊也教一個<code>GCP</code>提供的功能<br>如果你是以SSL用瀏覽器打開的話，在畫面右上角會有一個工具欄<br><img src="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_01.png" alt="gcp_download_01.png"></p>
+<p>點選下載檔案<br><img src="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_02.png" alt="gcp_download_02.png"></p>
+<p>接著會出現視窗讓你輸入路徑<br><img src="/images/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/gcp_download_03.png" alt="gcp_download_03.png"></p>
 <p>用這樣的方式就可以很簡單的把備份檔下載下來了<br>同理上傳檔案也是如此，上傳後檔案會放至在<code>/home/&lt;GCP_ACCOUNT&gt;</code>下<br>接著就可以開始著手處理還原的部分囉～</p>
 <h2 id="Restore"><a href="#Restore" class="headerlink" title="Restore"></a>Restore</h2><p>還原就有很多小細節要注意了，如果沒有處理好，不僅是WordPress打開來畫面跟原先的不一樣<br>甚至有可能會出現連網頁都開不了的窘境，因此這裡會一步一步教大家如何操作</p>
 <h3 id="Before"><a href="#Before" class="headerlink" title="Before"></a>Before</h3><p>我們先假設你已經將備份檔及Apache設定檔上傳至新的Server<br>這邊是透過<code>GCP</code>上傳，因此檔案會位於我<code>GCP</code>帳號的家目錄底下</p>

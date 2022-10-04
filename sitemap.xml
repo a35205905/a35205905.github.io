@@ -2,7 +2,35 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://a35205905.github.io/2022/10/04/Cloud-SQL-SSH/</loc>
+    <loc>https://a35205905.github.io/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/</loc>
+    
+    <lastmod>2022-10-04</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://a35205905.github.io/2020/09/18/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/</loc>
+    
+    <lastmod>2022-10-04</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://a35205905.github.io/2020/09/29/Ubuntu-18-04-LTS-vsftpd/</loc>
+    
+    <lastmod>2022-10-04</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://a35205905.github.io/2021/05/24/MySQL8-0-Backup-Restore/</loc>
+    
+    <lastmod>2022-10-04</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://a35205905.github.io/2021/10/06/Ubuntu-18-04-LTS-Apache-PM2/</loc>
     
     <lastmod>2022-10-04</lastmod>
     
@@ -16,14 +44,14 @@
   </url>
   
   <url>
-    <loc>https://a35205905.github.io/about/index.html</loc>
+    <loc>https://a35205905.github.io/2022/10/04/Cloud-SQL-SSH/</loc>
     
     <lastmod>2022-10-04</lastmod>
     
   </url>
   
   <url>
-    <loc>https://a35205905.github.io/2021/05/24/MySQL8-0-Backup-Restore/</loc>
+    <loc>https://a35205905.github.io/about/index.html</loc>
     
     <lastmod>2022-10-04</lastmod>
     
@@ -47,34 +75,6 @@
     <loc>https://a35205905.github.io/2020/10/28/Ubuntu-18-04-LTS-Certbot-Let%E2%80%99s-Encrypt/</loc>
     
     <lastmod>2021-10-06</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://a35205905.github.io/2021/10/06/Ubuntu-18-04-LTS-Apache-PM2/</loc>
-    
-    <lastmod>2021-10-05</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://a35205905.github.io/2020/09/29/Ubuntu-18-04-LTS-vsftpd/</loc>
-    
-    <lastmod>2021-07-23</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://a35205905.github.io/2020/09/18/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/</loc>
-    
-    <lastmod>2021-07-23</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://a35205905.github.io/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/</loc>
-    
-    <lastmod>2021-07-23</lastmod>
     
   </url>
   
@@ -158,6 +158,13 @@
   </url>
   
   <url>
+    <loc>https://a35205905.github.io/tags/vue/</loc>
+    <lastmod>2022-10-04</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://a35205905.github.io/tags/wordpress/</loc>
     <lastmod>2022-10-04</lastmod>
     <changefreq>daily</changefreq>
@@ -166,13 +173,6 @@
   
   <url>
     <loc>https://a35205905.github.io/tags/node-js/</loc>
-    <lastmod>2022-10-04</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://a35205905.github.io/tags/vue/</loc>
     <lastmod>2022-10-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
