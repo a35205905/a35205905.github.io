@@ -23,25 +23,20 @@
     var CONFIG = {"hostname":"a35205905.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="前言自從進來公司後所有的專案都是採用SPA開發，但在部署上時常會碰到一些小問題 像是當前後台並不是用子網域的方式分開，例如：  https:backstage.xxx.com&#x2F;  https:xxx.com&#x2F;   而是採用子目錄的方式分開：例如：  https:xxx.com&#x2F;  https:xxx.com&#x2F;bakcstage   要如何快速方便設定好Apache就是一個令人頭痛的地方 而如果前台">
+  <meta name="description" content="前言原本好一陣子的專案都在AWS上部署，沒想到目前手頭的專案客戶強烈要求要架設在GCP上 並且是採GCE、Cloud SQL、Cloud Storage分離的方式 因此這邊就來談談如何在本機及GCE上連線至Cloud SQL">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Ubuntu 18.04 LTS+Apache+PM2">
-<meta property="og:url" content="https://a35205905.github.io/2021/10/06/Ubuntu-18-04-LTS-Apache-PM2/index.html">
+<meta property="og:title" content="Cloud SQL+SSH">
+<meta property="og:url" content="https://a35205905.github.io/2022/10/04/Cloud-SQL-SSH/index.html">
 <meta property="og:site_name" content="Ricky 叩叮俱樂部">
-<meta property="og:description" content="前言自從進來公司後所有的專案都是採用SPA開發，但在部署上時常會碰到一些小問題 像是當前後台並不是用子網域的方式分開，例如：  https:backstage.xxx.com&#x2F;  https:xxx.com&#x2F;   而是採用子目錄的方式分開：例如：  https:xxx.com&#x2F;  https:xxx.com&#x2F;bakcstage   要如何快速方便設定好Apache就是一個令人頭痛的地方 而如果前台">
+<meta property="og:description" content="前言原本好一陣子的專案都在AWS上部署，沒想到目前手頭的專案客戶強烈要求要架設在GCP上 並且是採GCE、Cloud SQL、Cloud Storage分離的方式 因此這邊就來談談如何在本機及GCE上連線至Cloud SQL">
 <meta property="og:locale" content="zh_TW">
-<meta property="og:image" content="https://a35205905.github.io/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_list.png">
-<meta property="og:image" content="https://a35205905.github.io/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_monit.png">
-<meta property="og:image" content="https://a35205905.github.io/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_show.png">
-<meta property="article:published_time" content="2021-10-05T18:48:00.000Z">
-<meta property="article:modified_time" content="2021-10-05T20:40:38.000Z">
+<meta property="article:published_time" content="2022-10-04T13:29:24.000Z">
+<meta property="article:modified_time" content="2022-10-04T14:25:21.954Z">
 <meta property="article:author" content="Ricky">
-<meta property="article:tag" content="ubuntu">
-<meta property="article:tag" content="node.js">
+<meta property="article:tag" content="python">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://a35205905.github.io/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_list.png">
 
-<link rel="canonical" href="https://a35205905.github.io/2021/10/06/Ubuntu-18-04-LTS-Apache-PM2/">
+<link rel="canonical" href="https://a35205905.github.io/2022/10/04/Cloud-SQL-SSH/">
 
 
 <script id="page-configurations">
@@ -54,7 +49,7 @@
   };
 </script>
 
-  <title>Ubuntu 18.04 LTS+Apache+PM2 | Ricky 叩叮俱樂部</title>
+  <title>Cloud SQL+SSH | Ricky 叩叮俱樂部</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-180982767-1"></script>
     <script data-pjax>
@@ -212,7 +207,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="https://a35205905.github.io/2021/10/06/Ubuntu-18-04-LTS-Apache-PM2/">
+    <link itemprop="mainEntityOfPage" href="https://a35205905.github.io/2022/10/04/Cloud-SQL-SSH/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -225,7 +220,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Ubuntu 18.04 LTS+Apache+PM2
+          Cloud SQL+SSH
         </h1>
 
         <div class="post-meta">
@@ -236,16 +231,7 @@
               <span class="post-meta-item-text">發表於</span>
               
 
-              <time title="創建時間：2021-10-06 02:48:00 / 修改時間：04:40:38" itemprop="dateCreated datePublished" datetime="2021-10-06T02:48:00+08:00">2021-10-06</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分類於</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%8A%80%E8%A1%93%E6%96%87%E7%AB%A0/" itemprop="url" rel="index"><span itemprop="name">技術文章</span></a>
-                </span>
+              <time title="創建時間：2022-10-04 21:29:24 / 修改時間：22:25:21" itemprop="dateCreated datePublished" datetime="2022-10-04T21:29:24+08:00">2022-10-04</time>
             </span>
 
           
@@ -266,116 +252,64 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從進來公司後所有的專案都是採用SPA開發，但在部署上時常會碰到一些小問題</p>
-<p>像是當前後台並不是用子網域的方式分開，例如：</p>
-<ul>
-<li><p>https:backstage.xxx.com/</p>
-</li>
-<li><p>https:xxx.com/</p>
-</li>
-</ul>
-<p>而是採用子目錄的方式分開：例如：</p>
-<ul>
-<li><p>https:xxx.com/</p>
-</li>
-<li><p>https:xxx.com/bakcstage</p>
-</li>
-</ul>
-<p>要如何快速方便設定好<code>Apache</code>就是一個令人頭痛的地方</p>
-<p>而如果前台剛好使用的是<code>node.js</code>，就可以用<code>PM2</code>來解決這樣的困境</p>
-<p>那我們一起來看下去吧～！</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>原本好一陣子的專案都在AWS上部署，沒想到目前手頭的專案客戶強烈要求要架設在GCP上</p>
+<p>並且是採GCE、Cloud SQL、Cloud Storage分離的方式</p>
+<p>因此這邊就來談談如何在本機及GCE上連線至Cloud SQL</p>
 <a id="more"></a>
 
-<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+<h2 id="在開始之前"><a href="#在開始之前" class="headerlink" title="在開始之前"></a>在開始之前</h2><p>但在操作以下步驟之前，你必須先符合以下條件：</p>
+<ol>
+<li><p>擁有GCP帳號並在專案下建立GCE、Cloud SQL</p>
+</li>
+<li><p>於本機上安裝<a href="https://cloud.google.com/sdk/docs/install-sdk?hl=zh-tw" target="_blank" rel="noopener">Cloud SDK</a></p>
+</li>
+</ol>
+<h2 id="Cloud-SDK"><a href="#Cloud-SDK" class="headerlink" title="Cloud SDK"></a>Cloud SDK</h2><p>在安裝完Cloud SDK後，確認一下可以在終端機上執行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> gcloud -v</span></span><br><span class="line"></span><br><span class="line">Google Cloud SDK 381.0.0</span><br><span class="line">beta 2022.04.08</span><br><span class="line">bq 2.0.74</span><br><span class="line">core 2022.04.08</span><br><span class="line">gsutil 5.9</span><br><span class="line">Updates are available for some Google Cloud CLI components.  To install them,</span><br><span class="line">please run:</span><br><span class="line"><span class="meta">  $</span><span class="bash"> gcloud components update</span></span><br></pre></td></tr></table></figure>
 
-<p>可切換至<code>root</code>帳號</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+<p>接著登入帳號，此時會跳出登入頁填寫輸入帳號密碼</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> gcloud auth login</span></span><br><span class="line"></span><br><span class="line">You are now logged in as [xxx@gmail.com].</span><br><span class="line">Your current project is [storied-deck-xxx].  You can change this setting by running:</span><br><span class="line"><span class="meta">  $</span><span class="bash"> gcloud config <span class="built_in">set</span> project PROJECT_ID</span></span><br></pre></td></tr></table></figure>
 
-<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
-<h2 id="Node-js-Vue"><a href="#Node-js-Vue" class="headerlink" title="Node.js+Vue"></a>Node.js+Vue</h2><p>這次教學打算先架一個簡單的Vue cli當作node.js的專案，這部分可以參考<a href="/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/" title="這一篇">這一篇</a></p>
-<h2 id="PM2"><a href="#PM2" class="headerlink" title="PM2"></a>PM2</h2><p>PM2是自帶負載平衡的<code>node.js</code>程序管理器</p>
-<p>當你需要部署<code>node</code>專案，讓它有效分配主機CPU及記憶體資源時，並且獨立運作在主機上時</p>
-<p>它會是你很好的選擇，而其中<code>PM2</code>的<code>PM</code>代表著 Process Manager</p>
-<p>process可以指服務、程序、應用，這邊統一以<code>程序</code>作為中文譯詞</p>
-<h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><p>在全域模式下安裝<code>PM2</code></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> npm install pm2@latest -g</span></span><br></pre></td></tr></table></figure>
+<p>這邊也可以看到在本機上登入過的帳號</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> gcloud auth list</span></span><br><span class="line"></span><br><span class="line">Credentialed Accounts</span><br><span class="line">ACTIVE  ACCOUNT</span><br><span class="line">        abc@gmail.com</span><br><span class="line">*       xxx@gmail.com</span><br><span class="line"></span><br><span class="line">To set the active account, run:</span><br><span class="line">    $ gcloud config set account `ACCOUNT`</span><br></pre></td></tr></table></figure>
+
+<p>再來設定專案</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> gcloud config <span class="built_in">set</span> project &lt;PROJECT_ID&gt;</span></span><br><span class="line"></span><br><span class="line">Updated property [core/project].</span><br></pre></td></tr></table></figure>
+
+<p>還有時區</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> gcloud config <span class="built_in">set</span> compute/zone &lt;ZONE_NAME&gt;</span></span><br><span class="line"></span><br><span class="line">Updated property [compute/zone].</span><br></pre></td></tr></table></figure>
+
+<p>最後則是地區</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gcloud config set compute/region &lt;REGION_NAME&gt;</span><br><span class="line"></span><br><span class="line">Updated property [compute/region].</span><br></pre></td></tr></table></figure>
+
+<p>完成後可以透過<code>configurations</code>查看目前的配置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> gcloud config configurations list</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Gcloud"><a href="#Gcloud" class="headerlink" title="Gcloud"></a>Gcloud</h2><p>只要完成上述的設定，就可以很輕鬆的使用Cloud SDK連線至資料庫，並且是SSL！</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> gcloud sql connect &lt;INSTANCE_ID&gt; --user=root</span></span><br><span class="line"></span><br><span class="line">Allowlisting your IP for incoming connection for 5 minutes...</span><br><span class="line"></span><br><span class="line">Connecting to database with SQL user [root].Enter password:</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>-g:global</p>
+<p>GCP會先將你的IP加入白名單後詢問密碼即可登入</p>
 </blockquote>
-<h3 id="新增程序"><a href="#新增程序" class="headerlink" title="新增程序"></a>新增程序</h3><p>透過啟動js建立一個程序</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 start &lt;.js&gt;</span></span><br></pre></td></tr></table></figure>
+<p>接著馬上就可以看到熟悉的MySQL Command Line</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">Your MySQL connection id is 3773</span><br><span class="line">Server version: 8.0.26-google (Google)</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2019, Oracle and&#x2F;or its affiliates. All rights reserved.</span><br><span class="line"></span><br><span class="line">Oracle is a registered trademark of Oracle Corporation and&#x2F;or its</span><br><span class="line">affiliates. Other names may be trademarks of their respective</span><br><span class="line">owners.</span><br><span class="line"></span><br><span class="line">Type &#39;help;&#39; or &#39;\h&#39; for help. Type &#39;\c&#39; to clear the current input statement.</span><br><span class="line"></span><br><span class="line">mysql&gt;</span><br></pre></td></tr></table></figure>
 
-<p>透過指令方式建立一個程序</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 start <span class="string">"&lt;COMMAND&gt;"</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="Cloud-SQL-Proxy"><a href="#Cloud-SQL-Proxy" class="headerlink" title="Cloud SQL Proxy"></a>Cloud SQL Proxy</h2><p>使用Cloud SDK很方便，但更多時候我們想讓專案或是資料庫管理工具(ex. DataGrip)連至Cloud SQL，而Cloud SQL預設是不允許外部連線的，這時候我們可以由Google自家提供的cloud_sql_proxy來辦到這件事</p>
+<p>我們可以在本機上的任何地方(ex. ~/Downloads)將<a href="https://cloud.google.com/sql/docs/mysql/sql-proxy#install" target="_blank" rel="noopener">cloud_sql_proxy</a>下載下來</p>
+<p>設定cloud_sql_proxy權限</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> chmod +x cloud_sql_proxy</span></span><br></pre></td></tr></table></figure>
 
-<p>也可以直接透過靜態檔案建立</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 serve &lt;PATH&gt; &lt;PORT&gt;</span></span><br></pre></td></tr></table></figure>
+<p>將本機Port連接至Cloud SQL</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ./cloud_sql_proxy -instances=&lt;INSTANCE_CONNECTION_NAME&gt;=tcp:&lt;PORT&gt;</span></span><br><span class="line"></span><br><span class="line">當出現 Ready for new connections 就代表連線成功</span><br></pre></td></tr></table></figure>
 
-<p>如果你要啟動一個vue專案可以這麼做</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 start <span class="string">"npm run start"</span> --name &lt;APP NAME&gt; --watch --max-memory-restart 1000M --<span class="built_in">log</span> ~/.pm2/logs/&lt;APP NAME&gt;/ --time</span></span><br></pre></td></tr></table></figure>
-
-<p>可以附加的參數如下(以下–都為兩個-)：</p>
-<ul>
-<li><p>–name：指定 app 一個名字</p>
-</li>
-<li><p>–watch：檔案有變更時，會自動重啟</p>
-</li>
-<li><p>–max-memory-restart：記憶體使用超過這個門檻時，將自動重啟</p>
-</li>
-<li><p>–log：設定 log 的目錄，若要重新設定目錄，需將原本的程序刪掉後重新建立</p>
-</li>
-<li><p>–error：設定 error log 目錄</p>
-</li>
-<li><p>–log-date-format：指定 log 的格式</p>
-</li>
-<li><p>–time：給 log 加上時間前綴</p>
-</li>
-<li><p>–spa：限定<code>serve</code>使用，會重導所有的請求到<code>index.html</code></p>
-</li>
-<li><p>–restart-delay：自動重啟時，要 delay 多久</p>
-</li>
-<li><p>–basic-auth-username –basic-auth-password：限定<code>serve</code>使用，讓該頁面需要帳號密碼方可存取</p>
-</li>
-</ul>
-<h3 id="管理程序"><a href="#管理程序" class="headerlink" title="管理程序"></a>管理程序</h3><p>顯示管理程序狀態</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 [list|ls|status]</span></span><br></pre></td></tr></table></figure>
-<p><img src="/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_list.png" alt="vue_init"></p>
-<p>顯示管理程序CPU及記憶體使用狀態</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 monit</span></span><br></pre></td></tr></table></figure>
-<p><img src="/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_monit.png" alt="vue_init"></p>
-<p>顯示指定程序狀態</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 show &lt;APP NAME&gt;</span></span><br></pre></td></tr></table></figure>
-<p><img src="/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_show.png" alt="vue_init"></p>
-<p>直接kill再重啟程序</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 restart &lt;APP NAME&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>停止程序</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 stop &lt;APP NAME&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>停止並刪除程序</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 delete &lt;APP NAME&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>而除了<code>&lt;APP NAME&gt;</code>之外，你也可以替換成<code>all</code>或是<code>&lt;id&gt;</code></p>
 <blockquote>
-<p>all: 所有程序 / id: 該程序編號</p>
+<p>可將<code>tcp</code>設為33061避免與本機3306衝突</p>
 </blockquote>
-<h3 id="開機時自動啟用"><a href="#開機時自動啟用" class="headerlink" title="開機時自動啟用"></a>開機時自動啟用</h3><p>如果希望主機重啟時能夠重新啟用<code>PM2</code>的話可以這麼做</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 startup</span></span><br></pre></td></tr></table></figure>
+<p>這時我們另開一個終端機並使用設好的PORT登入MySQL</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p -P 33061 -h 127.0.0.1</span><br></pre></td></tr></table></figure>
 
-<p>另外不要忘記儲存當前設定好的應用</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 save</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><p>當你透過<code>PM2</code>的任何一種方式建立好程序後</p>
-<p>再來就是編輯我們的Apache設定檔<code>.conf</code>，<code>ProxyPassMatch</code>則設定後台要進入的目錄</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    ProxyPassMatch ^&#x2F;&lt;PATH&gt; !</span><br><span class="line">    ProxyPass &#x2F; http:&#x2F;&#x2F;localhost:3000&#x2F;</span><br><span class="line">    ProxyPassReverse &#x2F; http:&#x2F;&#x2F;localhost:3000&#x2F;</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
-
-<p>啟用該設定檔</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2ensite &lt;.conf&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>最後重啟Apache就大功告成了</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> systemctl restart apache2</span></span><br></pre></td></tr></table></figure>
+<p>此時神奇的地方出現了，本機上的33061就代表SQL Cloud，而你可以將此PORT用於專案及資料庫管理工具上！</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">Your MySQL connection id is 1008</span><br><span class="line">Server version: 8.0.26-google (Google)</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2019, Oracle and&#x2F;or its affiliates. All rights reserved.</span><br><span class="line"></span><br><span class="line">Oracle is a registered trademark of Oracle Corporation and&#x2F;or its</span><br><span class="line">affiliates. Other names may be trademarks of their respective</span><br><span class="line">owners.</span><br><span class="line"></span><br><span class="line">Type &#39;help;&#39; or &#39;\h&#39; for help. Type &#39;\c&#39; to clear the current input statement.</span><br></pre></td></tr></table></figure>
     </div>
 
     
@@ -386,11 +320,11 @@
 <div>
 <ul class="post-copyright">
   <li class="post-copyright-author">
-    <strong>作者： </strong>LinChi
+    <strong>作者： </strong>Ricky
   </li>
   <li class="post-copyright-link">
     <strong>文章連結：</strong>
-    <a href="https://a35205905.github.io/2021/10/06/Ubuntu-18-04-LTS-Apache-PM2/" title="Ubuntu 18.04 LTS+Apache+PM2">https://a35205905.github.io/2021/10/06/Ubuntu-18-04-LTS-Apache-PM2/</a>
+    <a href="https://a35205905.github.io/2022/10/04/Cloud-SQL-SSH/" title="Cloud SQL+SSH">https://a35205905.github.io/2022/10/04/Cloud-SQL-SSH/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版權聲明： </strong>本網誌所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 許可協議。轉載請註明出處！
@@ -400,10 +334,6 @@
 
 
       <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
-              <a href="/tags/node-js/" rel="tag"># node.js</a>
-          </div>
 
         
 
@@ -411,13 +341,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/07/23/macOS-pipenv-pyenv/" rel="prev" title="macOS+pipenv+pyenv">
-      <i class="fa fa-chevron-left"></i> macOS+pipenv+pyenv
+    <a href="/2021/11/03/GCE-SSH/" rel="prev" title="GCE+SSH">
+      <i class="fa fa-chevron-left"></i> GCE+SSH
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/11/03/GCE-SSH/" rel="next" title="GCE+SSH">
-      GCE+SSH <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -476,7 +403,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ubuntu"><span class="nav-number">2.</span> <span class="nav-text">Ubuntu</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Node-js-Vue"><span class="nav-number">3.</span> <span class="nav-text">Node.js+Vue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PM2"><span class="nav-number">4.</span> <span class="nav-text">PM2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安裝"><span class="nav-number">4.1.</span> <span class="nav-text">安裝</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新增程序"><span class="nav-number">4.2.</span> <span class="nav-text">新增程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#管理程序"><span class="nav-number">4.3.</span> <span class="nav-text">管理程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#開機時自動啟用"><span class="nav-number">4.4.</span> <span class="nav-text">開機時自動啟用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Apache"><span class="nav-number">4.5.</span> <span class="nav-text">Apache</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在開始之前"><span class="nav-number">2.</span> <span class="nav-text">在開始之前</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cloud-SDK"><span class="nav-number">3.</span> <span class="nav-text">Cloud SDK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Gcloud"><span class="nav-number">4.</span> <span class="nav-text">Gcloud</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cloud-SQL-Proxy"><span class="nav-number">5.</span> <span class="nav-text">Cloud SQL Proxy</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
