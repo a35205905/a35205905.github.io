@@ -123,20 +123,6 @@
   </url>
   
   <url>
-    <loc>https://a35205905.github.io/tags/php/</loc>
-    <lastmod>2022-10-04</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://a35205905.github.io/tags/laravel/</loc>
-    <lastmod>2022-10-04</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://a35205905.github.io/tags/ubuntu/</loc>
     <lastmod>2022-10-04</lastmod>
     <changefreq>daily</changefreq>
@@ -151,6 +137,20 @@
   </url>
   
   <url>
+    <loc>https://a35205905.github.io/tags/php/</loc>
+    <lastmod>2022-10-04</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://a35205905.github.io/tags/laravel/</loc>
+    <lastmod>2022-10-04</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://a35205905.github.io/tags/node-js/</loc>
     <lastmod>2022-10-04</lastmod>
     <changefreq>daily</changefreq>
@@ -158,14 +158,14 @@
   </url>
   
   <url>
-    <loc>https://a35205905.github.io/tags/wordpress/</loc>
+    <loc>https://a35205905.github.io/tags/vue/</loc>
     <lastmod>2022-10-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://a35205905.github.io/tags/vue/</loc>
+    <loc>https://a35205905.github.io/tags/wordpress/</loc>
     <lastmod>2022-10-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>

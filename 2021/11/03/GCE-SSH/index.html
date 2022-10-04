@@ -30,16 +30,16 @@
 <meta property="og:site_name" content="Ricky 叩叮俱樂部">
 <meta property="og:description" content="前言從進公司到現在以來，在連線Google Compute Engine時都是採用以下兩種方式：  從GCP平台透過瀏覽器開啟主機shell  安裝Google Cloud SDK方式ssh遠端   而自從接觸了AWS後我才又學到了第三種方式，只要透過ssh key就可以不用再設定任何東西 直接在CLI上ssh遠端至主機！！">
 <meta property="og:locale" content="zh_TW">
-<meta property="og:image" content="https://a35205905.github.io/images/GCP-SSH/vm_list.png">
-<meta property="og:image" content="https://a35205905.github.io/images/GCP-SSH/vm_info.png">
-<meta property="og:image" content="https://a35205905.github.io/images/GCP-SSH/vm_edit.png">
-<meta property="og:image" content="https://a35205905.github.io/images/GCP-SSH/vm_info_done.png">
+<meta property="og:image" content="https://a35205905.github.io/images/GCE-SSH/vm_list.png">
+<meta property="og:image" content="https://a35205905.github.io/images/GCE-SSH/vm_info.png">
+<meta property="og:image" content="https://a35205905.github.io/images/GCE-SSH/vm_edit.png">
+<meta property="og:image" content="https://a35205905.github.io/images/GCE-SSH/vm_info_done.png">
 <meta property="article:published_time" content="2021-11-03T09:45:00.000Z">
-<meta property="article:modified_time" content="2022-10-04T13:04:54.397Z">
+<meta property="article:modified_time" content="2022-10-04T13:26:11.714Z">
 <meta property="article:author" content="Ricky">
 <meta property="article:tag" content="gcp">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://a35205905.github.io/images/GCP-SSH/vm_list.png">
+<meta name="twitter:image" content="https://a35205905.github.io/images/GCE-SSH/vm_list.png">
 
 <link rel="canonical" href="https://a35205905.github.io/2021/11/03/GCE-SSH/">
 
@@ -242,7 +242,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2022-10-04 21:04:54" itemprop="dateModified" datetime="2022-10-04T21:04:54+08:00">2022-10-04</time>
+                <time title="修改時間：2022-10-04 21:26:11" itemprop="dateModified" datetime="2022-10-04T21:26:11+08:00">2022-10-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -309,10 +309,10 @@
 <blockquote>
 <p>-f:金鑰目錄及檔名 / -t:加密方式(預設RSA) / -C:註解</p>
 </blockquote>
-<h2 id="GCP"><a href="#GCP" class="headerlink" title="GCP"></a>GCP</h2><p>接著打開GCP平台並進入到<code>Compute Engine</code>底下的<code>VM執行個體</code><br><img src="/images/GCP-SSH/vm_list.png" alt="vue_init"></p>
-<p>進入專案詳細資訊並點選編輯<br><img src="/images/GCP-SSH/vm_info.png" alt="vue_init"></p>
-<p>在<code>SSH金鑰</code>中貼上剛剛所複製的公鑰，並點選儲存<br><img src="/images/GCP-SSH/vm_edit.png" alt="vue_init"></p>
-<p>接著回到專案詳細資訊就會看到已經設定好的<code>SSH Key</code><br><img src="/images/GCP-SSH/vm_info_done.png" alt="vue_init"></p>
+<h2 id="GCP"><a href="#GCP" class="headerlink" title="GCP"></a>GCP</h2><p>接著打開GCP平台並進入到<code>Compute Engine</code>底下的<code>VM執行個體</code><br><img src="/images/GCE-SSH/vm_list.png" alt="vue_init"></p>
+<p>進入專案詳細資訊並點選編輯<br><img src="/images/GCE-SSH/vm_info.png" alt="vue_init"></p>
+<p>在<code>SSH金鑰</code>中貼上剛剛所複製的公鑰，並點選儲存<br><img src="/images/GCE-SSH/vm_edit.png" alt="vue_init"></p>
+<p>接著回到專案詳細資訊就會看到已經設定好的<code>SSH Key</code><br><img src="/images/GCE-SSH/vm_info_done.png" alt="vue_init"></p>
 <p>最後只要打開CLI就能透過<code>ssh</code>的方式直接連接至GCE囉</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh &lt;USER&gt;@&lt;HOST&gt; -i ~/.ssh/&lt;KEY NAME&gt;.pem</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 輸入所設定的密碼</span></span><br></pre></td></tr></table></figure>
     </div>
