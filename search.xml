@@ -1,59 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>GCE+SSH</title>
-    <url>/2021/11/03/GCE-SSH/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>從進公司到現在以來，在連線Google Compute Engine時都是採用以下兩種方式：</p>
-<ol>
-<li><p>從GCP平台透過瀏覽器開啟主機shell</p>
-</li>
-<li><p>安裝<code>Google Cloud SDK</code>方式ssh遠端</p>
-</li>
-</ol>
-<p>而自從接觸了AWS後我才又學到了第三種方式，只要透過<code>ssh key</code>就可以不用再設定任何東西</p>
-<p>直接在CLI上ssh遠端至主機！！</p>
-<a id="more"></a>
-
-<h2 id="ssh-keygen"><a href="#ssh-keygen" class="headerlink" title="ssh-keygen"></a>ssh-keygen</h2><p>本篇文章參考至<a href="https://cloud.google.com/compute/docs/connect/create-ssh-keys" target="_blank" rel="noopener">Google Cloud官方文件</a></p>
-<p>只要透過<code>ssh-keygen</code>就能夠產生一組公私鑰，接著它會問你基本問題</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh-keygen</span></span><br></pre></td></tr></table></figure>
-
-<p>選擇<code>ssh key</code>放置的目錄及金鑰名稱，一般來說都會放在家目錄底下<code>~/.ssh</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Generating public&#x2F;private rsa key pair.</span><br><span class="line">Enter file in which to save the key (&#x2F;Users&#x2F;a35205905&#x2F;.ssh&#x2F;id_rsa):Users&#x2F;&lt;USER&gt;&#x2F;.ssh&#x2F;&lt;KEY NAME&gt;.pem</span><br></pre></td></tr></table></figure>
-
-<p>選擇是否在連線時需要輸入密碼，這邊建議要設定來提高安全性</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Enter passphrase (empty for no passphrase):</span><br></pre></td></tr></table></figure>
-
-<p>完成後這時就會得到一組金鑰：</p>
-<ul>
-<li><p>公鑰：<code>&lt;KEY NAME&gt;.pem.pub</code></p>
-</li>
-<li><p>私鑰：<code>&lt;KEY NAME&gt;.pem</code></p>
-</li>
-</ul>
-<p>如果想自定義設定也可以這麼做</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh-keygen -t rsa -f ~/.ssh/&lt;KEY NAME&gt;.pem -C &lt;COMMIT&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>最後把我們把公鑰給複製起來</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> less `~/.ssh/&lt;KEY NAME&gt;.pem.pub`</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>-f:金鑰目錄及檔名 / -t:加密方式(預設RSA) / -C:註解</p>
-</blockquote>
-<h2 id="GCP"><a href="#GCP" class="headerlink" title="GCP"></a>GCP</h2><p>接著打開GCP平台並進入到<code>Compute Engine</code>底下的<code>VM執行個體</code><br><img src="/images/GCE-SSH/vm_list.png" alt="vm_list.png"></p>
-<p>進入專案詳細資訊並點選編輯<br><img src="/images/GCE-SSH/vm_info.png" alt="vm_info.png"></p>
-<p>在<code>SSH金鑰</code>中貼上剛剛所複製的公鑰，並點選儲存<br><img src="/images/GCE-SSH/vm_edit.png" alt="vm_edit.png"></p>
-<p>接著回到專案詳細資訊就會看到已經設定好的<code>SSH Key</code><br><img src="/images/GCE-SSH/vm_info_done.png" alt="vm_info_done.png"></p>
-<p>最後只要打開CLI就能透過<code>ssh</code>的方式直接連接至GCE囉</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh &lt;USER&gt;@&lt;HOST&gt; -i ~/.ssh/&lt;KEY NAME&gt;.pem</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 輸入所設定的密碼</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>技術文章</category>
-      </categories>
-      <tags>
-        <tag>gcp</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Cloud SQL+SSH</title>
     <url>/2022/10/04/Cloud-SQL-SSH/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>原本好一陣子的專案都在AWS上部署，沒想到目前手頭的專案客戶強烈要求要架設在GCP上</p>
@@ -118,6 +65,59 @@
 <h2 id="Google-Compute-Engine"><a href="#Google-Compute-Engine" class="headerlink" title="Google Compute Engine"></a>Google Compute Engine</h2><p>而除了本機連線外，VM上的連線也是不可獲缺的，首先至Google Cloud的編輯頁中點選連線設定，於已授權網路點選<code>新增網路</code>，輸入名稱及IP後即可在主機上連線</p>
 <p><img src="/images/Cloud-SQL-SSH/Cloud_SQL_ip.png" alt="Cloud_SQL_ip.png"></p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>GCE+SSH</title>
+    <url>/2021/11/03/GCE-SSH/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>從進公司到現在以來，在連線Google Compute Engine時都是採用以下兩種方式：</p>
+<ol>
+<li><p>從GCP平台透過瀏覽器開啟主機shell</p>
+</li>
+<li><p>安裝<code>Google Cloud SDK</code>方式ssh遠端</p>
+</li>
+</ol>
+<p>而自從接觸了AWS後我才又學到了第三種方式，只要透過<code>ssh key</code>就可以不用再設定任何東西</p>
+<p>直接在CLI上ssh遠端至主機！！</p>
+<a id="more"></a>
+
+<h2 id="ssh-keygen"><a href="#ssh-keygen" class="headerlink" title="ssh-keygen"></a>ssh-keygen</h2><p>本篇文章參考至<a href="https://cloud.google.com/compute/docs/connect/create-ssh-keys" target="_blank" rel="noopener">Google Cloud官方文件</a></p>
+<p>只要透過<code>ssh-keygen</code>就能夠產生一組公私鑰，接著它會問你基本問題</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh-keygen</span></span><br></pre></td></tr></table></figure>
+
+<p>選擇<code>ssh key</code>放置的目錄及金鑰名稱，一般來說都會放在家目錄底下<code>~/.ssh</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Generating public&#x2F;private rsa key pair.</span><br><span class="line">Enter file in which to save the key (&#x2F;Users&#x2F;a35205905&#x2F;.ssh&#x2F;id_rsa):Users&#x2F;&lt;USER&gt;&#x2F;.ssh&#x2F;&lt;KEY NAME&gt;.pem</span><br></pre></td></tr></table></figure>
+
+<p>選擇是否在連線時需要輸入密碼，這邊建議要設定來提高安全性</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Enter passphrase (empty for no passphrase):</span><br></pre></td></tr></table></figure>
+
+<p>完成後這時就會得到一組金鑰：</p>
+<ul>
+<li><p>公鑰：<code>&lt;KEY NAME&gt;.pem.pub</code></p>
+</li>
+<li><p>私鑰：<code>&lt;KEY NAME&gt;.pem</code></p>
+</li>
+</ul>
+<p>如果想自定義設定也可以這麼做</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh-keygen -t rsa -f ~/.ssh/&lt;KEY NAME&gt;.pem -C &lt;COMMIT&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>最後把我們把公鑰給複製起來</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> less `~/.ssh/&lt;KEY NAME&gt;.pem.pub`</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>-f:金鑰目錄及檔名 / -t:加密方式(預設RSA) / -C:註解</p>
+</blockquote>
+<h2 id="GCP"><a href="#GCP" class="headerlink" title="GCP"></a>GCP</h2><p>接著打開GCP平台並進入到<code>Compute Engine</code>底下的<code>VM執行個體</code><br><img src="/images/GCE-SSH/vm_list.png" alt="vm_list.png"></p>
+<p>進入專案詳細資訊並點選編輯<br><img src="/images/GCE-SSH/vm_info.png" alt="vm_info.png"></p>
+<p>在<code>SSH金鑰</code>中貼上剛剛所複製的公鑰，並點選儲存<br><img src="/images/GCE-SSH/vm_edit.png" alt="vm_edit.png"></p>
+<p>接著回到專案詳細資訊就會看到已經設定好的<code>SSH Key</code><br><img src="/images/GCE-SSH/vm_info_done.png" alt="vm_info_done.png"></p>
+<p>最後只要打開CLI就能透過<code>ssh</code>的方式直接連接至GCE囉</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh &lt;USER&gt;@&lt;HOST&gt; -i ~/.ssh/&lt;KEY NAME&gt;.pem</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 輸入所設定的密碼</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>gcp</tag>
+      </tags>
   </entry>
   <entry>
     <title>Ubuntu 18.04 LTS+Apache+Django</title>
@@ -301,11 +301,26 @@
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu 18.04 LTS+Vue-CLI+Ngnix/Apache</title>
-    <url>/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從後台架設完畢後<br>緊接著要幫前端同事把Vue給搬至Server<br>如此一來整個專案就能順利上線了～</p>
-<p>不過即便如此也熬了一陣子的撞牆期<br>因為網路上的教學文章實在太多<br>每一篇都大同小異又有些微的不同<br>因此決定實際演練並趕緊記錄下來<br>這樣未來需要時就不會花太多時間走冤望路了</p>
-<p>那話不多說<br>一起來看是如何操作的吧</p>
+    <title>Ubuntu 18.04 LTS+Apache+PM2</title>
+    <url>/2021/10/06/Ubuntu-18-04-LTS-Apache-PM2/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從進來公司後所有的專案都是採用SPA開發，但在部署上時常會碰到一些小問題</p>
+<p>像是當前後台並不是用子網域的方式分開，例如：</p>
+<ul>
+<li><p>https:backstage.xxx.com/</p>
+</li>
+<li><p>https:xxx.com/</p>
+</li>
+</ul>
+<p>而是採用子目錄的方式分開：例如：</p>
+<ul>
+<li><p>https:xxx.com/</p>
+</li>
+<li><p>https:xxx.com/bakcstage</p>
+</li>
+</ul>
+<p>要如何快速方便設定好<code>Apache</code>就是一個令人頭痛的地方</p>
+<p>而如果前台剛好使用的是<code>node.js</code>，就可以用<code>PM2</code>來解決這樣的困境</p>
+<p>那我們一起來看下去吧～！</p>
 <a id="more"></a>
 
 <h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
@@ -315,89 +330,95 @@
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
 
 <p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
-<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>更新<code>APT</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+<h2 id="Node-js-Vue"><a href="#Node-js-Vue" class="headerlink" title="Node.js+Vue"></a>Node.js+Vue</h2><p>這次教學打算先架一個簡單的Vue cli當作node.js的專案，這部分可以參考<a href="/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/" title="這一篇">這一篇</a></p>
+<h2 id="PM2"><a href="#PM2" class="headerlink" title="PM2"></a>PM2</h2><p>PM2是自帶負載平衡的<code>node.js</code>程序管理器</p>
+<p>當你需要部署<code>node</code>專案，讓它有效分配主機CPU及記憶體資源時，並且獨立運作在主機上時</p>
+<p>它會是你很好的選擇，而其中<code>PM2</code>的<code>PM</code>代表著 Process Manager</p>
+<p>process可以指服務、程序、應用，這邊統一以<code>程序</code>作為中文譯詞</p>
+<h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><p>在全域模式下安裝<code>PM2</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> npm install pm2@latest -g</span></span><br></pre></td></tr></table></figure>
 
-<p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
-<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
-
-<p>查看版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.9.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.8</span><br></pre></td></tr></table></figure>
-
-<h2 id="Vue-CLI"><a href="#Vue-CLI" class="headerlink" title="Vue-CLI"></a>Vue-CLI</h2><p>安裝<code>Vue-CLI</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli-init</span></span><br></pre></td></tr></table></figure>
-
-<p>查看版本</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue -V</span></span><br><span class="line">@vue/cli 4.5.4</span><br></pre></td></tr></table></figure>
-
-<p>切換至存放專案目錄，這裡可自行選擇，我一般習慣放置在<code>/var/app</code>裡</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
-
-<p>建立專案</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue init webpack &lt;project&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>根據提示選擇即可<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_init.png" alt="vue_init.png"></p>
-<p>切換至剛剛建立的專案目錄，然後打包專案</p>
 <blockquote>
-<p>若是現有的專案可直接<code>git clone</code>到目錄下，再執行以下指令</p>
+<p>-g:global</p>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;project&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm install</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm run build</span></span><br></pre></td></tr></table></figure>
+<h3 id="新增程序"><a href="#新增程序" class="headerlink" title="新增程序"></a>新增程序</h3><p>透過啟動js建立一個程序</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 start &lt;.js&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p>接著可以在目錄底下看到<code>dist</code>這個資料夾就代表打包完成</p>
-<h2 id="Ngnix"><a href="#Ngnix" class="headerlink" title="Ngnix"></a>Ngnix</h2><p>安裝<code>Ngnix</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nginx</span></span><br></pre></td></tr></table></figure>
+<p>透過指令方式建立一個程序</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 start <span class="string">"&lt;COMMAND&gt;"</span></span></span><br></pre></td></tr></table></figure>
 
-<p>查看服務狀態</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service nginx status</span></span><br></pre></td></tr></table></figure>
+<p>也可以直接透過靜態檔案建立</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 serve &lt;PATH&gt; &lt;PORT&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p>打開瀏覽器直接輸入<code>http://&lt;server_ip&gt;/</code>就可以看到Nginx的歡迎頁面<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/nginx_welcome.png" alt="nginx_welcome"></p>
-<p>根據<code>/etc/nginx/nginx.conf</code>我們可以知道設定檔放置在這兩個地方</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">http &#123;</span><br><span class="line">	...</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;*.conf;</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;*;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>如果你要啟動一個vue專案可以這麼做</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 start <span class="string">"npm run start"</span> --name &lt;APP NAME&gt; --watch --max-memory-restart 1000M --<span class="built_in">log</span> ~/.pm2/logs/&lt;APP NAME&gt;/ --time</span></span><br></pre></td></tr></table></figure>
 
-<p>Nginx預設的做法會先將設定檔放置<code>/etc/nginx/sites-available</code><br>再經由<code>軟連結</code>將檔案綁定至<code>/etc/nginx/sites-enabled</code><br>而我們同樣依照它的流程先新增自定義設定檔</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/nginx/sites-available/&lt;project&gt;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name localhost;</span><br><span class="line">    root &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">    	index index.html;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以附加的參數如下(以下–都為兩個-)：</p>
+<ul>
+<li><p>–name：指定 app 一個名字</p>
+</li>
+<li><p>–watch：檔案有變更時，會自動重啟</p>
+</li>
+<li><p>–max-memory-restart：記憶體使用超過這個門檻時，將自動重啟</p>
+</li>
+<li><p>–log：設定 log 的目錄，若要重新設定目錄，需將原本的程序刪掉後重新建立</p>
+</li>
+<li><p>–error：設定 error log 目錄</p>
+</li>
+<li><p>–log-date-format：指定 log 的格式</p>
+</li>
+<li><p>–time：給 log 加上時間前綴</p>
+</li>
+<li><p>–spa：限定<code>serve</code>使用，會重導所有的請求到<code>index.html</code></p>
+</li>
+<li><p>–restart-delay：自動重啟時，要 delay 多久</p>
+</li>
+<li><p>–basic-auth-username –basic-auth-password：限定<code>serve</code>使用，讓該頁面需要帳號密碼方可存取</p>
+</li>
+</ul>
+<h3 id="管理程序"><a href="#管理程序" class="headerlink" title="管理程序"></a>管理程序</h3><p>顯示管理程序狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 [list|ls|status]</span></span><br></pre></td></tr></table></figure>
+<p><img src="/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_list.png" alt="pm2_list.png"></p>
+<p>顯示管理程序CPU及記憶體使用狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 monit</span></span><br></pre></td></tr></table></figure>
+<p><img src="/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_monit.png" alt="pm2_monit.png"></p>
+<p>顯示指定程序狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 show &lt;APP NAME&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_show.png" alt="pm2_show.png"></p>
+<p>直接kill再重啟程序</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 restart &lt;APP NAME&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p>建立軟連結</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ ln -s &#x2F;etc&#x2F;nginx&#x2F;sites-available&#x2F;&lt;project&gt; &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;&lt;project&gt;</span><br></pre></td></tr></table></figure>
+<p>停止程序</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 stop &lt;APP NAME&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p>刪除預設設定檔的軟連結</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ rm &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;default</span><br></pre></td></tr></table></figure>
+<p>停止並刪除程序</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 delete &lt;APP NAME&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p>測試設定檔配置並重啟</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> nginx -t</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> service nginx reload</span></span><br></pre></td></tr></table></figure>
-
-<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome.png"></p>
-<h3 id="補充"><a href="#補充" class="headerlink" title="補充"></a>補充</h3><p>在研究過程中耗費我最多時間的其實是設定檔的配置，由於我對Vue-cli的理解還不夠熟悉<br>裡頭有一些參數還不瞭解作用為何，也不太清楚Vue-cli的router是如何運作<br>因此雖然以上的配置可以讓專案運行，但不代表是完全正確的<br>這部分我還要再琢磨一番後才能寫得更詳細，而以下是我實際專案的配置<br><code>location</code>的部分和原來有些許的不同</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    server_name  easylunch.today;</span><br><span class="line">    root         &#x2F;var&#x2F;app&#x2F;lunch&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        try_files $uri $uri&#x2F; @router;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">    location @router &#123;</span><br><span class="line">        rewrite ^.*$ &#x2F;index.html last;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>Apache其實也是同樣的做法，只是換了一個Web Server而已～</p>
-<p>安裝<code>Apache</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install apache2 libapache2-mod-wsgi-py3</span><br></pre></td></tr></table></figure>
-
-<p>開機自動啟動Apache</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>
-
-<p>至/etc/apache2/sites-available/vue.conf新增下列設定</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/apache2/sites-available/vue.conf</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    DocumentRoot &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist</span><br><span class="line">    ServerName localhost</span><br><span class="line"></span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist&gt;</span><br><span class="line">        Options Indexes FollowSymLinks</span><br><span class="line">        AllowOverride All</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+<p>而除了<code>&lt;APP NAME&gt;</code>之外，你也可以替換成<code>all</code>或是<code>&lt;id&gt;</code></p>
 <blockquote>
-<p>可使用vi/Vim取代：<code>:%s/&lt;SEARCH_FROM&gt;/&lt;REPLACE_TO&gt;/g</code></p>
+<p>all: 所有程序 / id: 該程序編號</p>
 </blockquote>
-<p>啟用自訂設定 &amp; 關閉預設設定</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2ensite vue.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo a2dissite 000-default.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+<h3 id="開機時自動啟用"><a href="#開機時自動啟用" class="headerlink" title="開機時自動啟用"></a>開機時自動啟用</h3><p>如果希望主機重啟時能夠重新啟用<code>PM2</code>的話可以這麼做</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 startup</span></span><br></pre></td></tr></table></figure>
 
-<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome.png"></p>
-]]></content>
+<p>另外不要忘記儲存當前設定好的應用</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 save</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><p>當你透過<code>PM2</code>的任何一種方式建立好程序後</p>
+<p>再來就是編輯我們的Apache設定檔<code>.conf</code>，<code>ProxyPassMatch</code>則設定後台要進入的目錄</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    ProxyPassMatch ^&#x2F;&lt;PATH&gt; !</span><br><span class="line">    ProxyPass &#x2F; http:&#x2F;&#x2F;localhost:3000&#x2F;</span><br><span class="line">    ProxyPassReverse &#x2F; http:&#x2F;&#x2F;localhost:3000&#x2F;</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+
+<p>啟用該設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2ensite &lt;.conf&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>最後重啟Apache就大功告成了</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> systemctl restart apache2</span></span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>技術文章</category>
       </categories>
       <tags>
         <tag>ubuntu</tag>
-        <tag>vue</tag>
+        <tag>node.js</tag>
       </tags>
   </entry>
   <entry>
@@ -557,6 +578,188 @@
       </tags>
   </entry>
   <entry>
+    <title>Ubuntu 18.04 LTS+Certbot(Let’s Encrypt)</title>
+    <url>/2020/10/28/Ubuntu-18-04-LTS-Certbot-Let%E2%80%99s-Encrypt/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>打了幾篇文章之後發現，要想前言真的是一件挺燒腦的事情，明明也不是特別為了什麼才寫文章</p>
+<p>單純地只是為了把工作上遇到困難的解決辦法，記錄在這裡所以才打開<code>hexo</code>(攤手</p>
+<p>而因為最近部署了越來越多次的Server，導致我也面臨各種申請SSL/TLS的需求</p>
+<p>因此我把這一塊拉出來寫成一篇文章，好讓我以後再架設不同Web Server時也能快速上手</p>
+<p>那一樣就直接開始吧～</p>
+<a id="more"></a>
+
+<h2 id="在開始之前"><a href="#在開始之前" class="headerlink" title="在開始之前"></a>在開始之前</h2><p>有幾個名詞可以簡單介紹一下</p>
+<ul>
+<li><p><a href="https://certbot.eff.org/" target="_blank" rel="noopener">Let’s Encrypt</a>: 免費、自動化和開放的憑證(SSL/TLS)頒發機構</p>
+</li>
+<li><p><a href="https://letsencrypt.org/zh-tw/" target="_blank" rel="noopener">Certbot</a>: 協助向<code>Let’s Encrypt</code>申請憑證(SSL/TLS)的開源軟體</p>
+</li>
+</ul>
+<p>更多的相關知識你可以在網路上找到不少專業文章，這裡就只單純記錄實作上需要用到的部分<br>但在操作以下步驟之前，你必須先符合以下條件：</p>
+<ol>
+<li>已先向域名商(Web hosts)註冊一組網域名稱</li>
+<li>已設定<code>DNS</code>指向該Server IP</li>
+<li>已在<code>Apache</code>/<code>Nginx</code>設定檔中新增域名至<code>ServerName</code>中</li>
+</ol>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>接著我們可以先根據<code>PPA</code>下載最新版本的<code>Certobt</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:certbot/certbot</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install python-certbot-apache</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>按照提示按下<code>Enter</code></p>
+</blockquote>
+<h2 id="申請SSL-TLS憑證"><a href="#申請SSL-TLS憑證" class="headerlink" title="申請SSL/TLS憑證"></a>申請SSL/TLS憑證</h2><p>這裡先採用<code>Apache</code>作為實作範例，其實只要理解操作，要更換為<code>Nginx</code>並不會太困難</p>
+<p>建立SSL憑證</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo certbot --apache -d &lt;YOUR_DOMAIN&gt; -d &lt;YOUR_DOMAIN2&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>–apache: 使用Apache Web Server / -d: domain(可以依照域名新增至好幾個)</p>
+</blockquote>
+<blockquote>
+<p>如果不想讓<code>Certbot</code>覆寫設定檔只產生憑證，可以加入<code>certonly</code>參數</p>
+</blockquote>
+<p>如果是第一次申請，將會出現輸入Email的提示，之後<code>Cerbot</code>就會向<code>Let&#39;s Encrypt</code>進行申請SSL動作<br>同時驗證DNS配置是否正確，如果成功，<code>Cerbot</code>會再問你要如何設置<code>HTTPS</code>：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Please choose whether or not to redirect HTTP traffic to HTTPS, removing HTTP access.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">1: No redirect - Make no further changes to the webserver configuration.</span><br><span class="line">2: Redirect - Make all requests redirect to secure HTTPS access. Choose this for</span><br><span class="line">new sites, or if you&#39;re confident your site works on HTTPS. You can undo this</span><br><span class="line">change by editing your web server&#39;s configuration.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">Select the appropriate number [1-2] then [enter] (press &#39;c&#39; to cancel):</span><br></pre></td></tr></table></figure>
+<p>如果你想要讓瀏覽器輸入<code>http://&lt;DOMAIN&gt;/</code>時自動導向<code>https://&lt;DOMAIN&gt;</code>就輸入<code>2</code><br>接著<code>Certbot</code>就會在<code>/etc/apache2/sites-available/</code>中，將含有你輸入DOMAIN的設定檔進行配置，若你原先的設定內只有http<code>&lt;VirtualHost *:80&gt;</code>，那麼<code>Certbot</code>還會幫你再新增一份https<code>&lt;VirtualHost *:443&gt;</code>的設定檔，聽起來很難以理解對吧，實際做過一遍會更清楚這其中的流程</p>
+<ul>
+<li><p><code>&lt;YOUR CONF&gt;.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">        ...</span><br><span class="line">RewriteEngine on</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN2&gt; [OR]</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN&gt;</span><br><span class="line">RewriteRule ^ https:&#x2F;&#x2F;%&#123;SERVER_NAME&#125;%&#123;REQUEST_URI&#125; [END,NE,R&#x3D;permanent]</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>&lt;YOUR CONF&gt;-le-ssl.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;IfModule mod_ssl.c&gt;</span><br><span class="line">&lt;VirtualHost *:443&gt;</span><br><span class="line">        ...</span><br><span class="line">Include &#x2F;etc&#x2F;letsencrypt&#x2F;options-ssl-apache.conf</span><br><span class="line">SSLCertificateFile &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;kiitzu.com&#x2F;fullchain.pem</span><br><span class="line">SSLCertificateKeyFile &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;kiitzu.com&#x2F;privkey.pem</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br><span class="line">&lt;&#x2F;IfModule&gt;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>到這裡我們的憑證就已經申請好了，我們重啟<code>Apache</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+
+<p>現在你可以打開瀏覽器輸入<code>https://&lt;YOUR_DOMAIN&gt;</code>就可以看到SSL囉～</p>
+<h2 id="更換SSL-TLS憑證"><a href="#更換SSL-TLS憑證" class="headerlink" title="更換SSL/TLS憑證"></a>更換SSL/TLS憑證</h2><p>值得注意的是，<code>Let’s Encrypt</code>憑證是只有三個月的效期的，你可以手動查看目前申請的憑證狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot certificates</span></span><br></pre></td></tr></table></figure>
+
+<p>如果你想更換憑證可以這麼做</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew -v</span></span><br></pre></td></tr></table></figure>
+
+<p>但這樣做太不人性化了，等於每三個月都還要手動更換，因此推薦用Corntab的方式幫我們每個禮拜去確認憑證狀態，如果效期低於一個月就會自動更換憑證</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew --dry-run</span></span><br></pre></td></tr></table></figure>
+
+<p>確認Corntab狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl status certbot.timer</span></span><br></pre></td></tr></table></figure>
+
+<p>而想要移除憑證可以這麼做</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot delete</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可以加入<code>--cert-name &lt;DOMAIN&gt;</code>參數直接根據域名刪除</p>
+</blockquote>
+<h2 id="Django"><a href="#Django" class="headerlink" title="Django"></a>Django</h2><p>若你的專案正好是Django，那有一個地方要特別注意<br>再申請SSL之前，我們必須先把<code>.conf</code>裡有關WSGI的配置全部拿掉</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">WSGIDaemonProcess core python-path&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt; python-home&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt;&#x2F;.venv</span><br><span class="line">WSGIProcessGroup core</span><br><span class="line">WSGIScriptAlias &#x2F; &#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt;&#x2F;core&#x2F;wsgi.py</span><br><span class="line">WSGIPassAuthorization On</span><br></pre></td></tr></table></figure>
+
+<p>然後申請完後再把這些配置加回置<code>&lt;YOUR CONF&gt;-le-ssl.conf</code>裡<br>這麼做的目的是為了避免WSGI配置放在<code>&lt;YOUR CONF&gt;.conf</code>而導致的衝突發生</p>
+]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 LTS+Vue-CLI+Ngnix/Apache</title>
+    <url>/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從後台架設完畢後<br>緊接著要幫前端同事把Vue給搬至Server<br>如此一來整個專案就能順利上線了～</p>
+<p>不過即便如此也熬了一陣子的撞牆期<br>因為網路上的教學文章實在太多<br>每一篇都大同小異又有些微的不同<br>因此決定實際演練並趕緊記錄下來<br>這樣未來需要時就不會花太多時間走冤望路了</p>
+<p>那話不多說<br>一起來看是如何操作的吧</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>更新<code>APT</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br></pre></td></tr></table></figure>
+
+<p>添加<code>PPA</code>，這裡的版本為<code>_14.x</code>，你也可以選擇其他適合的版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span></span><br></pre></td></tr></table></figure>
+<p>系統會根據PPA自動安裝<code>Node.js</code> 、 <code>npm</code>及其他相關套件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nodejs</span></span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> node -v</span></span><br><span class="line">v14.9.0</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm -v</span></span><br><span class="line">6.14.8</span><br></pre></td></tr></table></figure>
+
+<h2 id="Vue-CLI"><a href="#Vue-CLI" class="headerlink" title="Vue-CLI"></a>Vue-CLI</h2><p>安裝<code>Vue-CLI</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo npm install -g @vue/cli-init</span></span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue -V</span></span><br><span class="line">@vue/cli 4.5.4</span><br></pre></td></tr></table></figure>
+
+<p>切換至存放專案目錄，這裡可自行選擇，我一般習慣放置在<code>/var/app</code>裡</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir /var/app</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> /var/app</span></span><br></pre></td></tr></table></figure>
+
+<p>建立專案</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vue init webpack &lt;project&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>根據提示選擇即可<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_init.png" alt="vue_init.png"></p>
+<p>切換至剛剛建立的專案目錄，然後打包專案</p>
+<blockquote>
+<p>若是現有的專案可直接<code>git clone</code>到目錄下，再執行以下指令</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> &lt;project&gt;</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm install</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> npm run build</span></span><br></pre></td></tr></table></figure>
+
+<p>接著可以在目錄底下看到<code>dist</code>這個資料夾就代表打包完成</p>
+<h2 id="Ngnix"><a href="#Ngnix" class="headerlink" title="Ngnix"></a>Ngnix</h2><p>安裝<code>Ngnix</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install nginx</span></span><br></pre></td></tr></table></figure>
+
+<p>查看服務狀態</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service nginx status</span></span><br></pre></td></tr></table></figure>
+
+<p>打開瀏覽器直接輸入<code>http://&lt;server_ip&gt;/</code>就可以看到Nginx的歡迎頁面<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/nginx_welcome.png" alt="nginx_welcome"></p>
+<p>根據<code>/etc/nginx/nginx.conf</code>我們可以知道設定檔放置在這兩個地方</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">http &#123;</span><br><span class="line">	...</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;*.conf;</span><br><span class="line">	include &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;*;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>Nginx預設的做法會先將設定檔放置<code>/etc/nginx/sites-available</code><br>再經由<code>軟連結</code>將檔案綁定至<code>/etc/nginx/sites-enabled</code><br>而我們同樣依照它的流程先新增自定義設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/nginx/sites-available/&lt;project&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name localhost;</span><br><span class="line">    root &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">    	index index.html;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>建立軟連結</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ ln -s &#x2F;etc&#x2F;nginx&#x2F;sites-available&#x2F;&lt;project&gt; &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;&lt;project&gt;</span><br></pre></td></tr></table></figure>
+
+<p>刪除預設設定檔的軟連結</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ rm &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;default</span><br></pre></td></tr></table></figure>
+
+<p>測試設定檔配置並重啟</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> nginx -t</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> service nginx reload</span></span><br></pre></td></tr></table></figure>
+
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome.png"></p>
+<h3 id="補充"><a href="#補充" class="headerlink" title="補充"></a>補充</h3><p>在研究過程中耗費我最多時間的其實是設定檔的配置，由於我對Vue-cli的理解還不夠熟悉<br>裡頭有一些參數還不瞭解作用為何，也不太清楚Vue-cli的router是如何運作<br>因此雖然以上的配置可以讓專案運行，但不代表是完全正確的<br>這部分我還要再琢磨一番後才能寫得更詳細，而以下是我實際專案的配置<br><code>location</code>的部分和原來有些許的不同</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    server_name  easylunch.today;</span><br><span class="line">    root         &#x2F;var&#x2F;app&#x2F;lunch&#x2F;dist;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        try_files $uri $uri&#x2F; @router;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">    location @router &#123;</span><br><span class="line">        rewrite ^.*$ &#x2F;index.html last;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    error_page 404 &#x2F;404.html;</span><br><span class="line">    location &#x3D; &#x2F;40x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 500 502 503 504 &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>Apache其實也是同樣的做法，只是換了一個Web Server而已～</p>
+<p>安裝<code>Apache</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install apache2 libapache2-mod-wsgi-py3</span><br></pre></td></tr></table></figure>
+
+<p>開機自動啟動Apache</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> apache2</span></span><br></pre></td></tr></table></figure>
+
+<p>至/etc/apache2/sites-available/vue.conf新增下列設定</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/apache2/sites-available/vue.conf</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    DocumentRoot &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist</span><br><span class="line">    ServerName localhost</span><br><span class="line"></span><br><span class="line">    &lt;Directory &#x2F;var&#x2F;app&#x2F;&lt;project&gt;&#x2F;dist&gt;</span><br><span class="line">        Options Indexes FollowSymLinks</span><br><span class="line">        AllowOverride All</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可使用vi/Vim取代：<code>:%s/&lt;SEARCH_FROM&gt;/&lt;REPLACE_TO&gt;/g</code></p>
+</blockquote>
+<p>啟用自訂設定 &amp; 關閉預設設定</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo a2ensite vue.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo a2dissite 000-default.conf</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
+
+<p>接著重新打開瀏覽器並輸入<code>http:&lt;server_ip&gt;/</code>就可以看到熟悉的<code>Vue</code>歡迎頁面<br><img src="/images/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/vue_welcome.png" alt="vue_welcome.png"></p>
+]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>vue</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Ubuntu 18.04 LTS+Wordpress Backup/Restore</title>
     <url>/2020/09/18/Ubuntu-18-04-LTS-Wordpress-Backup-Restore/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>說到WordPress，備份也是一件討人厭的事情<br>但比起備份，還原至另一台Server更是令人困擾<br>在工作時原本以為順利把WordPress部署至測試機後<br>續後處理起來會輕鬆很多，結果還是吃了不少悶虧<br>趁下班之餘趕緊趁忘記之前好好記起來！</p>
@@ -659,209 +862,6 @@
       <tags>
         <tag>ubuntu</tag>
         <tag>wordpress</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu 18.04 LTS+Apache+PM2</title>
-    <url>/2021/10/06/Ubuntu-18-04-LTS-Apache-PM2/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從進來公司後所有的專案都是採用SPA開發，但在部署上時常會碰到一些小問題</p>
-<p>像是當前後台並不是用子網域的方式分開，例如：</p>
-<ul>
-<li><p>https:backstage.xxx.com/</p>
-</li>
-<li><p>https:xxx.com/</p>
-</li>
-</ul>
-<p>而是採用子目錄的方式分開：例如：</p>
-<ul>
-<li><p>https:xxx.com/</p>
-</li>
-<li><p>https:xxx.com/bakcstage</p>
-</li>
-</ul>
-<p>要如何快速方便設定好<code>Apache</code>就是一個令人頭痛的地方</p>
-<p>而如果前台剛好使用的是<code>node.js</code>，就可以用<code>PM2</code>來解決這樣的困境</p>
-<p>那我們一起來看下去吧～！</p>
-<a id="more"></a>
-
-<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
-
-<p>可切換至<code>root</code>帳號</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
-
-<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
-<h2 id="Node-js-Vue"><a href="#Node-js-Vue" class="headerlink" title="Node.js+Vue"></a>Node.js+Vue</h2><p>這次教學打算先架一個簡單的Vue cli當作node.js的專案，這部分可以參考<a href="/2020/09/03/Ubuntu-18-04-LTS-Vue-CLI-Ngnix-Apache/" title="這一篇">這一篇</a></p>
-<h2 id="PM2"><a href="#PM2" class="headerlink" title="PM2"></a>PM2</h2><p>PM2是自帶負載平衡的<code>node.js</code>程序管理器</p>
-<p>當你需要部署<code>node</code>專案，讓它有效分配主機CPU及記憶體資源時，並且獨立運作在主機上時</p>
-<p>它會是你很好的選擇，而其中<code>PM2</code>的<code>PM</code>代表著 Process Manager</p>
-<p>process可以指服務、程序、應用，這邊統一以<code>程序</code>作為中文譯詞</p>
-<h3 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h3><p>在全域模式下安裝<code>PM2</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> npm install pm2@latest -g</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>-g:global</p>
-</blockquote>
-<h3 id="新增程序"><a href="#新增程序" class="headerlink" title="新增程序"></a>新增程序</h3><p>透過啟動js建立一個程序</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 start &lt;.js&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>透過指令方式建立一個程序</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 start <span class="string">"&lt;COMMAND&gt;"</span></span></span><br></pre></td></tr></table></figure>
-
-<p>也可以直接透過靜態檔案建立</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 serve &lt;PATH&gt; &lt;PORT&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>如果你要啟動一個vue專案可以這麼做</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 start <span class="string">"npm run start"</span> --name &lt;APP NAME&gt; --watch --max-memory-restart 1000M --<span class="built_in">log</span> ~/.pm2/logs/&lt;APP NAME&gt;/ --time</span></span><br></pre></td></tr></table></figure>
-
-<p>可以附加的參數如下(以下–都為兩個-)：</p>
-<ul>
-<li><p>–name：指定 app 一個名字</p>
-</li>
-<li><p>–watch：檔案有變更時，會自動重啟</p>
-</li>
-<li><p>–max-memory-restart：記憶體使用超過這個門檻時，將自動重啟</p>
-</li>
-<li><p>–log：設定 log 的目錄，若要重新設定目錄，需將原本的程序刪掉後重新建立</p>
-</li>
-<li><p>–error：設定 error log 目錄</p>
-</li>
-<li><p>–log-date-format：指定 log 的格式</p>
-</li>
-<li><p>–time：給 log 加上時間前綴</p>
-</li>
-<li><p>–spa：限定<code>serve</code>使用，會重導所有的請求到<code>index.html</code></p>
-</li>
-<li><p>–restart-delay：自動重啟時，要 delay 多久</p>
-</li>
-<li><p>–basic-auth-username –basic-auth-password：限定<code>serve</code>使用，讓該頁面需要帳號密碼方可存取</p>
-</li>
-</ul>
-<h3 id="管理程序"><a href="#管理程序" class="headerlink" title="管理程序"></a>管理程序</h3><p>顯示管理程序狀態</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 [list|ls|status]</span></span><br></pre></td></tr></table></figure>
-<p><img src="/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_list.png" alt="pm2_list.png"></p>
-<p>顯示管理程序CPU及記憶體使用狀態</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 monit</span></span><br></pre></td></tr></table></figure>
-<p><img src="/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_monit.png" alt="pm2_monit.png"></p>
-<p>顯示指定程序狀態</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 show &lt;APP NAME&gt;</span></span><br></pre></td></tr></table></figure>
-<p><img src="/images/Ubuntu-18-04-LTS-Apache-PM2/pm2_show.png" alt="pm2_show.png"></p>
-<p>直接kill再重啟程序</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 restart &lt;APP NAME&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>停止程序</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 stop &lt;APP NAME&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>停止並刪除程序</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 delete &lt;APP NAME&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>而除了<code>&lt;APP NAME&gt;</code>之外，你也可以替換成<code>all</code>或是<code>&lt;id&gt;</code></p>
-<blockquote>
-<p>all: 所有程序 / id: 該程序編號</p>
-</blockquote>
-<h3 id="開機時自動啟用"><a href="#開機時自動啟用" class="headerlink" title="開機時自動啟用"></a>開機時自動啟用</h3><p>如果希望主機重啟時能夠重新啟用<code>PM2</code>的話可以這麼做</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 startup</span></span><br></pre></td></tr></table></figure>
-
-<p>另外不要忘記儲存當前設定好的應用</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pm2 save</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><p>當你透過<code>PM2</code>的任何一種方式建立好程序後</p>
-<p>再來就是編輯我們的Apache設定檔<code>.conf</code>，<code>ProxyPassMatch</code>則設定後台要進入的目錄</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    ProxyPassMatch ^&#x2F;&lt;PATH&gt; !</span><br><span class="line">    ProxyPass &#x2F; http:&#x2F;&#x2F;localhost:3000&#x2F;</span><br><span class="line">    ProxyPassReverse &#x2F; http:&#x2F;&#x2F;localhost:3000&#x2F;</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
-
-<p>啟用該設定檔</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> a2ensite &lt;.conf&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>最後重啟Apache就大功告成了</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> systemctl restart apache2</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>技術文章</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>node.js</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu 18.04 LTS+Certbot(Let’s Encrypt)</title>
-    <url>/2020/10/28/Ubuntu-18-04-LTS-Certbot-Let%E2%80%99s-Encrypt/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>打了幾篇文章之後發現，要想前言真的是一件挺燒腦的事情，明明也不是特別為了什麼才寫文章</p>
-<p>單純地只是為了把工作上遇到困難的解決辦法，記錄在這裡所以才打開<code>hexo</code>(攤手</p>
-<p>而因為最近部署了越來越多次的Server，導致我也面臨各種申請SSL/TLS的需求</p>
-<p>因此我把這一塊拉出來寫成一篇文章，好讓我以後再架設不同Web Server時也能快速上手</p>
-<p>那一樣就直接開始吧～</p>
-<a id="more"></a>
-
-<h2 id="在開始之前"><a href="#在開始之前" class="headerlink" title="在開始之前"></a>在開始之前</h2><p>有幾個名詞可以簡單介紹一下</p>
-<ul>
-<li><p><a href="https://certbot.eff.org/" target="_blank" rel="noopener">Let’s Encrypt</a>: 免費、自動化和開放的憑證(SSL/TLS)頒發機構</p>
-</li>
-<li><p><a href="https://letsencrypt.org/zh-tw/" target="_blank" rel="noopener">Certbot</a>: 協助向<code>Let’s Encrypt</code>申請憑證(SSL/TLS)的開源軟體</p>
-</li>
-</ul>
-<p>更多的相關知識你可以在網路上找到不少專業文章，這裡就只單純記錄實作上需要用到的部分<br>但在操作以下步驟之前，你必須先符合以下條件：</p>
-<ol>
-<li>已先向域名商(Web hosts)註冊一組網域名稱</li>
-<li>已設定<code>DNS</code>指向該Server IP</li>
-<li>已在<code>Apache</code>/<code>Nginx</code>設定檔中新增域名至<code>ServerName</code>中</li>
-</ol>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>接著我們可以先根據<code>PPA</code>下載最新版本的<code>Certobt</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo add-apt-repository ppa:certbot/certbot</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt install python-certbot-apache</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>按照提示按下<code>Enter</code></p>
-</blockquote>
-<h2 id="申請SSL-TLS憑證"><a href="#申請SSL-TLS憑證" class="headerlink" title="申請SSL/TLS憑證"></a>申請SSL/TLS憑證</h2><p>這裡先採用<code>Apache</code>作為實作範例，其實只要理解操作，要更換為<code>Nginx</code>並不會太困難</p>
-<p>建立SSL憑證</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo certbot --apache -d &lt;YOUR_DOMAIN&gt; -d &lt;YOUR_DOMAIN2&gt;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>–apache: 使用Apache Web Server / -d: domain(可以依照域名新增至好幾個)</p>
-</blockquote>
-<blockquote>
-<p>如果不想讓<code>Certbot</code>覆寫設定檔只產生憑證，可以加入<code>certonly</code>參數</p>
-</blockquote>
-<p>如果是第一次申請，將會出現輸入Email的提示，之後<code>Cerbot</code>就會向<code>Let&#39;s Encrypt</code>進行申請SSL動作<br>同時驗證DNS配置是否正確，如果成功，<code>Cerbot</code>會再問你要如何設置<code>HTTPS</code>：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Please choose whether or not to redirect HTTP traffic to HTTPS, removing HTTP access.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">1: No redirect - Make no further changes to the webserver configuration.</span><br><span class="line">2: Redirect - Make all requests redirect to secure HTTPS access. Choose this for</span><br><span class="line">new sites, or if you&#39;re confident your site works on HTTPS. You can undo this</span><br><span class="line">change by editing your web server&#39;s configuration.</span><br><span class="line">-------------------------------------------------------------------------------</span><br><span class="line">Select the appropriate number [1-2] then [enter] (press &#39;c&#39; to cancel):</span><br></pre></td></tr></table></figure>
-<p>如果你想要讓瀏覽器輸入<code>http://&lt;DOMAIN&gt;/</code>時自動導向<code>https://&lt;DOMAIN&gt;</code>就輸入<code>2</code><br>接著<code>Certbot</code>就會在<code>/etc/apache2/sites-available/</code>中，將含有你輸入DOMAIN的設定檔進行配置，若你原先的設定內只有http<code>&lt;VirtualHost *:80&gt;</code>，那麼<code>Certbot</code>還會幫你再新增一份https<code>&lt;VirtualHost *:443&gt;</code>的設定檔，聽起來很難以理解對吧，實際做過一遍會更清楚這其中的流程</p>
-<ul>
-<li><p><code>&lt;YOUR CONF&gt;.conf</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">        ...</span><br><span class="line">RewriteEngine on</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN2&gt; [OR]</span><br><span class="line">RewriteCond %&#123;SERVER_NAME&#125; &#x3D;&lt;YOUR_DOMAIN&gt;</span><br><span class="line">RewriteRule ^ https:&#x2F;&#x2F;%&#123;SERVER_NAME&#125;%&#123;REQUEST_URI&#125; [END,NE,R&#x3D;permanent]</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>&lt;YOUR CONF&gt;-le-ssl.conf</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;IfModule mod_ssl.c&gt;</span><br><span class="line">&lt;VirtualHost *:443&gt;</span><br><span class="line">        ...</span><br><span class="line">Include &#x2F;etc&#x2F;letsencrypt&#x2F;options-ssl-apache.conf</span><br><span class="line">SSLCertificateFile &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;kiitzu.com&#x2F;fullchain.pem</span><br><span class="line">SSLCertificateKeyFile &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;kiitzu.com&#x2F;privkey.pem</span><br><span class="line">&lt;&#x2F;VirtualHost&gt;</span><br><span class="line">&lt;&#x2F;IfModule&gt;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<p>到這裡我們的憑證就已經申請好了，我們重啟<code>Apache</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo service apache2 reload</span></span><br></pre></td></tr></table></figure>
-
-<p>現在你可以打開瀏覽器輸入<code>https://&lt;YOUR_DOMAIN&gt;</code>就可以看到SSL囉～</p>
-<h2 id="更換SSL-TLS憑證"><a href="#更換SSL-TLS憑證" class="headerlink" title="更換SSL/TLS憑證"></a>更換SSL/TLS憑證</h2><p>值得注意的是，<code>Let’s Encrypt</code>憑證是只有三個月的效期的，你可以手動查看目前申請的憑證狀態</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot certificates</span></span><br></pre></td></tr></table></figure>
-
-<p>如果你想更換憑證可以這麼做</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew -v</span></span><br></pre></td></tr></table></figure>
-
-<p>但這樣做太不人性化了，等於每三個月都還要手動更換，因此推薦用Corntab的方式幫我們每個禮拜去確認憑證狀態，如果效期低於一個月就會自動更換憑證</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot renew --dry-run</span></span><br></pre></td></tr></table></figure>
-
-<p>確認Corntab狀態</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl status certbot.timer</span></span><br></pre></td></tr></table></figure>
-
-<p>而想要移除憑證可以這麼做</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo certbot delete</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>可以加入<code>--cert-name &lt;DOMAIN&gt;</code>參數直接根據域名刪除</p>
-</blockquote>
-<h2 id="Django"><a href="#Django" class="headerlink" title="Django"></a>Django</h2><p>若你的專案正好是Django，那有一個地方要特別注意<br>再申請SSL之前，我們必須先把<code>.conf</code>裡有關WSGI的配置全部拿掉</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">WSGIDaemonProcess core python-path&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt; python-home&#x3D;&#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt;&#x2F;.venv</span><br><span class="line">WSGIProcessGroup core</span><br><span class="line">WSGIScriptAlias &#x2F; &#x2F;var&#x2F;app&#x2F;&lt;YOR PROJECT&gt;&#x2F;core&#x2F;wsgi.py</span><br><span class="line">WSGIPassAuthorization On</span><br></pre></td></tr></table></figure>
-
-<p>然後申請完後再把這些配置加回置<code>&lt;YOUR CONF&gt;-le-ssl.conf</code>裡<br>這麼做的目的是為了避免WSGI配置放在<code>&lt;YOUR CONF&gt;.conf</code>而導致的衝突發生</p>
-]]></content>
-      <categories>
-        <category>技術文章</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
       </tags>
   </entry>
   <entry>
@@ -1057,115 +1057,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu 18.04 LTS+vsftpd</title>
-    <url>/2020/09/29/Ubuntu-18-04-LTS-vsftpd/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從開始實習，公司開了一組<code>GCP</code>帳號讓我測試用之後<br>前前後後碰了不少東西，也接觸了很多有關Server的知識<br>而這次要玩的則是不依賴<code>GCP</code>方便的傳輸介面<br>直接在Server上架設<code>FTP</code>，這個從小聽到大的檔案傳輸協定<br>那就一起來看看是如何實現的吧～</p>
-<a id="more"></a>
-
-<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
-
-<p>可切換至<code>root</code>帳號</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
-
-<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>安裝<code>vsftpd</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install vsftpd -y</span></span><br></pre></td></tr></table></figure>
-
-<p>啟動&amp;開機自動啟動<code>vsftpd</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl start vsftpd</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> vsftpd</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="設定檔"><a href="#設定檔" class="headerlink" title="設定檔"></a>設定檔</h2><p>備份原始設定檔以方便回溯</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo cp /etc/vsftpd.conf /etc/vsftpd.conf.org</span></span><br></pre></td></tr></table></figure>
-
-<p>修改設定檔</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo vim /etc/vsftpd.conf</span></span><br></pre></td></tr></table></figure>
-
-<p>設定存取權限</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 禁止匿名使用者</span><br><span class="line">anonymous_enable&#x3D;NO</span><br><span class="line"></span><br><span class="line"># 只允許本地端使用者存取</span><br><span class="line">local_enable&#x3D;YES</span><br><span class="line"></span><br><span class="line"># 允許使用者寫入</span><br><span class="line">write_enable&#x3D;YES</span><br></pre></td></tr></table></figure>
-
-<p>限制存取範圍，讓使用者只能在<code>/home/&lt;USER&gt;/ftp</code>底下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">chroot_local_user&#x3D;YES</span><br><span class="line">user_sub_token&#x3D;$USER</span><br><span class="line">local_root&#x3D;&#x2F;home&#x2F;$USER&#x2F;ftp</span><br></pre></td></tr></table></figure>
-
-<p>指定Port範圍在10000 ~ 110000 之間，可以依照個人需求修改</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pasv_min_port&#x3D;10000</span><br><span class="line">pasv_max_port&#x3D;11000</span><br></pre></td></tr></table></figure>
-
-<p>使用者登入清單</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">userlist_enable&#x3D;YES</span><br><span class="line">userlist_file&#x3D;&#x2F;etc&#x2F;vsftpd.user_list</span><br><span class="line">userlist_deny&#x3D;NO</span><br></pre></td></tr></table></figure>
-
-<p>PAM模組名稱</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pam_service_name&#x3D;vsftpd</span><br></pre></td></tr></table></figure>
-
-<p>SSL加密，這裡可以事先一起設定</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rsa_cert_file&#x3D;&#x2F;etc&#x2F;ssl&#x2F;private&#x2F;vsftpd.pem</span><br><span class="line">rsa_private_key_file&#x3D;&#x2F;etc&#x2F;ssl&#x2F;private&#x2F;vsftpd.pem</span><br><span class="line">ssl_enable&#x3D;YES</span><br></pre></td></tr></table></figure>
-
-<p>都存檔之後就可以重啟<code>vsftpd</code>囉</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl restart vsftpd</span></span><br></pre></td></tr></table></figure>
-
-<p>完整<code>vsftpd.conf</code>如下，保留原始的配置以便日後修改</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># Example config file &#x2F;etc&#x2F;vsftpd.conf</span><br><span class="line">#</span><br><span class="line"># The default compiled in settings are fairly paranoid. This sample file</span><br><span class="line"># loosens things up a bit, to make the ftp daemon more usable.</span><br><span class="line"># Please see vsftpd.conf.5 for all compiled in defaults.</span><br><span class="line">#</span><br><span class="line"># READ THIS: This example file is NOT an exhaustive list of vsftpd options.</span><br><span class="line"># Please read the vsftpd.conf.5 manual page to get a full idea of vsftpd&#39;s</span><br><span class="line"># capabilities.</span><br><span class="line">#</span><br><span class="line">#</span><br><span class="line"># Run standalone?  vsftpd can run either from an inetd or as a standalone</span><br><span class="line"># daemon started from an initscript.</span><br><span class="line">listen&#x3D;NO</span><br><span class="line">#</span><br><span class="line"># This directive enables listening on IPv6 sockets. By default, listening</span><br><span class="line"># on the IPv6 &quot;any&quot; address (::) will accept connections from both IPv6</span><br><span class="line"># and IPv4 clients. It is not necessary to listen on *both* IPv4 and IPv6</span><br><span class="line"># sockets. If you want that (perhaps because you want to listen on specific</span><br><span class="line"># addresses) then you must run two copies of vsftpd with two configuration</span><br><span class="line"># files.</span><br><span class="line">listen_ipv6&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Allow anonymous FTP? (Disabled by default).</span><br><span class="line">anonymous_enable&#x3D;NO</span><br><span class="line">#</span><br><span class="line"># Uncomment this to allow local users to log in.</span><br><span class="line">local_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Uncomment this to enable any form of FTP write command.</span><br><span class="line">write_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Default umask for local users is 077. You may wish to change this to 022,</span><br><span class="line"># if your users expect that (022 is used by most other ftpd&#39;s)</span><br><span class="line">#local_umask&#x3D;022</span><br><span class="line">#</span><br><span class="line"># Uncomment this to allow the anonymous FTP user to upload files. This only</span><br><span class="line"># has an effect if the above global write enable is activated. Also, you will</span><br><span class="line"># obviously need to create a directory writable by the FTP user.</span><br><span class="line">#anon_upload_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Uncomment this if you want the anonymous FTP user to be able to create</span><br><span class="line"># new directories.</span><br><span class="line">#anon_mkdir_write_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Activate directory messages - messages given to remote users when they</span><br><span class="line"># go into a certain directory.</span><br><span class="line">dirmessage_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># If enabled, vsftpd will display directory listings with the time</span><br><span class="line"># in  your  local  time  zone.  The default is to display GMT. The</span><br><span class="line"># times returned by the MDTM FTP command are also affected by this</span><br><span class="line"># option.</span><br><span class="line">use_localtime&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Activate logging of uploads&#x2F;downloads.</span><br><span class="line">xferlog_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Make sure PORT transfer connections originate from port 20 (ftp-data).</span><br><span class="line">connect_from_port_20&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># If you want, you can arrange for uploaded anonymous files to be owned by</span><br><span class="line"># a different user. Note! Using &quot;root&quot; for uploaded files is not</span><br><span class="line"># recommended!</span><br><span class="line">#chown_uploads&#x3D;YES</span><br><span class="line">#chown_username&#x3D;whoever</span><br><span class="line">#</span><br><span class="line"># You may override where the log file goes if you like. The default is shown</span><br><span class="line"># below.</span><br><span class="line">#xferlog_file&#x3D;&#x2F;var&#x2F;log&#x2F;vsftpd.log</span><br><span class="line">#</span><br><span class="line"># If you want, you can have your log file in standard ftpd xferlog format.</span><br><span class="line"># Note that the default log file location is &#x2F;var&#x2F;log&#x2F;xferlog in this case.</span><br><span class="line">#xferlog_std_format&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># You may change the default value for timing out an idle session.</span><br><span class="line">#idle_session_timeout&#x3D;600</span><br><span class="line">#</span><br><span class="line"># You may change the default value for timing out a data connection.</span><br><span class="line">#data_connection_timeout&#x3D;120</span><br><span class="line">#</span><br><span class="line"># It is recommended that you define on your system a unique user which the</span><br><span class="line"># ftp server can use as a totally isolated and unprivileged user.</span><br><span class="line">#nopriv_user&#x3D;ftpsecure</span><br><span class="line">#</span><br><span class="line"># Enable this and the server will recognise asynchronous ABOR requests. Not</span><br><span class="line"># recommended for security (the code is non-trivial). Not enabling it,</span><br><span class="line"># however, may confuse older FTP clients.</span><br><span class="line">#async_abor_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># By default the server will pretend to allow ASCII mode but in fact ignore</span><br><span class="line"># the request. Turn on the below options to have the server actually do ASCII</span><br><span class="line"># mangling on files when in ASCII mode.</span><br><span class="line"># Beware that on some FTP servers, ASCII support allows a denial of service</span><br><span class="line"># attack (DoS) via the command &quot;SIZE &#x2F;big&#x2F;file&quot; in ASCII mode. vsftpd</span><br><span class="line"># predicted this attack and has always been safe, reporting the size of the</span><br><span class="line"># raw file.</span><br><span class="line"># ASCII mangling is a horrible feature of the protocol.</span><br><span class="line">#ascii_upload_enable&#x3D;YES</span><br><span class="line">#ascii_download_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># You may fully customise the login banner string:</span><br><span class="line">#ftpd_banner&#x3D;Welcome to blah FTP service.</span><br><span class="line">#</span><br><span class="line"># You may specify a file of disallowed anonymous e-mail addresses. Apparently</span><br><span class="line"># useful for combatting certain DoS attacks.</span><br><span class="line">#deny_email_enable&#x3D;YES</span><br><span class="line"># (default follows)</span><br><span class="line">#banned_email_file&#x3D;&#x2F;etc&#x2F;vsftpd.banned_emails</span><br><span class="line">#</span><br><span class="line"># You may restrict local users to their home directories.  See the FAQ for</span><br><span class="line"># the possible risks in this before using chroot_local_user or</span><br><span class="line"># chroot_list_enable below.</span><br><span class="line">chroot_local_user&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># You may specify an explicit list of local users to chroot() to their home</span><br><span class="line"># directory. If chroot_local_user is YES, then this list becomes a list of</span><br><span class="line"># users to NOT chroot().</span><br><span class="line"># (Warning! chroot&#39;ing can be very dangerous. If using chroot, make sure that</span><br><span class="line"># the user does not have write access to the top level directory within the</span><br><span class="line"># chroot)</span><br><span class="line">#chroot_local_user&#x3D;YES</span><br><span class="line">#chroot_list_enable&#x3D;YES</span><br><span class="line"># (default follows)</span><br><span class="line">#chroot_list_file&#x3D;&#x2F;etc&#x2F;vsftpd.chroot_list</span><br><span class="line">#</span><br><span class="line"># You may activate the &quot;-R&quot; option to the builtin ls. This is disabled by</span><br><span class="line"># default to avoid remote users being able to cause excessive I&#x2F;O on large</span><br><span class="line"># sites. However, some broken FTP clients such as &quot;ncftp&quot; and &quot;mirror&quot; assume</span><br><span class="line"># the presence of the &quot;-R&quot; option, so there is a strong case for enabling it.</span><br><span class="line">#ls_recurse_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Customization</span><br><span class="line">#</span><br><span class="line"># Some of vsftpd&#39;s settings don&#39;t fit the filesystem layout by</span><br><span class="line"># default.</span><br><span class="line">#</span><br><span class="line"># This option should be the name of a directory which is empty.  Also, the</span><br><span class="line"># directory should not be writable by the ftp user. This directory is used</span><br><span class="line"># as a secure chroot() jail at times vsftpd does not require filesystem</span><br><span class="line"># access.</span><br><span class="line">secure_chroot_dir&#x3D;&#x2F;var&#x2F;run&#x2F;vsftpd&#x2F;empty</span><br><span class="line">#</span><br><span class="line"># This string is the name of the PAM service vsftpd will use.</span><br><span class="line">pam_service_name&#x3D;vsftpd</span><br><span class="line">#</span><br><span class="line"># This option specifies the location of the RSA certificate to use for SSL</span><br><span class="line"># encrypted connections.</span><br><span class="line">rsa_cert_file&#x3D;&#x2F;etc&#x2F;ssl&#x2F;private&#x2F;vsftpd.pem</span><br><span class="line">rsa_private_key_file&#x3D;&#x2F;etc&#x2F;ssl&#x2F;private&#x2F;vsftpd.pem</span><br><span class="line">ssl_enable&#x3D;YES</span><br><span class="line"></span><br><span class="line">#</span><br><span class="line"># Uncomment this to indicate that vsftpd use a utf8 filesystem.</span><br><span class="line">#utf8_filesystem&#x3D;YES</span><br><span class="line"></span><br><span class="line">user_sub_token&#x3D;$USER</span><br><span class="line">local_root&#x3D;&#x2F;home&#x2F;$USER&#x2F;ftp</span><br><span class="line"></span><br><span class="line">pasv_min_port&#x3D;10000</span><br><span class="line">pasv_max_port&#x3D;11000</span><br><span class="line"></span><br><span class="line">userlist_enable&#x3D;YES</span><br><span class="line">userlist_file&#x3D;&#x2F;etc&#x2F;vsftpd.user_list</span><br><span class="line">userlist_deny&#x3D;NO</span><br></pre></td></tr></table></figure>
-
-<h2 id="SSL-TLS"><a href="#SSL-TLS" class="headerlink" title="SSL / TLS"></a>SSL / TLS</h2><p>預設的FTP是使用明碼進行傳輸，這其實對資料非常沒有保障<br>為了安全性上的考量，我們採用<code>OpenSSL</code>建立加密憑證，這裡會產生一組十年期限的2048bit金鑰<br>而金鑰和憑證都會依照設定檔配置放在<code>/etc/ssl/private/vsftpd.pem</code>裡</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem</span></span><br></pre></td></tr></table></figure>
-<p>系統會先問你一連串的基本資料加入至憑證中，按照指示回答即可</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 國家代號</span><br><span class="line">Country Name (2 letter code) [AU]:TW</span><br><span class="line"># 州或省</span><br><span class="line">State or Province Name (full name) [Some-State]:Taipei</span><br><span class="line"># 城市</span><br><span class="line">Locality Name (eg, city) []:xinyi</span><br><span class="line"># 組織或公司名稱</span><br><span class="line">Organization Name (eg, company) [Internet Widgits Pty Ltd]:kiitzu</span><br><span class="line"># 單位名稱</span><br><span class="line">Organizational Unit Name (eg, section) []:RD</span><br><span class="line"># Server或是負責人姓名</span><br><span class="line">Common Name (e.g. server FQDN or YOUR name) []:ricky_lin</span><br><span class="line"># 聯絡Email</span><br><span class="line">Email Address []:ricky_lin@kiitzu.com</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>這裡就依照你的個人資料輸入</p>
-</blockquote>
-<p>重啟<code>vsftpd</code>就設定好囉</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl restart vsftpd</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="使用者"><a href="#使用者" class="headerlink" title="使用者"></a>使用者</h2><p>接著我們就可以創立一組給予<code>vsftpd</code>使用的帳號，這裡用<code>vsftp</code>當作示例<br>按照步驟輸入密碼，後面的問題可直接<code>Enter</code>略過</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo adduser vsftp</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p><code>adduser</code>和<code>useradd</code>雖然都可以建立使用者，但在細節上並不相同，可別搞混囉</p>
-</blockquote>
-<p>將使用者加入至登入清單中</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo vim /etc/vsftpd.user_list</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vsftp</span><br></pre></td></tr></table></figure>
-
-<h2 id="FTP目錄"><a href="#FTP目錄" class="headerlink" title="FTP目錄"></a>FTP目錄</h2><p>在剛建立好的使用者家目錄下建立FTP目錄，並設定權限</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo <span class="built_in">cd</span> /home/vsftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mkdir ftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chown nobody:nogroup ftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chmod a-w ftp</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p><code>a-w</code>: 該檔案(目錄)不能寫入</p>
-</blockquote>
-<p>接下來在<code>ftp</code>目錄下建立一個可以上傳下載的目錄，並設定使用者權限</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo <span class="built_in">cd</span> ftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mkdir upload</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chown vsftp:vsftp upload</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p><code>chmod</code>: 更改檔案(目錄)權限 / <code>chown</code>: 更改檔案(目錄)擁有者</p>
-</blockquote>
-<h2 id="GCP"><a href="#GCP" class="headerlink" title="GCP"></a>GCP</h2><p>別忘了我們的<code>Ubuntu</code>是綁在<code>GCP</code>底下，因此我們還要到GCP設置防火牆<br>不然連線至FTP時，會硬是活生生的被Google給擋了下來</p>
-<p>這邊要記得<code>Port</code>要根據你在設定檔配置的範圍<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/gcp_firewall_ftp.png" alt="gcp_firewall_ftp.png"></p>
-<h2 id="FileZilla"><a href="#FileZilla" class="headerlink" title="FileZilla"></a>FileZilla</h2><p>所有的步驟都做好後，我們就可以在本機端連線至FTP了<br>我是使用<a href="https://filezilla-project.org/" target="_blank" rel="noopener">FileZilla</a>這套老牌的FTP軟體</p>
-<p>點擊左上角新增站台<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/filezilla01.png" alt="filezilla01.png"></p>
-<p>配置好<code>主機</code>、<code>加密</code>、<code>使用者</code>後，點選連線<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/filezilla02.png" alt="filezilla02.png"></p>
-<p>這就是我們之前建立好的憑證，點選確認<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/openssl_ftp.png" alt="openssl_ftp.png"></p>
-<p>我們的目錄就會出現在畫面右方<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/filezilla03.png" alt="filezilla03.png"></p>
-<p>接著你就可以在目錄下存取檔案囉～</p>
-<h2 id="WordPress"><a href="#WordPress" class="headerlink" title="WordPress"></a>WordPress</h2><p>如果你想在FTP上直接存取<code>WordPress</code>的話，可以這麼做</p>
-<p>先將<code>WordPress</code>目錄移至<code>ftp</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo mv /var/www/html/wordpress /home/vsftp/ftp</span></span><br></pre></td></tr></table></figure>
-
-<p>設定軟連結</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo ln -s /home/vsftp/ftp/wordpress /var/www/html/wordpress</span></span><br></pre></td></tr></table></figure>
-
-<p>這時候可以在FTP看到<code>WordPress</code>，但只能夠對檔案進行下載，完全不能上傳或是異動檔案<br>這是因為<code>WordPress</code>的擁有者必須是為<code>www-data</code>，因此<code>vsftp</code>這組帳號對<code>WordPress</code>並沒有寫入的權限<br>除非你<code>WordPress</code>的權限改為<code>777</code>，但是如此一來又有安全性上的疑慮<br>如果你希望能夠寫入，這裡提供一個簡單的方式，就是直接將<code>vsftp</code>加入至<code>www-data</code>群組當中<br>再把<code>WordPress</code>目錄及底下所有檔案擁有者改為<code>www-data:www-data</code><br>這樣的好處是你可以不必更動<code>WordPress</code>的所有權，同時又可以讓<code>vsftp</code>擁有權限<br>聽起來非常的複雜，但其實只要三行指令就可以做到這件事了</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 將使用者加入至www-data群組</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo usermod -aG www-data vsftp</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 將WordPress目錄及檔案擁有者改為www-data</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chown -R www-data:www-data /home/vsftp/ftp/wordpress</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 設定目錄及檔案權限</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chmod -R 775 /home/vsftp/ftp/wordpress</span></span><br></pre></td></tr></table></figure>
-<p>接下來你就可以在FTP上對<code>WordPress</code>進行操作囉～</p>
-<p>你可以在過程中使用<code>ls -l</code>觀察這其中的變化，這也代表<code>linux</code>在安全性上做得很好<br>我也是在這之中學到很多基礎的知識，<code>linux</code>真是個有趣的世界呢</p>
-<blockquote>
-<p>注意上傳至WordPress的檔案也記得要手動將檔案擁有者改為www-data！</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>技術文章</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>macOS+pipenv+pyenv</title>
     <url>/2021/07/23/macOS-pipenv-pyenv/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近準備要開發新的Python專案時，發現自己原先用pip+virtualenv的方式已經有點難管理各個版本的套件了<br>會有這樣的感覺是因為之前參與其他專案時發現無論是Laravel的<code>composer.json</code>/<code>composer.lock</code><br>或是Vue的<code>package.json</code>/<code>yarn.lock</code>都能很有效的管理套件本身的相依問題<br>而要達到這點，進一步的還需要在本機與測試機版本相同的情況下會是更好<br>雖然能達成的方法有很多，但還是想以<code>pipenv</code>+<code>pyenv</code>來實做看看</p>
@@ -1344,6 +1235,115 @@
       <tags>
         <tag>macOS</tag>
         <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 LTS+vsftpd</title>
+    <url>/2020/09/29/Ubuntu-18-04-LTS-vsftpd/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>自從開始實習，公司開了一組<code>GCP</code>帳號讓我測試用之後<br>前前後後碰了不少東西，也接觸了很多有關Server的知識<br>而這次要玩的則是不依賴<code>GCP</code>方便的傳輸介面<br>直接在Server上架設<code>FTP</code>，這個從小聽到大的檔案傳輸協定<br>那就一起來看看是如何實現的吧～</p>
+<a id="more"></a>
+
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>這邊使用的是<code>GCP</code>平台，因此在建立Ubuntu時可先賦予root密碼</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo passwd root</span></span><br></pre></td></tr></table></figure>
+
+<p>可切換至<code>root</code>帳號</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su -</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣在操作下列步驟時，執行指令前就不用另外加<code>sudo</code></p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>安裝<code>vsftpd</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install vsftpd -y</span></span><br></pre></td></tr></table></figure>
+
+<p>啟動&amp;開機自動啟動<code>vsftpd</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl start vsftpd</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">enable</span> vsftpd</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="設定檔"><a href="#設定檔" class="headerlink" title="設定檔"></a>設定檔</h2><p>備份原始設定檔以方便回溯</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo cp /etc/vsftpd.conf /etc/vsftpd.conf.org</span></span><br></pre></td></tr></table></figure>
+
+<p>修改設定檔</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo vim /etc/vsftpd.conf</span></span><br></pre></td></tr></table></figure>
+
+<p>設定存取權限</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 禁止匿名使用者</span><br><span class="line">anonymous_enable&#x3D;NO</span><br><span class="line"></span><br><span class="line"># 只允許本地端使用者存取</span><br><span class="line">local_enable&#x3D;YES</span><br><span class="line"></span><br><span class="line"># 允許使用者寫入</span><br><span class="line">write_enable&#x3D;YES</span><br></pre></td></tr></table></figure>
+
+<p>限制存取範圍，讓使用者只能在<code>/home/&lt;USER&gt;/ftp</code>底下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">chroot_local_user&#x3D;YES</span><br><span class="line">user_sub_token&#x3D;$USER</span><br><span class="line">local_root&#x3D;&#x2F;home&#x2F;$USER&#x2F;ftp</span><br></pre></td></tr></table></figure>
+
+<p>指定Port範圍在10000 ~ 110000 之間，可以依照個人需求修改</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pasv_min_port&#x3D;10000</span><br><span class="line">pasv_max_port&#x3D;11000</span><br></pre></td></tr></table></figure>
+
+<p>使用者登入清單</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">userlist_enable&#x3D;YES</span><br><span class="line">userlist_file&#x3D;&#x2F;etc&#x2F;vsftpd.user_list</span><br><span class="line">userlist_deny&#x3D;NO</span><br></pre></td></tr></table></figure>
+
+<p>PAM模組名稱</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pam_service_name&#x3D;vsftpd</span><br></pre></td></tr></table></figure>
+
+<p>SSL加密，這裡可以事先一起設定</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rsa_cert_file&#x3D;&#x2F;etc&#x2F;ssl&#x2F;private&#x2F;vsftpd.pem</span><br><span class="line">rsa_private_key_file&#x3D;&#x2F;etc&#x2F;ssl&#x2F;private&#x2F;vsftpd.pem</span><br><span class="line">ssl_enable&#x3D;YES</span><br></pre></td></tr></table></figure>
+
+<p>都存檔之後就可以重啟<code>vsftpd</code>囉</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl restart vsftpd</span></span><br></pre></td></tr></table></figure>
+
+<p>完整<code>vsftpd.conf</code>如下，保留原始的配置以便日後修改</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># Example config file &#x2F;etc&#x2F;vsftpd.conf</span><br><span class="line">#</span><br><span class="line"># The default compiled in settings are fairly paranoid. This sample file</span><br><span class="line"># loosens things up a bit, to make the ftp daemon more usable.</span><br><span class="line"># Please see vsftpd.conf.5 for all compiled in defaults.</span><br><span class="line">#</span><br><span class="line"># READ THIS: This example file is NOT an exhaustive list of vsftpd options.</span><br><span class="line"># Please read the vsftpd.conf.5 manual page to get a full idea of vsftpd&#39;s</span><br><span class="line"># capabilities.</span><br><span class="line">#</span><br><span class="line">#</span><br><span class="line"># Run standalone?  vsftpd can run either from an inetd or as a standalone</span><br><span class="line"># daemon started from an initscript.</span><br><span class="line">listen&#x3D;NO</span><br><span class="line">#</span><br><span class="line"># This directive enables listening on IPv6 sockets. By default, listening</span><br><span class="line"># on the IPv6 &quot;any&quot; address (::) will accept connections from both IPv6</span><br><span class="line"># and IPv4 clients. It is not necessary to listen on *both* IPv4 and IPv6</span><br><span class="line"># sockets. If you want that (perhaps because you want to listen on specific</span><br><span class="line"># addresses) then you must run two copies of vsftpd with two configuration</span><br><span class="line"># files.</span><br><span class="line">listen_ipv6&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Allow anonymous FTP? (Disabled by default).</span><br><span class="line">anonymous_enable&#x3D;NO</span><br><span class="line">#</span><br><span class="line"># Uncomment this to allow local users to log in.</span><br><span class="line">local_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Uncomment this to enable any form of FTP write command.</span><br><span class="line">write_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Default umask for local users is 077. You may wish to change this to 022,</span><br><span class="line"># if your users expect that (022 is used by most other ftpd&#39;s)</span><br><span class="line">#local_umask&#x3D;022</span><br><span class="line">#</span><br><span class="line"># Uncomment this to allow the anonymous FTP user to upload files. This only</span><br><span class="line"># has an effect if the above global write enable is activated. Also, you will</span><br><span class="line"># obviously need to create a directory writable by the FTP user.</span><br><span class="line">#anon_upload_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Uncomment this if you want the anonymous FTP user to be able to create</span><br><span class="line"># new directories.</span><br><span class="line">#anon_mkdir_write_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Activate directory messages - messages given to remote users when they</span><br><span class="line"># go into a certain directory.</span><br><span class="line">dirmessage_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># If enabled, vsftpd will display directory listings with the time</span><br><span class="line"># in  your  local  time  zone.  The default is to display GMT. The</span><br><span class="line"># times returned by the MDTM FTP command are also affected by this</span><br><span class="line"># option.</span><br><span class="line">use_localtime&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Activate logging of uploads&#x2F;downloads.</span><br><span class="line">xferlog_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Make sure PORT transfer connections originate from port 20 (ftp-data).</span><br><span class="line">connect_from_port_20&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># If you want, you can arrange for uploaded anonymous files to be owned by</span><br><span class="line"># a different user. Note! Using &quot;root&quot; for uploaded files is not</span><br><span class="line"># recommended!</span><br><span class="line">#chown_uploads&#x3D;YES</span><br><span class="line">#chown_username&#x3D;whoever</span><br><span class="line">#</span><br><span class="line"># You may override where the log file goes if you like. The default is shown</span><br><span class="line"># below.</span><br><span class="line">#xferlog_file&#x3D;&#x2F;var&#x2F;log&#x2F;vsftpd.log</span><br><span class="line">#</span><br><span class="line"># If you want, you can have your log file in standard ftpd xferlog format.</span><br><span class="line"># Note that the default log file location is &#x2F;var&#x2F;log&#x2F;xferlog in this case.</span><br><span class="line">#xferlog_std_format&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># You may change the default value for timing out an idle session.</span><br><span class="line">#idle_session_timeout&#x3D;600</span><br><span class="line">#</span><br><span class="line"># You may change the default value for timing out a data connection.</span><br><span class="line">#data_connection_timeout&#x3D;120</span><br><span class="line">#</span><br><span class="line"># It is recommended that you define on your system a unique user which the</span><br><span class="line"># ftp server can use as a totally isolated and unprivileged user.</span><br><span class="line">#nopriv_user&#x3D;ftpsecure</span><br><span class="line">#</span><br><span class="line"># Enable this and the server will recognise asynchronous ABOR requests. Not</span><br><span class="line"># recommended for security (the code is non-trivial). Not enabling it,</span><br><span class="line"># however, may confuse older FTP clients.</span><br><span class="line">#async_abor_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># By default the server will pretend to allow ASCII mode but in fact ignore</span><br><span class="line"># the request. Turn on the below options to have the server actually do ASCII</span><br><span class="line"># mangling on files when in ASCII mode.</span><br><span class="line"># Beware that on some FTP servers, ASCII support allows a denial of service</span><br><span class="line"># attack (DoS) via the command &quot;SIZE &#x2F;big&#x2F;file&quot; in ASCII mode. vsftpd</span><br><span class="line"># predicted this attack and has always been safe, reporting the size of the</span><br><span class="line"># raw file.</span><br><span class="line"># ASCII mangling is a horrible feature of the protocol.</span><br><span class="line">#ascii_upload_enable&#x3D;YES</span><br><span class="line">#ascii_download_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># You may fully customise the login banner string:</span><br><span class="line">#ftpd_banner&#x3D;Welcome to blah FTP service.</span><br><span class="line">#</span><br><span class="line"># You may specify a file of disallowed anonymous e-mail addresses. Apparently</span><br><span class="line"># useful for combatting certain DoS attacks.</span><br><span class="line">#deny_email_enable&#x3D;YES</span><br><span class="line"># (default follows)</span><br><span class="line">#banned_email_file&#x3D;&#x2F;etc&#x2F;vsftpd.banned_emails</span><br><span class="line">#</span><br><span class="line"># You may restrict local users to their home directories.  See the FAQ for</span><br><span class="line"># the possible risks in this before using chroot_local_user or</span><br><span class="line"># chroot_list_enable below.</span><br><span class="line">chroot_local_user&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># You may specify an explicit list of local users to chroot() to their home</span><br><span class="line"># directory. If chroot_local_user is YES, then this list becomes a list of</span><br><span class="line"># users to NOT chroot().</span><br><span class="line"># (Warning! chroot&#39;ing can be very dangerous. If using chroot, make sure that</span><br><span class="line"># the user does not have write access to the top level directory within the</span><br><span class="line"># chroot)</span><br><span class="line">#chroot_local_user&#x3D;YES</span><br><span class="line">#chroot_list_enable&#x3D;YES</span><br><span class="line"># (default follows)</span><br><span class="line">#chroot_list_file&#x3D;&#x2F;etc&#x2F;vsftpd.chroot_list</span><br><span class="line">#</span><br><span class="line"># You may activate the &quot;-R&quot; option to the builtin ls. This is disabled by</span><br><span class="line"># default to avoid remote users being able to cause excessive I&#x2F;O on large</span><br><span class="line"># sites. However, some broken FTP clients such as &quot;ncftp&quot; and &quot;mirror&quot; assume</span><br><span class="line"># the presence of the &quot;-R&quot; option, so there is a strong case for enabling it.</span><br><span class="line">#ls_recurse_enable&#x3D;YES</span><br><span class="line">#</span><br><span class="line"># Customization</span><br><span class="line">#</span><br><span class="line"># Some of vsftpd&#39;s settings don&#39;t fit the filesystem layout by</span><br><span class="line"># default.</span><br><span class="line">#</span><br><span class="line"># This option should be the name of a directory which is empty.  Also, the</span><br><span class="line"># directory should not be writable by the ftp user. This directory is used</span><br><span class="line"># as a secure chroot() jail at times vsftpd does not require filesystem</span><br><span class="line"># access.</span><br><span class="line">secure_chroot_dir&#x3D;&#x2F;var&#x2F;run&#x2F;vsftpd&#x2F;empty</span><br><span class="line">#</span><br><span class="line"># This string is the name of the PAM service vsftpd will use.</span><br><span class="line">pam_service_name&#x3D;vsftpd</span><br><span class="line">#</span><br><span class="line"># This option specifies the location of the RSA certificate to use for SSL</span><br><span class="line"># encrypted connections.</span><br><span class="line">rsa_cert_file&#x3D;&#x2F;etc&#x2F;ssl&#x2F;private&#x2F;vsftpd.pem</span><br><span class="line">rsa_private_key_file&#x3D;&#x2F;etc&#x2F;ssl&#x2F;private&#x2F;vsftpd.pem</span><br><span class="line">ssl_enable&#x3D;YES</span><br><span class="line"></span><br><span class="line">#</span><br><span class="line"># Uncomment this to indicate that vsftpd use a utf8 filesystem.</span><br><span class="line">#utf8_filesystem&#x3D;YES</span><br><span class="line"></span><br><span class="line">user_sub_token&#x3D;$USER</span><br><span class="line">local_root&#x3D;&#x2F;home&#x2F;$USER&#x2F;ftp</span><br><span class="line"></span><br><span class="line">pasv_min_port&#x3D;10000</span><br><span class="line">pasv_max_port&#x3D;11000</span><br><span class="line"></span><br><span class="line">userlist_enable&#x3D;YES</span><br><span class="line">userlist_file&#x3D;&#x2F;etc&#x2F;vsftpd.user_list</span><br><span class="line">userlist_deny&#x3D;NO</span><br></pre></td></tr></table></figure>
+
+<h2 id="SSL-TLS"><a href="#SSL-TLS" class="headerlink" title="SSL / TLS"></a>SSL / TLS</h2><p>預設的FTP是使用明碼進行傳輸，這其實對資料非常沒有保障<br>為了安全性上的考量，我們採用<code>OpenSSL</code>建立加密憑證，這裡會產生一組十年期限的2048bit金鑰<br>而金鑰和憑證都會依照設定檔配置放在<code>/etc/ssl/private/vsftpd.pem</code>裡</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem</span></span><br></pre></td></tr></table></figure>
+<p>系統會先問你一連串的基本資料加入至憑證中，按照指示回答即可</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 國家代號</span><br><span class="line">Country Name (2 letter code) [AU]:TW</span><br><span class="line"># 州或省</span><br><span class="line">State or Province Name (full name) [Some-State]:Taipei</span><br><span class="line"># 城市</span><br><span class="line">Locality Name (eg, city) []:xinyi</span><br><span class="line"># 組織或公司名稱</span><br><span class="line">Organization Name (eg, company) [Internet Widgits Pty Ltd]:kiitzu</span><br><span class="line"># 單位名稱</span><br><span class="line">Organizational Unit Name (eg, section) []:RD</span><br><span class="line"># Server或是負責人姓名</span><br><span class="line">Common Name (e.g. server FQDN or YOUR name) []:ricky_lin</span><br><span class="line"># 聯絡Email</span><br><span class="line">Email Address []:ricky_lin@kiitzu.com</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>這裡就依照你的個人資料輸入</p>
+</blockquote>
+<p>重啟<code>vsftpd</code>就設定好囉</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl restart vsftpd</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="使用者"><a href="#使用者" class="headerlink" title="使用者"></a>使用者</h2><p>接著我們就可以創立一組給予<code>vsftpd</code>使用的帳號，這裡用<code>vsftp</code>當作示例<br>按照步驟輸入密碼，後面的問題可直接<code>Enter</code>略過</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo adduser vsftp</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>adduser</code>和<code>useradd</code>雖然都可以建立使用者，但在細節上並不相同，可別搞混囉</p>
+</blockquote>
+<p>將使用者加入至登入清單中</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo vim /etc/vsftpd.user_list</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vsftp</span><br></pre></td></tr></table></figure>
+
+<h2 id="FTP目錄"><a href="#FTP目錄" class="headerlink" title="FTP目錄"></a>FTP目錄</h2><p>在剛建立好的使用者家目錄下建立FTP目錄，並設定權限</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo <span class="built_in">cd</span> /home/vsftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mkdir ftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chown nobody:nogroup ftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chmod a-w ftp</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>a-w</code>: 該檔案(目錄)不能寫入</p>
+</blockquote>
+<p>接下來在<code>ftp</code>目錄下建立一個可以上傳下載的目錄，並設定使用者權限</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo <span class="built_in">cd</span> ftp</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mkdir upload</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chown vsftp:vsftp upload</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>chmod</code>: 更改檔案(目錄)權限 / <code>chown</code>: 更改檔案(目錄)擁有者</p>
+</blockquote>
+<h2 id="GCP"><a href="#GCP" class="headerlink" title="GCP"></a>GCP</h2><p>別忘了我們的<code>Ubuntu</code>是綁在<code>GCP</code>底下，因此我們還要到GCP設置防火牆<br>不然連線至FTP時，會硬是活生生的被Google給擋了下來</p>
+<p>這邊要記得<code>Port</code>要根據你在設定檔配置的範圍<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/gcp_firewall_ftp.png" alt="gcp_firewall_ftp.png"></p>
+<h2 id="FileZilla"><a href="#FileZilla" class="headerlink" title="FileZilla"></a>FileZilla</h2><p>所有的步驟都做好後，我們就可以在本機端連線至FTP了<br>我是使用<a href="https://filezilla-project.org/" target="_blank" rel="noopener">FileZilla</a>這套老牌的FTP軟體</p>
+<p>點擊左上角新增站台<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/filezilla01.png" alt="filezilla01.png"></p>
+<p>配置好<code>主機</code>、<code>加密</code>、<code>使用者</code>後，點選連線<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/filezilla02.png" alt="filezilla02.png"></p>
+<p>這就是我們之前建立好的憑證，點選確認<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/openssl_ftp.png" alt="openssl_ftp.png"></p>
+<p>我們的目錄就會出現在畫面右方<br><img src="/images/Ubuntu-18-04-LTS-vsftpd/filezilla03.png" alt="filezilla03.png"></p>
+<p>接著你就可以在目錄下存取檔案囉～</p>
+<h2 id="WordPress"><a href="#WordPress" class="headerlink" title="WordPress"></a>WordPress</h2><p>如果你想在FTP上直接存取<code>WordPress</code>的話，可以這麼做</p>
+<p>先將<code>WordPress</code>目錄移至<code>ftp</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo mv /var/www/html/wordpress /home/vsftp/ftp</span></span><br></pre></td></tr></table></figure>
+
+<p>設定軟連結</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo ln -s /home/vsftp/ftp/wordpress /var/www/html/wordpress</span></span><br></pre></td></tr></table></figure>
+
+<p>這時候可以在FTP看到<code>WordPress</code>，但只能夠對檔案進行下載，完全不能上傳或是異動檔案<br>這是因為<code>WordPress</code>的擁有者必須是為<code>www-data</code>，因此<code>vsftp</code>這組帳號對<code>WordPress</code>並沒有寫入的權限<br>除非你<code>WordPress</code>的權限改為<code>777</code>，但是如此一來又有安全性上的疑慮<br>如果你希望能夠寫入，這裡提供一個簡單的方式，就是直接將<code>vsftp</code>加入至<code>www-data</code>群組當中<br>再把<code>WordPress</code>目錄及底下所有檔案擁有者改為<code>www-data:www-data</code><br>這樣的好處是你可以不必更動<code>WordPress</code>的所有權，同時又可以讓<code>vsftp</code>擁有權限<br>聽起來非常的複雜，但其實只要三行指令就可以做到這件事了</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 將使用者加入至www-data群組</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo usermod -aG www-data vsftp</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 將WordPress目錄及檔案擁有者改為www-data</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chown -R www-data:www-data /home/vsftp/ftp/wordpress</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 設定目錄及檔案權限</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo chmod -R 775 /home/vsftp/ftp/wordpress</span></span><br></pre></td></tr></table></figure>
+<p>接下來你就可以在FTP上對<code>WordPress</code>進行操作囉～</p>
+<p>你可以在過程中使用<code>ls -l</code>觀察這其中的變化，這也代表<code>linux</code>在安全性上做得很好<br>我也是在這之中學到很多基礎的知識，<code>linux</code>真是個有趣的世界呢</p>
+<blockquote>
+<p>注意上傳至WordPress的檔案也記得要手動將檔案擁有者改為www-data！</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技術文章</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
       </tags>
   </entry>
 </search>
